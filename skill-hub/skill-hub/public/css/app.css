@@ -1,0 +1,13 @@
+:root {
+    --navy-dark: #0F1C2E;
+    --navy-medium: #1A2C3E;
+    --navy-light: #2C3E50;
+    --pure-white: #FFFFFF;
+    --accent-blue: #3498DB;
+    --text-light: #E0E6ED;
+    --text-muted: #8899A6;
+}
+.base-color-text {
+    color: var(--accent-blue);
+}
+
