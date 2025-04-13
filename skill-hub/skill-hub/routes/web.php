@@ -57,6 +57,27 @@ Route::middleware('auth')->group(function () {
     // Voucher Routes for Users
     Route::post('voucher/redeem', [VoucherController::class, 'redeem'])->name('voucher.redeem');
 
+    // Rute untuk menampilkan daftar rating
+    Route::get('rating', [RatingController::class, 'index'])->name('rating.index');
+    
+    // Rute untuk menampilkan form untuk menambah rating
+    Route::get('rating/create', [RatingController::class, 'create'])->name('rating.create');
+    
+    // Rute untuk menyimpan rating baru
+    Route::post('rating', [RatingController::class, 'store'])->name('rating.store');
+    
+    // Rute untuk menampilkan rating tertentu
+    Route::get('rating/{rating}', [RatingController::class, 'show'])->name('rating.show');
+    
+    // Rute untuk menampilkan form edit rating
+    Route::get('rating/{rating}/edit', [RatingController::class, 'edit'])->name('rating.edit');
+    
+    // Rute untuk mengupdate rating
+    Route::put('rating/{rating}', [RatingController::class, 'update'])->name('rating.update');
+    
+    // Rute untuk menghapus rating
+    Route::delete('rating/{rating}', [RatingController::class, 'destroy'])->name('rating.destroy');
+
     // Home Route
     Route::get('/home', function () {
         return view('home'); // Ganti dengan halaman home Anda
