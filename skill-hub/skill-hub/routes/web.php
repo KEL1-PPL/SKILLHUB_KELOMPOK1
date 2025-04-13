@@ -14,6 +14,7 @@ use App\Http\Controllers\RatingReviewController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\WishlistController;
 
 // Landing Page Route
 Route::get('/', function () {
@@ -33,7 +34,8 @@ Route::middleware('guest')->group(function () {
 
 // User Routes (Protected by 'auth' middleware)
 Route::middleware('auth')->group(function () {
-    Route::get('dashboard',DashboardController::class)->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
+    
     // Profile Routes
     Route::resource('profile', ProfileController::class);
 
@@ -57,11 +59,15 @@ Route::middleware('auth')->group(function () {
     // Voucher Routes for Users
     Route::post('voucher/redeem', [VoucherController::class, 'redeem'])->name('voucher.redeem');
 
+    // Wishlist Route
+    Route::post('/wishlist/add/{courseId}', [WishlistController::class, 'add'])->name('wishlist.add');
+
     // Home Route
     Route::get('/home', function () {
         return view('home'); // Ganti dengan halaman home Anda
     })->name('home');
 });
+
 
 // Admin Routes (Protected with 'auth' and 'can:admin' middleware)
 Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
