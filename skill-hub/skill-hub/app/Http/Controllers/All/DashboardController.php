@@ -18,7 +18,7 @@ class DashboardController extends Controller
         $grouped = [];
         if(auth()->user()->role == 'siswa')
         {
-            $enrollments = CourseEnrollment::with(['course', 'progress'])
+            $enrollments = CourseEnrollment::with(['course', 'progresS'])
                             ->where('user_id', auth()->user()->id)->get();
 
             $completionHistory = CourseCompletionHistory::with('course')
@@ -40,6 +40,7 @@ class DashboardController extends Controller
             'completionHistory' => $completionHistory,
             'grouped' => $grouped,
             'analytics' => $analytics,
+            'filter' => $filter,
         ]);
     }
 }
