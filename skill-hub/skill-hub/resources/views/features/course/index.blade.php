@@ -6,7 +6,7 @@
         <h1 class="text-2xl font-bold">Daftar Kursus</h1>
 
         @if(auth()->check() && auth()->user()->role === 'mentor')
-        <a href="{{ route('course.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
+        <a href="{{ route('features.course.create') }}" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">
             + Tambah Kursus
         </a>
         @endif
@@ -27,12 +27,12 @@
             <p class="text-sm text-gray-500 mb-2">Mentor: {{ $course->mentor->name ?? '-' }}</p>
             
             <div class="flex justify-between items-center mt-4">
-                <a href="{{ route('course.show', $course->id) }}" class="text-blue-600 hover:underline">Lihat Detail</a>
+                <a href="{{ route('features.course.show', $course->id) }}" class="text-blue-600 hover:underline">Lihat Detail</a>
 
                 @if(auth()->user()->role === 'mentor')
                 <div class="flex gap-2">
-                    <a href="{{ route('course.edit', $course->id) }}" class="text-yellow-500 hover:underline">Edit</a>
-                    <form action="{{ route('course.destroy', $course->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus kursus ini?')">
+                    <a href="{{ route('features.course.edit', $course->id) }}" class="text-yellow-500 hover:underline">Edit</a>
+                    <form action="{{ route('features.course.destroy', $course->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus kursus ini?')">
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="text-red-500 hover:underline">Hapus</button>

@@ -24,4 +24,15 @@ class Course extends Model
         return $this->hasMany(Analytic::class);
     }
 
+    public function mentor()
+    {
+    return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function materials()
+    {
+    return $this->hasMany(CourseMaterial::class);
+    }
+
+
 }

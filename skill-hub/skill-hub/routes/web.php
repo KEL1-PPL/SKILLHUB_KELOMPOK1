@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CourseController; // imam
+use App\Http\Controllers\CourseMaterialController; // imam
 
 // Landing Page Route
 Route::get('/', function () {
@@ -89,3 +90,31 @@ Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name
 
 // course - imam
 Route::resource('course', CourseController::class);
+Route::middleware(['auth'])->group(function () {
+    Route::prefix('features')->group(function () {
+        Route::get('/course', [CourseController::class, 'index'])->name('features.course.index');
+        Route::get('/course/create', [CourseController::class, 'create'])->name('features.course.create');
+        Route::get('/course/{id}', [CourseController::class, 'show'])->name('features.course.show');
+        Route::get('/course/{id}/edit', [CourseController::class, 'edit'])->name('features.course.edit');
+        Route::post('/course', [CourseController::class, 'store'])->name('features.course.store');
+        Route::put('/course/{id}', [CourseController::class, 'update'])->name('features.course.update');
+        Route::delete('/course/{id}', [CourseController::class, 'destroy'])->name('features.course.destroy');
+        Route::get('/courses', function () {
+            return redirect()->route('features.course.index');
+        });
+        Route::post('/features/course/{id}/complete', [CourseController::class, 'markCompleted'])->name('features.course.markCompleted');
+        //
+    });
+});
+
+Route::prefix('features/course/{course}/materials')->middleware('auth')->group(function () {
+    Route::get('create', [CourseMaterialController::class, 'create'])->name('features.course.materials.create');
+    Route::post('/', [CourseMaterialController::class, 'store'])->name('features.course.materials.store');
+});
+
+Route::prefix('features/materials')->middleware('auth')->group(function () {
+    Route::get('{id}/edit', [CourseMaterialController::class, 'edit'])->name('features.course.materials.edit');
+    Route::put('{id}', [CourseMaterialController::class, 'update'])->name('features.course.materials.update');
+    Route::delete('{id}', [CourseMaterialController::class, 'destroy'])->name('features.course.materials.destroy');
+});
+
