@@ -33,7 +33,8 @@ Route::middleware('guest')->group(function () {
 
 // User Routes (Protected by 'auth' middleware)
 Route::middleware('auth')->group(function () {
-    Route::get('dashboard',DashboardController::class)->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
+    
     // Profile Routes
     Route::resource('profile', ProfileController::class);
 
@@ -67,6 +68,11 @@ Route::middleware('auth')->group(function () {
 Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
     // Admin Dashboard
     Route::get('dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+
+    // Earnings Management (PBI #30)
+    Route::get('earnings', [App\Http\Controllers\EarningsController::class, 'index'])->name('admin.earnings.index');
+    Route::put('earnings/{id}', [App\Http\Controllers\EarningsController::class, 'update'])->name('admin.earnings.update');
+    Route::delete('earnings/{id}', [App\Http\Controllers\EarningsController::class, 'destroy'])->name('admin.earnings.destroy');
 
     // Admin-Only Resource Routes
     Route::resource('about', AboutController::class);
