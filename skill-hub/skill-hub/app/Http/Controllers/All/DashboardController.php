@@ -40,7 +40,6 @@ class DashboardController extends Controller
             'completionHistory' => $completionHistory,
             'grouped' => $grouped,
             'analytics' => $analytics,
-            'filter' => $filter,
         ]);
     }
 }
