@@ -1,4 +1,12 @@
 <li class="sidebar-item">
+    <a class="sidebar-link {{ $title == 'subscription' ? 'active' : '' }} text-decoration-none"
+        href="{{ route('admin.subscription-plans.index') }}">
+        <i class="bi bi-person fs-4"></i>
+        <h3 class="fs-4 mt-1">Manajement Langganan</h3>
+    </a>
+</li>
+
+<li class="sidebar-item">
     <a class="sidebar-link {{ $title == 'kursus' ? 'active' : '' }} text-decoration-none"
         href="">
         <i class="bi bi-person fs-4"></i>

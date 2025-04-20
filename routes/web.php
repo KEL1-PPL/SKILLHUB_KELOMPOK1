@@ -14,6 +14,7 @@ use App\Http\Controllers\RatingReviewController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SubscriptionPlanController;
 
 // Landing Page Route
 Route::get('/', function () {
@@ -73,6 +74,18 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
     Route::resource('contact', ContactController::class);
     Route::resource('voucher', VoucherController::class);
 });
+
+// Subscription-plans -elsa
+Route::resource('subscription-plans', SubscriptionPlanController::class)
+    ->names([
+        'index' => 'admin.subscription-plans.index',
+        'create' => 'admin.subscription-plans.create',
+        'store' => 'admin.subscription-plans.store',
+        'show' => 'admin.subscription-plans.show',
+        'edit' => 'admin.subscription-plans.edit',
+        'update' => 'admin.subscription-plans.update',
+        'destroy' => 'admin.subscription-plans.destroy',
+    ]);
 
 // Catch-all Fallback Route (for undefined routes)
 Route::fallback(function () {
