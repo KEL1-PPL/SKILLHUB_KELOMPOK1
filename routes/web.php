@@ -13,6 +13,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RatingReviewController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\EarningsController; // Pastikan EarningsController ada di folder Admin
 use Illuminate\Support\Facades\Route;
 
 // Landing Page Route
@@ -33,7 +34,8 @@ Route::middleware('guest')->group(function () {
 
 // User Routes (Protected by 'auth' middleware)
 Route::middleware('auth')->group(function () {
-    Route::get('dashboard',DashboardController::class)->name('dashboard');
+    Route::get('dashboard', DashboardController::class)->name('dashboard');
+    
     // Profile Routes
     Route::resource('profile', ProfileController::class);
 
@@ -72,6 +74,9 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
     Route::resource('about', AboutController::class);
     Route::resource('contact', ContactController::class);
     Route::resource('voucher', VoucherController::class);
+
+    // Earnings Routes for Admin
+    Route::resource('earnings', EarningsController::class)->except(['create', 'edit']); // Tambahkan EarningsController
 });
 
 // Catch-all Fallback Route (for undefined routes)
