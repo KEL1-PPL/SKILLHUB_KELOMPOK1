@@ -14,6 +14,7 @@ use App\Http\Controllers\RatingReviewController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
 
 // Landing Page Route
 Route::get('/', function () {
@@ -83,3 +84,7 @@ Route::fallback(function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+// course - imam
+
+// imam - end
