@@ -54,11 +54,11 @@
             </li>
 
             @if (auth()->user()->role == 'admin')
-                @include('all.component.menu.admin')
+                @include('admin.menu')
             @elseif (auth()->user()->role == 'mentor')
-                @include('all.component.menu.mentor')
+                @include('mentor.menu')
             @else
-                @include('all.component.menu.siswa')
+                @include('siswa.menu')
             @endif
 
         </ul>

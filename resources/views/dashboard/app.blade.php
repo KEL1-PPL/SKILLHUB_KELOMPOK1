@@ -24,8 +24,8 @@
     <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
         data-sidebar-position="fixed" data-header-position="fixed">
         <aside class="left-sidebar shadow">
-            @include('all.component.nav')
-            @include('all.component.sidebar')
+            @include('dashboard.nav')
+            @include('dashboard.sidebar')
         </aside>
 
         <main>
