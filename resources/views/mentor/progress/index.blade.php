@@ -16,4 +16,20 @@
                         <th>Area Kesulitan</th>
                     </tr>
                 </thead>
- 
+                <tbody>
+                    @foreach ($analytics as $a)
+                        <tr>
+                            <td>{{ $a->student->name }}</td>
+                            <td>{{ $a->course->title }}</td>
+                            <td>{{ $a->area_of_struggle }}</td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+    </div>
+@endsection
+
+@push('scripts')
+
+@endpush
