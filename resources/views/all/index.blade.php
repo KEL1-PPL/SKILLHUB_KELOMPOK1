@@ -1,307 +1,164 @@
 @extends('all.component.app')
 
 @push('styles')
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                height: 'auto',
-                contentHeight: 200,
-                aspectRatio: 2
-            });
-            calendar.render();
-        });
-    </script>
+    <!-- Google Fonts: Figtree -->
+    <link href="https://fonts.googleapis.com/css2?family=Figtree:wght@400;600;700&display=swap" rel="stylesheet">
 
+    <style>
+        body {
+            font-family: 'Figtree', sans-serif;
+            background-color: #F6F6F6;
+            background: linear-gradient(180deg, #287094, #D4D4CE, #F6F6F6, #023246);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+        }
+
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        h2 {
+            color: #023246;
+            font-weight: 700;
+        }
+
+        .search-bar {
+            border: 2px solid #D4D4CE;
+            border-radius: 8px;
+        }
+
+        .card {
+            background-color: #FFFFFF;
+            border: 1px solid #D4D4CE;
+            border-radius: 10px;
+            transition: transform 0.2s ease, box-shadow 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.05);
+        }
+
+        .card-title {
+            color: #023246;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .card-text {
+            color: #555;
+        }
+
+        .rating .star {
+            font-size: 16px;
+            color: #f39c12;
+        }
+
+        .btn-primary {
+            background-color: #287094;
+            border: none;
+            font-weight: 600;
+        }
+
+        .btn-primary:hover {
+            background-color: #023246;
+        }
+
+        .wishlist-btn {
+            background-color: #FFB6C1;
+            border: none;
+            font-weight: 600;
+        }
+
+        .wishlist-btn:hover {
+            background-color: #FF69B4;
+        }
+
+        .course-card img {
+            height: 200px;
+            object-fit: cover;
+            border-radius: 8px 8px 0 0;
+        }
+    </style>
 @endpush
 
 @section('content')
     <div class="body-wrapper">
         <div class="container mt-5 pt-5">
-            @if(auth()->user()->role == 'admin')
-                <div class="row">
-                    <div class="col-12">
-                        <div class="row">
-                            <div class="col">
-                                <div style="height: 100%" id="user-count"></div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <div style="height: 100%" id="learning"></div>
+            <h2 class="mb-4">📚 Jelajahi Kursus Populer</h2>
+
+            <!-- Search Bar -->
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <input type="text" id="search-course" class="form-control search-bar" placeholder="🔍 Cari kursus...">
+                </div>
+            </div>
+
+            <!-- Course Grid -->
+            <div class="row" id="course-list">
+                @php
+                    $courses = [
+                        ['title' => 'Web Development Dasar', 'desc' => 'Belajar HTML, CSS, dan JavaScript dari nol.', 'rating' => 4, 'image' => 'WebDev.png'],
+                        ['title' => 'Data Science Pemula', 'desc' => 'Analisis data menggunakan Python dan Pandas.', 'rating' => 5, 'image' => 'DataSci.png'],
+                        ['title' => 'Desain Grafis Modern', 'desc' => 'Kuasai Adobe Photoshop dan Illustrator.', 'rating' => 3, 'image' => 'GraphicDes.png'],
+                        ['title' => 'Mobile App Development', 'desc' => 'Bangun aplikasi mobile dengan Flutter.', 'rating' => 4, 'image' => 'MobileApp.png'],
+                        ['title' => 'UI/UX Design', 'desc' => 'Pelajari dasar desain aplikasi yang menarik.', 'rating' => 5, 'image' => 'UIX.png'],
+                        ['title' => 'Machine Learning Dasar', 'desc' => 'Memahami supervised & unsupervised learning.', 'rating' => 5, 'image' => 'MachineLearning.png'],
+                        ['title' => 'Cybersecurity 101', 'desc' => 'Lindungi data dan sistem dengan baik.', 'rating' => 4, 'image' => 'CyberSecurity.png'],
+                        ['title' => 'DevOps & CI/CD', 'desc' => 'Belajar automation dan deployment modern.', 'rating' => 4, 'image' => 'DevopsEngineer.png'],
+                        ['title' => 'Cloud Computing', 'desc' => 'Pahami AWS dan layanan cloud lainnya.', 'rating' => 4, 'image' => 'CloudComputing.png'],
+                        ['title' => 'Game Development', 'desc' => 'Ciptakan game seru dengan Unity.', 'rating' => 5, 'image' => 'GameDev.png'],
+                        ['title' => 'Digital Marketing', 'desc' => 'Optimalkan visibilitas brand digitalmu.', 'rating' => 3, 'image' => 'DigiMarketing.png'],
+                        ['title' => 'Artificial Intelligence', 'desc' => 'Terjun ke dunia AI dan aplikasi nyatanya.', 'rating' => 5, 'image' => 'AI.png'],
+                    ];
+                @endphp
+
+                @foreach ($courses as $course)
+                    <div class="col-md-4 mb-4 course-card" data-title="{{ strtolower($course['title']) }}">
+                        <div class="card shadow-sm h-100">
+                            <!-- Gambar Kursus -->
+                            <img src="{{ asset('image/dashboard_kursus/' . $course['image']) }}"
+                                 class="card-img-top" alt="{{ $course['title'] }}">
+
+                            <div class="card-body d-flex flex-column justify-content-between">
+                                <div>
+                                    <h5 class="card-title">{{ $course['title'] }}</h5>
+                                    <p class="card-text">{{ $course['desc'] }}</p>
+                                </div>
+                                <div>
+                                    <div class="rating mb-2">
+                                        @for ($i = 1; $i <= 5; $i++)
+                                            <span class="star {{ $i <= $course['rating'] ? 'filled' : '' }}">⭐</span>
+                                        @endfor
+                                    </div>
+                                    <button class="wishlist-btn btn btn-sm mb-2 w-100">Tambah ke Wishlist</button>
+                                    <a href="#" class="btn btn-primary btn-sm mt-auto w-100">Lihat Detail</a>
+                                </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            @elseif(auth()->user()->role == 'siswa')
-
-                <h2 class="mb-4">📚 Kursus yang Diikuti & Progres</h2>
-                <table class="table table-bordered">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Kursus</th>
-                            <th>Progres</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($enrollments as $item)
-                            <tr>
-                                <td>{{ $item->course->title }}</td>
-                                <td>
-                                    <div class="progress" style="height: 20px;">
-                                        <div class="progress-bar" role="progressbar"
-                                            style="width: {{ $item->progress->percentage_completed }}%;"
-                                            aria-valuenow="{{ $item->progress->percentage_completed }}" aria-valuemin="0"
-                                            aria-valuemax="100">
-                                            {{ $item->progress->percentage_completed }}%
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    @if ($item->progress->status === 'Selesai')
-                                        <span class="badge bg-success">Selesai</span>
-                                    @else
-                                        <span class="badge bg-warning text-dark">Belum Selesai</span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-
-                <h2 class="mt-5 mb-4">🕘 Riwayat Penyelesaian Kursus</h2>
-                <table class="table table-bordered">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Kursus</th>
-                            <th>Tanggal Selesai</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($completionHistory as $history)
-                            <tr>
-                                <td>{{ $history->course->title }}</td>
-                                <td>{{ $history->completed_at->format('d M Y') }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @else
-                <h2 class="mb-4">📊 Analitik Kemajuan Siswa</h2>
-                <table class="table table-bordered">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Nama Siswa</th>
-                            <th>Kursus</th>
-                            <th>Area Kesulitan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($analytics as $a)
-                            <tr>
-                                <td>{{ $a->student->name }}</td>
-                                <td>{{ $a->course->title }}</td>
-                                <td>{{ $a->area_of_struggle }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-
-                <h2 class="mt-5 mb-4">📈 Statistik Area Kesulitan</h2>
-                <canvas id="struggleChart" width="400" height="200"></canvas>
-            @endif
+                @endforeach
+            </div>
         </div>
     </div>
 @endsection
 
 @push('scripts')
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    @if(auth()->user()->role == 'admin')
-        <script>
-            fetch('/api/register-user')
-                .then(response => response.json())
-                .then(data => {
-                    Highcharts.chart('user-count', {
-                        chart: {
-                            type: 'line'
-                        },
-                        title: {
-                            text: 'Pendaftaran Siswa dan Mentor setiap bulan ({{ now()->year }})'
-                        },
-                        xAxis: {
-                            categories: data.months.map(m => new Date(2024, m - 1, 1).toLocaleString('id-ID', { month: 'long' })),
-                            title: { text: 'Bulan' }
-                        },
-                        yAxis: {
-                            title: { text: 'Jumlah Pendaftaran' },
-                            allowDecimals: false
-                        },
-                        plotOptions: {
-                            line: {
-                                dataLabels: { enabled: true },
-                                enableMouseTracking: true
-                            }
-                        },
-                        series: [
-                            { name: 'Siswa', data: data.siswa },
-                            { name: 'Mentor', data: data.mentor }
-                        ]
-                    });
-                })
-                .catch(error => console.error("Gagal mengambil data:", error));
-
-
-            Highcharts.chart('learning', {
-                chart: {
-                    type: 'pie'
-                },
-                title: {
-                    text: 'Departmental Strength of a Company'
-                },
-                subtitle: {
-                    text: 'Custom animation of pie series'
-                },
-                accessibility: {
-                    point: {
-                        valueSuffix: '%'
-                    }
-                },
-                plotOptions: {
-                    pie: {
-                        allowPointSelect: true,
-                        borderWidth: 2,
-                        cursor: 'pointer',
-                        dataLabels: {
-                            enabled: true,
-                            distance: 20
-                        }
-                    }
-                },
-                series: [{
-                    enableMouseTracking: false,
-                    animation: {
-                        duration: 2000
-                    },
-                    colorByPoint: true,
-                    data: [{
-                        name: 'Customer Support',
-                        y: 21.3
-                    }, {
-                        name: 'Development',
-                        y: 18.7
-                    }, {
-                        name: 'Sales',
-                        y: 20.2
-                    }, {
-                        name: 'Marketing',
-                        y: 14.2
-                    }, {
-                        name: 'Other',
-                        y: 25.6
-                    }]
-                }]
-            });
-        </script>
-    @endif
-    @if (auth()->user()->role == 'siswa')
-        <script>
-
-            Highcharts.chart('progress-chart', {
-                chart: {
-                    type: 'line'
-                },
-                title: {
-                    text: 'Progress Menguasai Web Developer - Tahun 2025'
-                },
-                xAxis: {
-                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']
-                },
-                yAxis: {
-                    title: {
-                        text: 'Persentase Penguasaan (%)'
-                    },
-                    max: 100
-                },
-                tooltip: {
-                    valueSuffix: '%'
-                },
-                series: [{
-                    name: 'Frontend',
-                    data: [10, 20, 35, 45, 55, 65, 70, 75, 80, 85, 90, 95]
-                }, {
-                    name: 'Backend',
-                    data: [5, 10, 15, 25, 35, 50, 60, 65, 70, 80, 85, 90]
-                }, {
-                    name: 'Fullstack',
-                    data: [3, 8, 18, 30, 40, 55, 63, 70, 78, 85, 92, 98]
-                }]
-            });
-        </script>
-    @endif
-
-    @if(auth()->user()->role == 'mentor')
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            const ctx = document.getElementById('struggleChart');
-            const chart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: {!! json_encode($grouped->keys()) !!},
-                    datasets: [{
-                        label: 'Jumlah Siswa',
-                        data: {!! json_encode($grouped->values()) !!},
-                        backgroundColor: 'rgba(13, 110, 253, 0.7)'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: { display: true, text: 'Jumlah Siswa' }
-                        },
-                        x: {
-                            title: { display: true, text: 'Area Kesulitan' }
-                        }
-                    }
-                }
-            });
-        </script>
-    @endif
     <script>
-
-
-
-
         document.addEventListener('DOMContentLoaded', function () {
-            // Add animation to product cards on scroll
-            const cards = document.querySelectorAll('.product-card');
+            const searchInput = document.getElementById('search-course');
+            const courseCards = document.querySelectorAll('.course-card');
 
-            const observerOptions = {
-                threshold: 0.2
-            };
+            searchInput.addEventListener('input', function () {
+                const query = this.value.toLowerCase();
 
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
-                    }
+                courseCards.forEach(card => {
+                    const title = card.getAttribute('data-title');
+                    card.style.display = title.includes(query) ? 'block' : 'none';
                 });
-            }, observerOptions);
-
-            cards.forEach(card => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                observer.observe(card);
             });
         });
-                        </>
+    </script>
 @endpush

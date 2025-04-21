@@ -38,5 +38,26 @@
     </script>
     @stack('scripts')
 </body>
+<style>
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+        font-family: 'Figtree', sans-serif;
+    }
+
+    body {
+        background: linear-gradient(135deg, #287094, #D4D4CE, #F6F6F6, #023246);
+        background-size: 300% 300%;
+        animation: gradientBG 15s ease infinite;
+    }
+
+    @keyframes gradientBG {
+        0% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+        100% { background-position: 0% 50%; }
+    }
+</style>
+
 
 </html>

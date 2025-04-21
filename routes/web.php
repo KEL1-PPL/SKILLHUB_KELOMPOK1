@@ -14,6 +14,7 @@ use App\Http\Controllers\RatingReviewController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\HomeController;
 
 // Landing Page Route
 Route::get('/', function () {
