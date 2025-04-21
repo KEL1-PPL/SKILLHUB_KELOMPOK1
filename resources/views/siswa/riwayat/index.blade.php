@@ -18,7 +18,8 @@
                 <tbody>
                     @foreach ($completionHistory as $history)
                         <tr>
-                    
+                            <td>{{ $history->course->title }}</td>
+                            <td>{{ $history->completed_at->format('d M Y') }}</td>
                         </tr>
                     @endforeach
                 </tbody>
