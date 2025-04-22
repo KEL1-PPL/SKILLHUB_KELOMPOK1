@@ -1,3 +1,4 @@
+<?php
 class Earning extends Model
 {
     protected $fillable = [
