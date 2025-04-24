@@ -31,8 +31,9 @@ Route::middleware('auth')->group(function () {
 
     //Route untuk siswa
     Route::prefix('siswa')->group(function(){
-        Route::get('kursus',[KursusController::class,'index'])->name('siswa.kursus.index');
-        Route::get('riwayat',[RiwayatController::class,'index'])->name('siswa.riwayat.index');
+        Route::get('kursus', [KursusController::class, 'index'])->name('siswa.kursus.index');
+        Route::get('riwayat', [RiwayatController::class, 'index'])->name('siswa.riwayat.index');
+        Route::get('riwayat/{id}/review', [RiwayatController::class, 'review'])->name('courses.review');
     });
 
     //Route untuk Mentor
