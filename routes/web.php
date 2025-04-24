@@ -14,6 +14,8 @@ use App\Http\Controllers\RatingReviewController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\CourseController; // imam
 use App\Http\Controllers\HomeController;
 
 // Landing Page Route
@@ -84,3 +86,17 @@ Route::fallback(function () {
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+// course - imam
+Route::resource('course', CourseController::class);
+Route::resource('course', CourseController::class)->names([
+    'index' => 'features.course.index',
+    'create' => 'features.course.create',
+    'store' => 'features.course.store',
+    'show' => 'features.course.show',
+    'edit' => 'features.course.edit',
+    'update' => 'features.course.update',
+    'destroy' => 'features.course.destroy',
+Route::get('/course/{slug}', [CourseController::class, 'show'])->name('course.show')
+]);
