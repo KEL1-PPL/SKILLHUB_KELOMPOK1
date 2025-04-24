@@ -59,5 +59,12 @@
     }
 </style>
 
+<nav>
+    <!-- Navbar content -->
+    <ul>
+        <li><a href="{{ route('wishlist.index') }}">Wishlist</a></li>
+    </ul>
+</nav>
+
 
 </html>
