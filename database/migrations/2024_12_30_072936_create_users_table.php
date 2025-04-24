@@ -11,23 +11,25 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->string('password');  // Kolom password tetap tidak nullable
-            $table->enum('learning_path',[
-                'web-development',
-                'mobile-development',
-                'data-science'
-            ]);
-            $table->enum('role',[
-                'admin',
-                'siswa',
-                'mentor'
-            ]);
-            $table->timestamps(); // created_at dan updated_at
-        });
+        if (!Schema::hasTable('users')) {
+            Schema::create('users', function (Blueprint $table) {
+                $table->id();
+                $table->string('name');
+                $table->string('email')->unique();
+                $table->string('password');
+                $table->enum('learning_path', [
+                    'web-development',
+                    'mobile-development',
+                    'data-science'
+                ]);
+                $table->enum('role', [
+                    'admin',
+                    'siswa',
+                    'mentor'
+                ]);
+                $table->timestamps();
+            });
+        }
     }
 
     /**

@@ -77,6 +77,7 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
 
     // Earnings Routes for Admin
     Route::resource('earnings', EarningsController::class)->except(['create', 'edit']); // Tambahkan EarningsController
+    Route::post('/earnings/{earning}/invalidate', [EarningsController::class, 'invalidate'])->name('admin.earnings.invalidate');
 });
 
 // Catch-all Fallback Route (for undefined routes)
