@@ -83,9 +83,7 @@ Route::fallback(function () {
 // Auth Routes for the rest of the authentication process
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-//Route Rating
+// Route Rating (Specific routes for RatingController)
 Route::middleware(['auth'])->group(function () {
     Route::get('/ratings', [RatingController::class, 'index'])->name('ratings.index');
     Route::get('/ratings/create', [RatingController::class, 'create'])->name('ratings.create');
