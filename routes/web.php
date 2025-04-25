@@ -52,6 +52,10 @@ Route::middleware('auth')->group(function () {
     // Checkout Routes
     Route::resource('checkout', CheckoutController::class);
 
+    // Subscription-plans -elsa
+    Route::get('/subscription/checkout/{plan}', [SubscriptionPlanController::class, 'checkout'])
+    ->name('subscription.checkout');
+
     // Rating and Review Routes
     Route::resource('ratingreview', RatingReviewController::class);
 

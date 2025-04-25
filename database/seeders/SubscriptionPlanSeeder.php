@@ -15,7 +15,7 @@ class SubscriptionPlanSeeder extends Seeder
         $plans = [
             [
                 'name' => 'SkillHub Starter',
-                'description' => 'Cocok untuk pemula yang ingin mulai belajar pemrograman dengan akses dasar.',
+                'description' => 'Ideal untuk pemula yang ingin mulai belajar pemrograman dengan akses dasar.',
                 'price' => 50000,
                 'duration_in_days' => 30,
                 'features' => json_encode([
