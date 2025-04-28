@@ -126,3 +126,5 @@ Route::resource('course', CourseController::class)->names([
     'destroy' => 'features.course.destroy',
 Route::get('/course/{slug}', [CourseController::class, 'show'])->name('course.show')
 ]);
+
+

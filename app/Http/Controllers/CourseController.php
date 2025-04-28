@@ -37,29 +37,29 @@ class CourseController extends Controller
     }
 
     public function store(Request $request)
-    {
-        if (auth()->user()->role !== 'admin' && auth()->user()->role !== 'mentor') {
-            return redirect()->route('features.course.index')->with('error', 'Anda tidak memiliki akses untuk menambah kursus');
-        }
+{
+    $request->validate([
+        'title' => 'required|unique:courses,title',
+        'description' => 'required',
+        'image' => 'required|image',
+    ], [
+        'title.unique' => 'Judul kursus sudah ada, data tidak boleh sama.',
+    ]);
 
-        $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'required|string',
-            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
-        ]);
+    // Generate slug unik menggunakan fungsi generateUniqueSlug
+    $slug = Course::generateUniqueSlug($request->title);
 
-        $imagePath = $request->file('image')->store('courses', 'public');
+    // Simpan data jika validasi lolos
+    Course::create([
+        'title' => $request->title,
+        'description' => $request->description,
+        'image' => $request->file('image')->store('course-images', 'public'),
+        'slug' => $slug,
+        'created_by' => auth()->id(),
+    ]);
 
-        Course::create([
-            'title' => $request->title,
-            'description' => $request->description,
-            'image' => $imagePath,
-            'slug' => Str::slug($request->title),
-            'created_by' => auth()->id(),
-        ]);
-
-        return redirect()->route('features.course.index')->with('success', 'Kursus berhasil ditambahkan');
-    }
+    return redirect()->route('features.course.index')->with('success', 'Kursus berhasil disimpan.');
+}
 
     public function show($slug)
     {
@@ -121,4 +121,13 @@ class CourseController extends Controller
 
         return redirect()->route('features.course.index')->with('success', 'Kursus berhasil dihapus');
     }
+
+    public static function generateUniqueSlug($title)
+{
+    $slug = Str::slug($title);
+    $count = Course::where('slug', 'LIKE', "{$slug}%")->count();
+
+    return $count ? "{$slug}-{$count}" : $slug;
+}
+
 }
