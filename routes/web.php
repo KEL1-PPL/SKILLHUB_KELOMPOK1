@@ -16,6 +16,7 @@ use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CourseController; // imam
+use App\Http\Controllers\MaterialController;
 
 // Landing Page Route
 Route::get('/', function () {
@@ -63,6 +64,32 @@ Route::middleware('auth')->group(function () {
     Route::get('/home', function () {
         return view('home'); // Ganti dengan halaman home Anda
     })->name('home');
+
+    // course - imam
+    Route::resource('course', CourseController::class)->names([
+        'index' => 'features.course.index',
+        'create' => 'features.course.create',
+        'store' => 'features.course.store',
+        'show' => 'features.course.show',
+        'edit' => 'features.course.edit',
+        'update' => 'features.course.update',
+        'destroy' => 'features.course.destroy'
+    ]);
+
+    // Material routes
+    Route::resource('course/{course}/material', MaterialController::class)
+        ->names([
+            'index' => 'features.material.index',
+            'create' => 'features.material.create',
+            'store' => 'features.material.store',
+            'show' => 'features.material.show',
+            'edit' => 'features.material.edit',
+            'update' => 'features.material.update',
+            'destroy' => 'features.material.destroy',
+        ]);
+
+    Route::post('course/{course}/material/{material}/toggle-completion', [MaterialController::class, 'toggleCompletion'])
+        ->name('features.material.toggle-completion');
 });
 
 // Admin Routes (Protected with 'auth' and 'can:admin' middleware)

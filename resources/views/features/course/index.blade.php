@@ -87,7 +87,12 @@
 @section('content')
     <div class="body-wrapper">
         <div class="container mt-5 pt-5">
-            <h2 class="mb-4">📚 Jelajahi Kursus Populer</h2>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>📚 Jelajahi Kursus Populer</h2>
+                @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'mentor'))
+                    <a href="{{ route('features.course.create') }}" class="btn btn-primary">Tambah Kursus</a>
+                @endif
+            </div>
 
             <!-- Search Bar -->
             <div class="row mb-4">
@@ -98,43 +103,26 @@
 
             <!-- Course Grid -->
             <div class="row" id="course-list">
-                @php
-                    $courses = [
-                        ['title' => 'Web Development Dasar', 'slug' => 'web-development-dasar', 'desc' => 'Belajar HTML, CSS, dan JavaScript dari nol.', 'rating' => 4, 'image' => 'WebDev.png'],
-                        ['title' => 'Data Science Pemula', 'slug' => 'data-science-pemula', 'desc' => 'Analisis data menggunakan Python dan Pandas.', 'rating' => 5, 'image' => 'DataSci.png'],
-                        ['title' => 'Desain Grafis Modern', 'slug' => 'desain-grafis-modern', 'desc' => 'Kuasai Adobe Photoshop dan Illustrator.', 'rating' => 3, 'image' => 'GraphicDes.png'],
-                        ['title' => 'Mobile App Development', 'slug' => 'mobile-app-development', 'desc' => 'Bangun aplikasi mobile dengan Flutter.', 'rating' => 4, 'image' => 'MobileApp.png'],
-                        ['title' => 'UI/UX Design', 'slug' => 'ui-ux-design', 'desc' => 'Pelajari dasar desain aplikasi yang menarik.', 'rating' => 5, 'image' => 'UIX.png'],
-                        ['title' => 'Machine Learning Dasar', 'slug' => 'machine-learning-dasar', 'desc' => 'Memahami supervised & unsupervised learning.', 'rating' => 5, 'image' => 'MachineLearning.png'],
-                        ['title' => 'Cybersecurity 101', 'slug' => 'cybersecurity-101', 'desc' => 'Lindungi data dan sistem dengan baik.', 'rating' => 4, 'image' => 'CyberSecurity.png'],
-                        ['title' => 'DevOps & CI/CD', 'slug' => 'devops-ci-cd', 'desc' => 'Belajar automation dan deployment modern.', 'rating' => 4, 'image' => 'DevopsEngineer.png'],
-                        ['title' => 'Cloud Computing', 'slug' => 'cloud-computing', 'desc' => 'Pahami AWS dan layanan cloud lainnya.', 'rating' => 4, 'image' => 'CloudComputing.png'],
-                        ['title' => 'Game Development', 'slug' => 'game-development', 'desc' => 'Ciptakan game seru dengan Unity.', 'rating' => 5, 'image' => 'GameDev.png'],
-                        ['title' => 'Digital Marketing', 'slug' => 'digital-marketing', 'desc' => 'Optimalkan visibilitas brand digitalmu.', 'rating' => 3, 'image' => 'DigiMarketing.png'],
-                        ['title' => 'Artificial Intelligence', 'slug' => 'artificial-intelligence', 'desc' => 'Terjun ke dunia AI dan aplikasi nyatanya.', 'rating' => 5, 'image' => 'AI.png'],
-                    ];
-                @endphp
-
                 @foreach ($courses as $course)
-                    <div class="col-md-4 mb-4 course-card" data-title="{{ strtolower($course['title']) }}">
+                    <div class="col-md-4 mb-4 course-card" data-title="{{ strtolower($course->title) }}">
                         <div class="card shadow-sm h-100">
                             <!-- Gambar Kursus -->
-                            <img src="{{ asset('image/dashboard_kursus/' . $course['image']) }}"
-                                 class="card-img-top" alt="{{ $course['title'] }}">
+                            <img src="{{ asset('storage/courses/' . $course->image) }}"
+                                 class="card-img-top" alt="{{ $course->title }}">
 
                             <div class="card-body d-flex flex-column justify-content-between">
                                 <div>
-                                    <h5 class="card-title">{{ $course['title'] }}</h5>
-                                    <p class="card-text">{{ $course['desc'] }}</p>
+                                    <h5 class="card-title">{{ $course->title }}</h5>
+                                    <p class="card-text">{{ $course->description }}</p>
                                 </div>
                                 <div>
                                     <div class="rating mb-2">
                                         @for ($i = 1; $i <= 5; $i++)
-                                            <span class="star {{ $i <= $course['rating'] ? 'filled' : '' }}">⭐</span>
+                                            <span class="star {{ $i <= $course->rating ? 'filled' : '' }}">⭐</span>
                                         @endfor
                                     </div>
                                     <button class="wishlist-btn btn btn-sm mb-2 w-100">Tambah ke Wishlist</button>
-                                    <a href="{{ route('course.show', $course['slug']) }}" class="btn btn-primary btn-sm mt-auto w-100">Lihat Detail</a>
+                                    <a href="{{ route('features.course.show', $course->slug) }}" class="btn btn-primary btn-sm mt-auto w-100">Lihat Detail</a>
                                 </div>
                             </div>
                         </div>

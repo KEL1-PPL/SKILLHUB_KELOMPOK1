@@ -24,4 +24,9 @@ class Course extends Model
         return $this->hasMany(Analytic::class);
     }
 
+    public function materials()
+    {
+        return $this->hasMany(Material::class)->orderBy('order');
+    }
+
 }

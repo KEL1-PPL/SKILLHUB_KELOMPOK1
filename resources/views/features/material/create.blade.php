@@ -7,13 +7,13 @@
                 <div class="col-md-8">
                     <div class="card">
                         <div class="card-header">
-                            <h3 class="mb-0">Tambah Kursus Baru</h3>
+                            <h3 class="mb-0">Tambah Materi Baru</h3>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('features.course.store') }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('features.material.store', $course->id) }}" method="POST">
                                 @csrf
                                 <div class="mb-3">
-                                    <label for="title" class="form-label">Judul Kursus</label>
+                                    <label for="title" class="form-label">Judul Materi</label>
                                     <input type="text" class="form-control @error('title') is-invalid @enderror" 
                                            id="title" name="title" value="{{ old('title') }}" required>
                                     @error('title')
@@ -22,26 +22,26 @@
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="description" class="form-label">Deskripsi</label>
-                                    <textarea class="form-control @error('description') is-invalid @enderror" 
-                                              id="description" name="description" rows="4" required>{{ old('description') }}</textarea>
-                                    @error('description')
+                                    <label for="content" class="form-label">Konten Materi</label>
+                                    <textarea class="form-control @error('content') is-invalid @enderror" 
+                                              id="content" name="content" rows="10" required>{{ old('content') }}</textarea>
+                                    @error('content')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
 
                                 <div class="mb-3">
-                                    <label for="image" class="form-label">Gambar Kursus</label>
-                                    <input type="file" class="form-control @error('image') is-invalid @enderror" 
-                                           id="image" name="image" accept="image/*" required>
-                                    @error('image')
+                                    <label for="order" class="form-label">Urutan Materi</label>
+                                    <input type="number" class="form-control @error('order') is-invalid @enderror" 
+                                           id="order" name="order" value="{{ old('order', 0) }}" min="0" required>
+                                    @error('order')
                                         <div class="invalid-feedback">{{ $message }}</div>
                                     @enderror
                                 </div>
 
                                 <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-primary">Simpan Kursus</button>
-                                    <a href="{{ route('features.course.index') }}" class="btn btn-secondary">Kembali</a>
+                                    <button type="submit" class="btn btn-primary">Simpan Materi</button>
+                                    <a href="{{ route('features.material.index', $course->id) }}" class="btn btn-secondary">Kembali</a>
                                 </div>
                             </form>
                         </div>
@@ -50,4 +50,4 @@
             </div>
         </div>
     </div>
-@endsection
+@endsection 
