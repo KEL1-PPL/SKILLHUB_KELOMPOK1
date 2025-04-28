@@ -16,7 +16,7 @@ use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CourseController; // imam
-use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\MaterialController; // imam
 
 // Landing Page Route
 Route::get('/', function () {
@@ -126,5 +126,3 @@ Route::resource('course', CourseController::class)->names([
     'destroy' => 'features.course.destroy',
 Route::get('/course/{slug}', [CourseController::class, 'show'])->name('course.show')
 ]);
-
-

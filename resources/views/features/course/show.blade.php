@@ -8,6 +8,11 @@
                     <a href="{{ route('features.course.index') }}" class="btn btn-secondary">
                         <i class="ti ti-arrow-left"></i> Kembali ke Daftar Kursus
                     </a>
+                    @if (auth()->user()->role === 'mentor' || auth()->user()->role === 'admin')
+                        <a href="{{ route('features.course.edit', $course->id) }}" class="btn btn-warning">
+                            <i class="ti ti-pencil"></i> Edit Kursus
+                        </a>
+                    @endif
                 </div>
                 <div class="col-md-8">
                     <div class="card mb-4">
