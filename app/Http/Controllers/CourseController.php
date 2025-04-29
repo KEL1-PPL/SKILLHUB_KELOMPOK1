@@ -53,7 +53,7 @@ class CourseController extends Controller
     Course::create([
         'title' => $request->title,
         'description' => $request->description,
-        'image' => $request->file('image')->store('course-images', 'public'),
+        'image' => $request->file('image')->store('courses-images', 'public'),
         'slug' => $slug,
         'created_by' => auth()->id(),
     ]);

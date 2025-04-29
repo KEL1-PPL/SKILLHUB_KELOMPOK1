@@ -107,7 +107,7 @@
                     <div class="col-md-4 mb-4 course-card" data-title="{{ strtolower($course->title) }}">
                         <div class="card shadow-sm h-100">
                             <!-- Gambar Kursus -->
-                            <img src="{{ asset('storage/courses/' . $course->image) }}"
+                            <img src="{{ asset('storage/public/courses' . $course->image) }}"
                                  class="card-img-top" alt="{{ $course->title }}">
 
                             <div class="card-body d-flex flex-column justify-content-between">
