@@ -9,14 +9,21 @@
                         <i class="ti ti-arrow-left"></i> Kembali ke Daftar Kursus
                     </a>
                     @if (auth()->user()->role === 'mentor' || auth()->user()->role === 'admin')
-                        <a href="{{ route('features.course.edit', $course->id) }}" class="btn btn-warning">
+                        <a href="{{ route('features.course.edit', $course->slug) }}" class="btn btn-warning">
                             <i class="ti ti-pencil"></i> Edit Kursus
                         </a>
+                        <form action="{{ route('features.course.destroy', $course->slug) }}" method="POST" class="d-inline">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn btn-danger" onclick="return confirm('Apakah Anda yakin ingin menghapus kursus ini?')">
+                                <i class="ti ti-trash"></i> Hapus Kursus
+                            </button>
+                        </form>
                     @endif
                 </div>
                 <div class="col-md-8">
                     <div class="card mb-4">
-                        <img src="{{ asset('storage/' . $course->image) }}" class="card-img-top" alt="{{ $course->title }}">
+                    <img src="{{ $course->image_url }}" class="card-img-top" alt="{{ $course->title }}">
                         <div class="card-body">
                             <h1 class="card-title">{{ $course->title }}</h1>
                             <div class="rating mb-3">

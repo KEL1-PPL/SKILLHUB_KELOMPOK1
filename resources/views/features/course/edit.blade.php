@@ -10,7 +10,7 @@
                             <h3 class="mb-0">Edit Kursus</h3>
                         </div>
                         <div class="card-body">
-                            <form action="{{ route('course.update', $course->id) }}" method="POST" enctype="multipart/form-data">
+                            <form action="{{ route('features.course.update', $course->slug) }}" method="POST" enctype="multipart/form-data">
                                 @csrf
                                 @method('PUT')
                                 <div class="mb-3">
@@ -48,7 +48,7 @@
 
                                 <div class="d-grid gap-2">
                                     <button type="submit" class="btn btn-primary">Update Kursus</button>
-                                    <a href="{{ route('course.index') }}" class="btn btn-secondary">Kembali</a>
+                                    <a href="{{ route('features.course.index') }}" class="btn btn-secondary">Kembali</a>
                                 </div>
                             </form>
                         </div>

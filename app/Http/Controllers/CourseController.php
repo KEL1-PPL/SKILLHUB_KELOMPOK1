@@ -37,29 +37,31 @@ class CourseController extends Controller
     }
 
     public function store(Request $request)
-{
-    $request->validate([
-        'title' => 'required|unique:courses,title',
-        'description' => 'required',
-        'image' => 'required|image',
-    ], [
-        'title.unique' => 'Judul kursus sudah ada, data tidak boleh sama.',
-    ]);
+    {
+        $request->validate([
+            'title' => 'required|unique:courses,title',
+            'description' => 'required',
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'title.unique' => 'Judul kursus sudah ada, data tidak boleh sama.',
+        ]);
 
-    // Generate slug unik menggunakan fungsi generateUniqueSlug
-    $slug = Course::generateUniqueSlug($request->title);
+        // Generate slug unik menggunakan fungsi generateUniqueSlug
+        $slug = Course::generateUniqueSlug($request->title);
 
-    // Simpan data jika validasi lolos
-    Course::create([
-        'title' => $request->title,
-        'description' => $request->description,
-        'image' => $request->file('image')->store('courses-images', 'public'),
-        'slug' => $slug,
-        'created_by' => auth()->id(),
-    ]);
+        // Simpan data jika validasi lolos
+        $imagePath = $request->file('image')->store('courses', 'public');
 
-    return redirect()->route('features.course.index')->with('success', 'Kursus berhasil disimpan.');
-}
+        Course::create([
+            'title' => $request->title,
+            'description' => $request->description,
+            'image' => $imagePath,
+            'slug' => $slug,
+            'created_by' => auth()->id(),
+        ]);
+
+        return redirect()->route('features.course.index')->with('success', 'Kursus berhasil disimpan.');
+    }
 
     public function show($slug)
     {
@@ -68,23 +70,24 @@ class CourseController extends Controller
         return view('features.course.show', compact('course', 'title'));
     }
 
-    public function edit($id)
+    public function edit($slug)
     {
         if (auth()->user()->role !== 'admin' && auth()->user()->role !== 'mentor') {
             return redirect()->route('features.course.index')->with('error', 'Anda tidak memiliki akses untuk mengedit kursus');
         }
 
-        $course = Course::findOrFail($id);
-        return view('features.course.edit', compact('course'));
+        $course = Course::where('slug', $slug)->firstOrFail();
+        $title = 'Edit Kursus';
+        return view('features.course.edit', compact('course', 'title'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, $slug)
     {
         if (auth()->user()->role !== 'admin' && auth()->user()->role !== 'mentor') {
             return redirect()->route('features.course.index')->with('error', 'Anda tidak memiliki akses untuk mengedit kursus');
         }
 
-        $course = Course::findOrFail($id);
+        $course = Course::where('slug', $slug)->firstOrFail();
 
         $request->validate([
             'title' => 'required|string|max:255',
@@ -109,13 +112,13 @@ class CourseController extends Controller
         return redirect()->route('features.course.index')->with('success', 'Kursus berhasil diperbarui');
     }
 
-    public function destroy($id)
+    public function destroy($slug)
     {
         if (auth()->user()->role !== 'admin' && auth()->user()->role !== 'mentor') {
             return redirect()->route('features.course.index')->with('error', 'Anda tidak memiliki akses untuk menghapus kursus');
         }
 
-        $course = Course::findOrFail($id);
+        $course = Course::where('slug', $slug)->firstOrFail();
         Storage::disk('public')->delete($course->image);
         $course->delete();
 
@@ -123,11 +126,10 @@ class CourseController extends Controller
     }
 
     public static function generateUniqueSlug($title)
-{
-    $slug = Str::slug($title);
-    $count = Course::where('slug', 'LIKE', "{$slug}%")->count();
+    {
+        $slug = Str::slug($title);
+        $count = Course::where('slug', 'LIKE', "{$slug}%")->count();
 
-    return $count ? "{$slug}-{$count}" : $slug;
-}
-
+        return $count ? "{$slug}-{$count}" : $slug;
+    }
 }

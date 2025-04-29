@@ -30,11 +30,18 @@ class Course extends Model
         return $this->hasMany(Material::class)->orderBy('order');
     }
 
-    public static function generateUniqueSlug($title)
-{
-    $slug = Str::slug($title);
-    $count = self::where('slug', 'LIKE', "{$slug}%")->count();
+    public function getImageUrlAttribute()
+    {
+        return $this->image ? asset('storage/' . $this->image) : asset('images/default-course.png');
+    }
 
-    return $count ? "{$slug}-{$count}" : $slug;
-}
+    public static function generateUniqueSlug($title)
+    {
+        $slug = Str::slug($title);
+        $count = self::where('slug', 'LIKE', "{$slug}%")->count();
+
+        return $count ? "{$slug}-{$count}" : $slug;
+    }
+
+    
 }

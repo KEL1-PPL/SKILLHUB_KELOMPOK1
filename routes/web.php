@@ -74,6 +74,8 @@ Route::middleware('auth')->group(function () {
         'edit' => 'features.course.edit',
         'update' => 'features.course.update',
         'destroy' => 'features.course.destroy'
+    ])->parameters([
+        'course' => 'slug'
     ]);
 
     // Material routes
