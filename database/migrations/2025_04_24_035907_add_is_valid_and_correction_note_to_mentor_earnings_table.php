@@ -6,23 +6,17 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    /**
-     * Run the migrations.
-     */
-    public function up(): void
+    public function up()
     {
-        Schema::table('mentor_earnings', function (Blueprint $table) {
+        Schema::table('mentor_incomes', function (Blueprint $table) {
             $table->boolean('is_valid')->default(true);
-            $table->text('correction_note')->nullable();
+            $table->string('correction_note')->nullable();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
+    public function down()
     {
-        Schema::table('mentor_earnings', function (Blueprint $table) {
+        Schema::table('mentor_incomes', function (Blueprint $table) {
             $table->dropColumn(['is_valid', 'correction_note']);
         });
     }

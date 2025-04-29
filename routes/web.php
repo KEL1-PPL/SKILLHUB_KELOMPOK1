@@ -13,8 +13,15 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RatingReviewController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\EarningsController; // Pastikan EarningsController ada di folder Admin
+use App\Http\Controllers\Admin\EarningsController;
+use App\Http\Controllers\Mentor\IncomeReportController;
+use App\Http\Controllers\Admin\MentorIncomeController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\Mentor\MentorDashboardController;
+use App\Http\Controllers\Mentor\MentorIncomeReportController; 
+use App\Http\Controllers\Mentor\MentorAnalyticsController;
+use App\Http\Controllers\Mentor\MentorCourseController;
 
 // Landing Page Route
 Route::get('/', function () {
@@ -34,7 +41,7 @@ Route::middleware('guest')->group(function () {
 
 // User Routes (Protected by 'auth' middleware)
 Route::middleware('auth')->group(function () {
-    Route::get('dashboard', DashboardController::class)->name('dashboard');
+    Route::get('dashboard', [DashboardController::class, '__invoke'])->name('dashboard');
     
     // Profile Routes
     Route::resource('profile', ProfileController::class);
@@ -61,12 +68,12 @@ Route::middleware('auth')->group(function () {
 
     // Home Route
     Route::get('/home', function () {
-        return view('home'); // Ganti dengan halaman home Anda
+        return view('home');
     })->name('home');
 });
 
-// Admin Routes (Protected with 'auth' and 'can:admin' middleware)
-Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
+// Admin Routes
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
     // Admin Dashboard
     Route::get('dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
 
@@ -76,16 +83,53 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
     Route::resource('voucher', VoucherController::class);
 
     // Earnings Routes for Admin
-    Route::resource('earnings', EarningsController::class)->except(['create', 'edit']); // Tambahkan EarningsController
-    Route::post('/earnings/{earning}/invalidate', [EarningsController::class, 'invalidate'])->name('admin.earnings.invalidate');
+    Route::resource('earnings', AdminController::class)->except(['create', 'edit']);
+    Route::post('/earnings/{earning}/invalidate', [AdminController::class, 'invalidate'])->name('admin.earnings.invalidate')
+        ->name('admin.earnings.invalidate');  
+
+    // Mentor Income Routes
+    Route::get('/mentor-incomes', [MentorIncomeController::class, 'index'])->name('admin.mentor-incomes');
+    Route::post('/mentor-incomes/{id}/correct', [MentorIncomeController::class, 'correct'])
+        ->name('admin.mentor-incomes.correct'); 
 });
 
-// Catch-all Fallback Route (for undefined routes)
+// Mentor Routes
+Route::middleware(['auth', 'mentor'])->prefix('mentor')->name('mentor.')->group(function () {
+    Route::get('/dashboard', [MentorDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/analytics', [MentorAnalyticsController::class, 'index'])->name('analytics');
+    Route::get('/courses', [MentorCourseController::class, 'index'])->name('courses');
+    Route::get('/income-report', [MentorIncomeReportController::class, 'index'])->name('income-report');
+});
+
+// Route untuk admin
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/income-management', [AdminController::class, 'incomeManagement']);
+    // Route admin lainnya
+});
+
+// Route untuk mentor
+Route::middleware(['auth', 'role:mentor'])->prefix('mentor')->group(function () {
+    Route::get('/income-report', [IncomeReportController::class, 'index'])->name('mentor.income-report');
+    // Route mentor lainnya
+});
+
+Route::middleware(['auth', 'mentor'])->group(function () {
+    Route::get('/income-report', [App\Http\Controllers\Mentor\IncomeReportController::class, 'index'])->name('mentor.income-report');
+});
+
+// Catch-all Fallback Route
 Route::fallback(function () {
     return view('errors.404');
 });
 
-// Auth Routes for the rest of the authentication process
+// Auth Routes
 Auth::routes();
+;
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+// Routes untuk Mentor
+Route::prefix('mentor')->middleware(['auth', 'role:mentor'])->group(function () {
+    Route::get('/dashboard', [MentorDashboardController::class, 'index'])->name('mentor.dashboard');
+    Route::get('/income-report', [MentorIncomeReportController::class, 'index'])->name('mentor.income-report');
+    Route::get('/analytics', [MentorAnalyticsController::class, 'index'])->name('mentor.analytics');
+    Route::get('/course-management', [MentorCourseController::class, 'index'])->name('mentor.course-management');
+});
