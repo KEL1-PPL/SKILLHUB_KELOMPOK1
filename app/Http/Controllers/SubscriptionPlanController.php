@@ -62,6 +62,9 @@ class SubscriptionPlanController extends Controller
         }
 
         $data = $validator->validated();
+
+        // Handle checkbox is_active
+        $data['is_active'] = $request->has('is_active') ? true : false;
         
         // Convert features from array to JSON
         if (isset($data['features'])) {
@@ -127,6 +130,9 @@ class SubscriptionPlanController extends Controller
         }
 
         $data = $validator->validated();
+
+        // Handle checkbox is_active
+        $data['is_active'] = $request->has('is_active') ? true : false;
         
         // Convert features from array to JSON
         if (isset($data['features'])) {
