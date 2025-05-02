@@ -23,8 +23,8 @@
                 </div>
                 <div class="col-md-8">
                     <div class="card mb-4">
-                    <img src="{{ $course->image_url }}" class="card-img-top" alt="{{ $course->title }}">
-                        <div class="card-body">
+                    <img src="{{ asset('storage/' . $course->image) }}" alt="{{ $course->title }}">
+                    <div class="card-body">
                             <h1 class="card-title">{{ $course->title }}</h1>
                             <div class="rating mb-3">
                                 @for ($i = 1; $i <= 5; $i++)
