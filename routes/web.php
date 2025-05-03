@@ -52,7 +52,7 @@ Route::middleware('auth')->group(function () {
     // Checkout Routes
     Route::resource('checkout', CheckoutController::class);
 
-    // Subscription-plans -elsa
+    // Subscription-plans
     Route::get('/subscription/checkout/{plan}', [SubscriptionPlanController::class, 'checkout'])
     ->name('subscription.checkout');
 
@@ -79,7 +79,7 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
     Route::resource('voucher', VoucherController::class);
 });
 
-// Subscription-plans -elsa
+// Subscription-plans
 Route::resource('subscription-plans', SubscriptionPlanController::class)
     ->names([
         'index' => 'admin.subscription-plans.index',
