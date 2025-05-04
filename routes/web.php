@@ -13,9 +13,6 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RatingReviewController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Siswa\KursusController;
-use App\Http\Controllers\Siswa\RiwayatController;
-use App\Http\Controllers\Mentor\ProgressController;
 use Illuminate\Support\Facades\Route;
 
 // Landing Page Route
@@ -81,21 +78,6 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
 Route::fallback(function () {
     return view('errors.404');
 });
-
-// Auth Routes for the rest of the authentication process
-
-    //Route untuk siswa
-    Route::prefix('siswa')->group(function(){
-        Route::get('kursus', [KursusController::class, 'index'])->name('siswa.kursus.index');
-        Route::get('riwayat', [RiwayatController::class, 'index'])->name('siswa.riwayat.index');
-        Route::get('riwayat/{id}/review', [RiwayatController::class, 'review'])->name('courses.review');
-    });
-
-    //Route untuk Mentor
-    Route::prefix('mentor')->group(function(){
-        Route::get('progress',[ProgressController::class,'index'])->name('mentor.progress.index');
-});
-
 
 Auth::routes();
 
