@@ -1,30 +1,15 @@
 <?php
 
-use App\Http\Controllers\All\DashboardController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\User\ProfileController;
-use App\Http\Controllers\AboutController;
-use App\Http\Controllers\CartController;
-use App\Http\Controllers\CategoryController;
-use App\Http\Controllers\CheckoutController;
-use App\Http\Controllers\ContactController;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\RatingReviewController;
-use App\Http\Controllers\VoucherController;
-use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Siswa\KursusController;
+use App\Http\Controllers\Siswa\RiwayatController;
+use App\Http\Controllers\Mentor\ProgressController;
 use App\Http\Controllers\Admin\EarningsController;
 use App\Http\Controllers\Mentor\IncomeReportController;
 use App\Http\Controllers\Admin\MentorIncomeController;
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
-use App\Http\Controllers\Mentor\MentorDashboardController;
-use App\Http\Controllers\Mentor\MentorIncomeReportController; 
-use App\Http\Controllers\Mentor\MentorAnalyticsController;
-use App\Http\Controllers\Mentor\MentorCourseController;
-use App\Http\Controllers\SubscriptionPlanController;
-use App\Http\Controllers\CourseController; // imam
-use App\Http\Controllers\MaterialController; // imam
 
 // Landing Page Route
 Route::get('/', function () {
@@ -36,14 +21,28 @@ Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-// Register Routes (Only accessible for guests)
+
+//Register
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
 });
 
-// User Routes (Protected by 'auth' middleware)
+// User yang sudah login, baik itu role admin, mentor dan siswa
 Route::middleware('auth')->group(function () {
+    Route::get('dashboard',DashboardController::class)->name('dashboard');
+
+    //Route untuk siswa
+    Route::prefix('siswa')->group(function(){
+        Route::get('kursus', [KursusController::class, 'index'])->name('siswa.kursus.index');
+        Route::get('riwayat', [RiwayatController::class, 'index'])->name('siswa.riwayat.index');
+        Route::get('riwayat/{id}/review', [RiwayatController::class, 'review'])->name('courses.review');
+    });
+
+    //Route untuk Mentor
+    Route::prefix('mentor')->group(function(){
+        Route::get('progress',[ProgressController::class,'index'])->name('mentor.progress.index');
+    });
     Route::get('dashboard', [DashboardController::class, '__invoke'])->name('dashboard');
     
     // Profile Routes
@@ -170,20 +169,11 @@ Route::fallback(function () {
     return view('errors.404');
 });
 
+
 // Auth Routes
 Auth::routes();
-;
-
-// Routes untuk Mentor
-Route::prefix('mentor')->middleware(['auth', 'role:mentor'])->group(function () {
-    Route::get('/dashboard', [MentorDashboardController::class, 'index'])->name('mentor.dashboard');
-    Route::get('/income-report', [MentorIncomeReportController::class, 'index'])->name('mentor.income-report');
-    Route::get('/analytics', [MentorAnalyticsController::class, 'index'])->name('mentor.analytics');
-    Route::get('/course-management', [MentorCourseController::class, 'index'])->name('mentor.course-management');
-});
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
 
 // course - imam
 Route::resource('course', CourseController::class);

@@ -25,7 +25,7 @@
     <a class="sidebar-link {{ $title == 'Kursus' ? 'active' : '' }} text-decoration-none"
         href="{{ route('features.course.index') }}">
         <i class="bi bi-person fs-4"></i>
-        <h3 class="fs-4 mt-1">Manajement Kursus</h3>
+        <h3 class="fs-4 mt-1">Manajement Progress</h3>
     </a>
 </li>
 
@@ -65,4 +65,3 @@
         <h3 class="fs-4 mt-1">Rating & Review</h3>
     </a>
 </li>
-

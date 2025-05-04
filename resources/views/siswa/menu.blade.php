@@ -5,6 +5,13 @@
         <h3 class="fs-4 mt-1">Kursus Saya</h3>
     </a>
 </li>
+<li class="sidebar-item">
+    <a class="sidebar-link {{ $title == 'riwayat' ? 'active' : '' }} text-decoration-none"
+        href="{{ route('siswa.riwayat.index') }}">
+        <i class="bi bi-journal fs-4"></i>
+        <h3 class="fs-4 mt-1">Riwayat Saya</h3>
+    </a>
+</li>
 
 <li class="sidebar-item">
     <a class="sidebar-link {{ $title == 'whislist' ? 'active' : '' }} text-decoration-none"
