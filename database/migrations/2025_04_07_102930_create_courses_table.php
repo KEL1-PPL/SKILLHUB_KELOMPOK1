@@ -15,9 +15,6 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description')->nullable();
-            $table->string('image')->nullable();
-            $table->string('slug')->unique();
-            $table->integer('rating')->default(0);
             $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
             $table->timestamps();
         });

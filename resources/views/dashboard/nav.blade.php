@@ -12,16 +12,6 @@
 
     <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
-            <!-- subscription button only for 'siswa' role -->
-            @if(auth()->check() && auth()->user()->role == 'siswa')
-                <li class="nav-item me-3">
-                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#subscriptionModal">
-                        <i class="bi bi-star"></i> Tingkatkan Paket
-                    </button>
-                </li>
-            @endif
-
-
             <li class="nav-item dropdown">
                 <a class="nav-link btn btn-dark nav-icon-hover" href="javascript:void(0)" id="drop2"
                     data-bs-toggle="dropdown" aria-expanded="false">
