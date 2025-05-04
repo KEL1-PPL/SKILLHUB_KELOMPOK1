@@ -23,7 +23,6 @@ use App\Http\Controllers\Mentor\MentorIncomeReportController;
 use App\Http\Controllers\Mentor\MentorAnalyticsController;
 use App\Http\Controllers\Mentor\MentorCourseController;
 use App\Http\Controllers\SubscriptionPlanController;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CourseController; // imam
 use App\Http\Controllers\MaterialController; // imam
 
