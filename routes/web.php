@@ -14,6 +14,7 @@ use App\Http\Controllers\RatingReviewController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SubscriptionPlanController;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CourseController; // imam
 use App\Http\Controllers\MaterialController; // imam
@@ -53,6 +54,10 @@ Route::middleware('auth')->group(function () {
 
     // Checkout Routes
     Route::resource('checkout', CheckoutController::class);
+
+    // Subscription-plans
+    Route::get('/subscription/checkout/{plan}', [SubscriptionPlanController::class, 'checkout'])
+    ->name('subscription.checkout');
 
     // Rating and Review Routes
     Route::resource('ratingreview', RatingReviewController::class);
@@ -104,6 +109,18 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
     Route::resource('contact', ContactController::class);
     Route::resource('voucher', VoucherController::class);
 });
+
+// Subscription-plans
+Route::resource('subscription-plans', SubscriptionPlanController::class)
+    ->names([
+        'index' => 'admin.subscription-plans.index',
+        'create' => 'admin.subscription-plans.create',
+        'store' => 'admin.subscription-plans.store',
+        'show' => 'admin.subscription-plans.show',
+        'edit' => 'admin.subscription-plans.edit',
+        'update' => 'admin.subscription-plans.update',
+        'destroy' => 'admin.subscription-plans.destroy',
+    ]);
 
 // Catch-all Fallback Route (for undefined routes)
 Route::fallback(function () {
