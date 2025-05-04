@@ -11,8 +11,3 @@
     color: var(--accent-blue);
 }
 
-.menu-link.active {
-    background: #e9ecef;
-    color: #0d6efd;
-}
-
