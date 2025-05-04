@@ -79,7 +79,6 @@ Route::fallback(function () {
     return view('errors.404');
 });
 
-// Auth Routes for the rest of the authentication process
 Auth::routes();
 
 Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
