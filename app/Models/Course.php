@@ -24,4 +24,9 @@ class Course extends Model
         return $this->hasMany(Analytic::class);
     }
 
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
 }

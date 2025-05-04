@@ -1,68 +1,36 @@
-<!-- Sidebar scroll-->
-
-<style>
-    .sidebar-item.active {
-        background-color: #6084fc;
-    }
-
-    .sidebar-item.active .hide-menu {
-        color: #fdfdfd;
-    }
-
-    .sidebar-item.active .sidebar-link span i {
-        color: #fdfdfd;
-    }
-
-    .no-scrollbar {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-    }
-
-    .no-scrollbar::-webkit-scrollbar {
-        display: none;
-    }
-</style>
-
-<div>
-    <div class="brand-logo d-flex align-items-center justify-content-between">
-        <a href="" class="text-nowrap logo-img">
-            <img src="" width="180" alt="" />
-        </a>
-        <div class="close-btn d-xl-none d-block sidebartoggler cursor-pointer" id="sidebarCollapse">
-            <i class="ti ti-x fs-8"></i>
+<div class="sidebar-header">
+    <a href="{{ route('dashboard') }}" class="d-flex align-items-center text-decoration-none">
+        <img src="{{ asset('images/logo.png') }}" alt="Skill Hub Logo" class="img-fluid" style="max-height: 40px;">
+        <div class="ms-3">
+            <h2 class="brand-text mb-0">Skill <span>Hub</span></h2>
         </div>
+    </a>
+</div>
+
+<div class="sidebar-menu">
+    <!-- Dashboard Menu Item -->
+    <div class="menu-category">Menu Utama</div>
+    <ul class="nav flex-column">
+        <li class="sidebar-item">
+            <a href="{{ route('dashboard') }}" class="sidebar-link {{ $title == 'Dashboard' ? 'active' : '' }}">
+                <i class="bi bi-speedometer2"></i>
+                <span class="sidebar-link-text">Dashboard</span>
+            </a>
+        </li>
+    </ul>
+
+    <!-- Role-specific Menu Items -->
+    <div class="menu-category mt-3">
+        {{ auth()->user()->role == 'admin' ? 'Management' : 'Layanan ' . ucfirst(auth()->user()->role) }}
     </div>
-
-    <nav class="sidebar-nav scroll-sidebar no-scrollbar" data-simplebar="">
-        <ul id="sidebarnav">
-            <li class="nav-small-cap">
-                <h3 class="text-muted fs-4">Menu</h3>
-            </li>
-            <li class="sidebar-item">
-                <a class="sidebar-link {{ $title == 'Dashboard' ? 'active' : '' }} text-decoration-none"
-                    href="{{route('dashboard')}}">
-                    <i class="ti ti-layout-dashboard fs-6"></i>
-                    <h3 class="fs-4 mt-1">Dashboard</h3>
-                </a>
-            </li>
-        </ul>
-
-        <ul id="sidebarnav">
-            <li class="nav-small-cap">
-                <h3 class="text-muted fs-4">
-                    {{ auth()->user()->role == 'admin' ? 'Management' : 'Layanan' . ucfirst(auth()->user()->role) }}</h3>
-            </li>
-
-            @if (auth()->user()->role == 'admin')
-                @include('all.component.menu.admin')
-            @elseif (auth()->user()->role == 'mentor')
-                @include('all.component.menu.mentor')
-            @else
-                @include('all.component.menu.siswa')
-            @endif
-
-        </ul>
-
-    </nav>
-
+    
+    <ul class="nav flex-column">
+        @if (auth()->user()->role == 'admin')
+            @include('all.component.menu.admin')
+        @elseif (auth()->user()->role == 'mentor')
+            @include('all.component.menu.mentor')
+        @else
+            @include('all.component.menu.siswa')
+        @endif
+    </ul>
 </div>

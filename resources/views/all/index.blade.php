@@ -1,307 +1,372 @@
 @extends('all.component.app')
 
-@push('styles')
-    <script src='https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js'></script>
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            var calendarEl = document.getElementById('calendar');
-            var calendar = new FullCalendar.Calendar(calendarEl, {
-                initialView: 'dayGridMonth',
-                height: 'auto',
-                contentHeight: 200,
-                aspectRatio: 2
-            });
-            calendar.render();
-        });
-    </script>
-
+@push('style')
+<style>
+    /* Course Index Page Specific Styles */
+    .page-header {
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+    
+    .page-description {
+        color: var(--text-light);
+        font-size: 1rem;
+    }
+    
+    .search-container {
+        position: relative;
+        margin-bottom: 2rem;
+    }
+    
+    .search-input {
+        padding: 0.75rem 1rem 0.75rem 3rem;
+        border-radius: 0.5rem;
+        border: 1px solid var(--border-color);
+        width: 100%;
+        font-size: 0.95rem;
+        box-shadow: var(--shadow-sm);
+        transition: all 0.2s ease;
+    }
+    
+    .search-input:focus {
+        outline: none;
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    
+    .search-icon {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-light);
+        font-size: 1.25rem;
+    }
+    
+    .course-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .course-card {
+        border-radius: 0.5rem;
+        overflow: hidden;
+        background-color: var(--white);
+        border: 1px solid var(--border-color);
+        box-shadow: var(--shadow-sm);
+        transition: transform 0.2s ease, box-shadow 0.3s ease;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow);
+    }
+    
+    .course-image {
+        height: 180px;
+        width: 100%;
+        object-fit: cover;
+    }
+    
+    .course-content {
+        padding: 1.25rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .course-title {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+    
+    .course-description {
+        color: var(--text-light);
+        font-size: 0.875rem;
+        margin-bottom: 1rem;
+        flex-grow: 1;
+    }
+    
+    .course-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 1rem;
+    }
+    
+    .course-rating {
+        display: flex;
+        align-items: center;
+    }
+    
+    .rating-stars {
+        color: var(--accent-color);
+        font-size: 0.875rem;
+    }
+    
+    .course-price {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+    
+    .course-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .btn-wishlist {
+        background-color: rgba(239, 68, 68, 0.1);
+        color: var(--danger-color);
+        border: none;
+        border-radius: 0.375rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-wishlist:hover {
+        background-color: rgba(239, 68, 68, 0.2);
+    }
+    
+    .btn-wishlist.added {
+        background-color: var(--danger-color);
+        color: var(--white);
+    }
+    
+    .btn-detail {
+        background-color: var(--primary-color);
+        color: var(--white);
+        border: none;
+        border-radius: 0.375rem;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        transition: all 0.2s ease;
+    }
+    
+    .btn-detail:hover {
+        background-color: var(--primary-dark);
+    }
+    
+    .category-badge {
+        display: inline-block;
+        background-color: rgba(37, 99, 235, 0.1);
+        color: var(--primary-color);
+        font-size: 0.75rem;
+        font-weight: 500;
+        padding: 0.25rem 0.75rem;
+        border-radius: 1rem;
+        margin-bottom: 0.75rem;
+    }
+    
+    .instructor-info {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .instructor-avatar {
+        width: 2rem;
+        height: 2rem;
+        border-radius: 50%;
+        background-color: var(--primary-color);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--white);
+        font-weight: 600;
+        font-size: 0.875rem;
+    }
+    
+    .instructor-name {
+        font-size: 0.875rem;
+        color: var(--text-light);
+    }
+    
+    /* Empty state */
+    .empty-state {
+        text-align: center;
+        padding: 3rem;
+        background-color: var(--white);
+        border-radius: 0.5rem;
+        box-shadow: var(--shadow-sm);
+    }
+    
+    .empty-icon {
+        font-size: 3rem;
+        color: var(--text-light);
+        margin-bottom: 1rem;
+    }
+    
+    .empty-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: var(--text-dark);
+        margin-bottom: 0.5rem;
+    }
+    
+    .empty-description {
+        color: var(--text-light);
+        margin-bottom: 1.5rem;
+    }
+</style>
 @endpush
 
 @section('content')
-    <div class="body-wrapper">
-        <div class="container mt-5 pt-5">
-            @if(auth()->user()->role == 'admin')
-                <div class="row">
-                    <div class="col-12">
-                        <div class="row">
-                            <div class="col">
-                                <div style="height: 100%" id="user-count"></div>
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col">
-                                <div style="height: 100%" id="learning"></div>
-                            </div>
-                        </div>
+<div class="page-header">
+    <h1 class="page-title">📚 Jelajahi Kursus Populer</h1>
+    <p class="page-description">Temukan kursus terbaik untuk meningkatkan keterampilan Anda</p>
+</div>
+
+<!-- Search Bar -->
+<div class="search-container">
+    <i class="bi bi-search search-icon"></i>
+    <input type="text" id="search-course" class="search-input" placeholder="Cari kursus berdasarkan judul, kategori, atau instruktur...">
+</div>
+
+<!-- Course Grid -->
+<div class="course-grid" id="course-list">
+    @forelse ($courses as $course)
+    <div class="course-card" data-title="{{ strtolower($course->title) }}">
+        <img src="{{ asset('image/dashboard_kursus/' . $course->image) }}" class="course-image" alt="{{ $course->title }}">
+        
+        <div class="course-content">
+            <span class="category-badge">{{ $course->category ?? 'Umum' }}</span>
+            
+            <h3 class="course-title">{{ $course->title }}</h3>
+            
+          
+            
+            <p class="course-description">{{ Str::limit($course->description, 100) }}</p>
+            
+            <div class="course-meta">
+                <div class="course-rating">
+                    <div class="rating-stars">
+                        @for ($i = 1; $i <= 5; $i++)
+                            <i class="bi bi-star{{ $i <= $course->rating ? '-fill' : '' }}"></i>
+                        @endfor
                     </div>
+                    <span class="ms-1">({{ $course->rating }})</span>
                 </div>
-            @elseif(auth()->user()->role == 'siswa')
-
-                <h2 class="mb-4">📚 Kursus yang Diikuti & Progres</h2>
-                <table class="table table-bordered">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Kursus</th>
-                            <th>Progres</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($enrollments as $item)
-                            <tr>
-                                <td>{{ $item->course->title }}</td>
-                                <td>
-                                    <div class="progress" style="height: 20px;">
-                                        <div class="progress-bar" role="progressbar"
-                                            style="width: {{ $item->progress->percentage_completed }}%;"
-                                            aria-valuenow="{{ $item->progress->percentage_completed }}" aria-valuemin="0"
-                                            aria-valuemax="100">
-                                            {{ $item->progress->percentage_completed }}%
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>
-                                    @if ($item->progress->status === 'Selesai')
-                                        <span class="badge bg-success">Selesai</span>
-                                    @else
-                                        <span class="badge bg-warning text-dark">Belum Selesai</span>
-                                    @endif
-                                </td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-
-                <h2 class="mt-5 mb-4">🕘 Riwayat Penyelesaian Kursus</h2>
-                <table class="table table-bordered">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Kursus</th>
-                            <th>Tanggal Selesai</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($completionHistory as $history)
-                            <tr>
-                                <td>{{ $history->course->title }}</td>
-                                <td>{{ $history->completed_at->format('d M Y') }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-            @else
-                <h2 class="mb-4">📊 Analitik Kemajuan Siswa</h2>
-                <table class="table table-bordered">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Nama Siswa</th>
-                            <th>Kursus</th>
-                            <th>Area Kesulitan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($analytics as $a)
-                            <tr>
-                                <td>{{ $a->student->name }}</td>
-                                <td>{{ $a->course->title }}</td>
-                                <td>{{ $a->area_of_struggle }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
-
-                <h2 class="mt-5 mb-4">📈 Statistik Area Kesulitan</h2>
-                <canvas id="struggleChart" width="400" height="200"></canvas>
-            @endif
+                
+                <div class="course-price">
+                    {{ $course->price ? 'Rp ' . number_format($course->price, 3, ',', '.') : 'Gratis' }}
+                </div>
+            </div>
+            
+            <div class="course-actions">
+                <button type="button" class="btn-wishlist" data-course-id="{{ $course->id }}">
+                    <i class="bi bi-heart"></i> Tambah ke Wishlist
+                </button>
+                
+                <a href="#" class="btn-detail">
+                    <i class="bi bi-eye"></i> Lihat Detail
+                </a>
+            </div>
         </div>
     </div>
+    @empty
+    <div class="empty-state">
+        <i class="bi bi-journal-x empty-icon"></i>
+        <h3 class="empty-title">Belum ada kursus tersedia</h3>
+        <p class="empty-description">Kursus yang Anda cari belum tersedia saat ini.</p>
+    </div>
+    @endforelse
+</div>
+
+<!-- Toast Container for Notifications -->
+<div class="toast-container"></div>
 @endsection
 
 @push('scripts')
-    <script src="https://code.highcharts.com/highcharts.js"></script>
-    @if(auth()->user()->role == 'admin')
-        <script>
-            fetch('/api/register-user')
-                .then(response => response.json())
-                .then(data => {
-                    Highcharts.chart('user-count', {
-                        chart: {
-                            type: 'line'
-                        },
-                        title: {
-                            text: 'Pendaftaran Siswa dan Mentor setiap bulan ({{ now()->year }})'
-                        },
-                        xAxis: {
-                            categories: data.months.map(m => new Date(2024, m - 1, 1).toLocaleString('id-ID', { month: 'long' })),
-                            title: { text: 'Bulan' }
-                        },
-                        yAxis: {
-                            title: { text: 'Jumlah Pendaftaran' },
-                            allowDecimals: false
-                        },
-                        plotOptions: {
-                            line: {
-                                dataLabels: { enabled: true },
-                                enableMouseTracking: true
-                            }
-                        },
-                        series: [
-                            { name: 'Siswa', data: data.siswa },
-                            { name: 'Mentor', data: data.mentor }
-                        ]
-                    });
-                })
-                .catch(error => console.error("Gagal mengambil data:", error));
-
-
-            Highcharts.chart('learning', {
-                chart: {
-                    type: 'pie'
-                },
-                title: {
-                    text: 'Departmental Strength of a Company'
-                },
-                subtitle: {
-                    text: 'Custom animation of pie series'
-                },
-                accessibility: {
-                    point: {
-                        valueSuffix: '%'
-                    }
-                },
-                plotOptions: {
-                    pie: {
-                        allowPointSelect: true,
-                        borderWidth: 2,
-                        cursor: 'pointer',
-                        dataLabels: {
-                            enabled: true,
-                            distance: 20
-                        }
-                    }
-                },
-                series: [{
-                    enableMouseTracking: false,
-                    animation: {
-                        duration: 2000
-                    },
-                    colorByPoint: true,
-                    data: [{
-                        name: 'Customer Support',
-                        y: 21.3
-                    }, {
-                        name: 'Development',
-                        y: 18.7
-                    }, {
-                        name: 'Sales',
-                        y: 20.2
-                    }, {
-                        name: 'Marketing',
-                        y: 14.2
-                    }, {
-                        name: 'Other',
-                        y: 25.6
-                    }]
-                }]
-            });
-        </script>
-    @endif
-    @if (auth()->user()->role == 'siswa')
-        <script>
-
-            Highcharts.chart('progress-chart', {
-                chart: {
-                    type: 'line'
-                },
-                title: {
-                    text: 'Progress Menguasai Web Developer - Tahun 2025'
-                },
-                xAxis: {
-                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des']
-                },
-                yAxis: {
-                    title: {
-                        text: 'Persentase Penguasaan (%)'
-                    },
-                    max: 100
-                },
-                tooltip: {
-                    valueSuffix: '%'
-                },
-                series: [{
-                    name: 'Frontend',
-                    data: [10, 20, 35, 45, 55, 65, 70, 75, 80, 85, 90, 95]
-                }, {
-                    name: 'Backend',
-                    data: [5, 10, 15, 25, 35, 50, 60, 65, 70, 80, 85, 90]
-                }, {
-                    name: 'Fullstack',
-                    data: [3, 8, 18, 30, 40, 55, 63, 70, 78, 85, 92, 98]
-                }]
-            });
-        </script>
-    @endif
-
-    @if(auth()->user()->role == 'mentor')
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            const ctx = document.getElementById('struggleChart');
-            const chart = new Chart(ctx, {
-                type: 'bar',
-                data: {
-                    labels: {!! json_encode($grouped->keys()) !!},
-                    datasets: [{
-                        label: 'Jumlah Siswa',
-                        data: {!! json_encode($grouped->values()) !!},
-                        backgroundColor: 'rgba(13, 110, 253, 0.7)'
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    plugins: {
-                        legend: { display: false }
-                    },
-                    scales: {
-                        y: {
-                            beginAtZero: true,
-                            title: { display: true, text: 'Jumlah Siswa' }
-                        },
-                        x: {
-                            title: { display: true, text: 'Area Kesulitan' }
-                        }
-                    }
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        // Pencarian kursus
+        const searchInput = document.getElementById('search-course');
+        const courseCards = document.querySelectorAll('.course-card');
+        
+        searchInput.addEventListener('input', function() {
+            const searchTerm = this.value.toLowerCase();
+            let foundCourses = false;
+            
+            courseCards.forEach(card => {
+                const title = card.dataset.title;
+                if (title.includes(searchTerm)) {
+                    card.style.display = 'block';
+                    foundCourses = true;
+                } else {
+                    card.style.display = 'none';
                 }
             });
-        </script>
-    @endif
-    <script>
+            
+            // Show empty state if no courses found
+            const emptyState = document.querySelector('.empty-state');
+            if (emptyState) {
+                if (!foundCourses) {
+                    emptyState.style.display = 'block';
+                } else {
+                    emptyState.style.display = 'none';
+                }
+            }
+        });
+        
+        // Menangani klik tombol wishlist
+        const wishlistButtons = document.querySelectorAll('.btn-wishlist');
 
+        wishlistButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                const courseId = this.dataset.courseId;
+                const button = this;
 
-
-
-        document.addEventListener('DOMContentLoaded', function () {
-            // Add animation to product cards on scroll
-            const cards = document.querySelectorAll('.product-card');
-
-            const observerOptions = {
-                threshold: 0.2
-            };
-
-            const observer = new IntersectionObserver((entries) => {
-                entries.forEach(entry => {
-                    if (entry.isIntersecting) {
-                        entry.target.style.opacity = '1';
-                        entry.target.style.transform = 'translateY(0)';
+                // Kirim permintaan AJAX untuk menambahkan kursus ke wishlist
+                fetch('{{ route("wishlist.add") }}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    },
+                    body: JSON.stringify({
+                        course_id: courseId
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        button.classList.add('added');
+                        button.innerHTML = '<i class="bi bi-heart-fill"></i> Ditambahkan ke Wishlist';
+                        showToast('Kursus berhasil ditambahkan ke wishlist!', 'success');
+                    } else {
+                        showToast(data.message, 'error');
                     }
+                })
+                .catch(error => {
+                    showToast('Terjadi kesalahan saat menambahkan ke wishlist.', 'error');
                 });
-            }, observerOptions);
-
-            cards.forEach(card => {
-                card.style.opacity = '0';
-                card.style.transform = 'translateY(20px)';
-                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-                observer.observe(card);
             });
         });
-                        </>
+    });
+</script>
 @endpush

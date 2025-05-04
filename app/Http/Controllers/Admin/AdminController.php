@@ -7,6 +7,7 @@ use App\Models\Contact;
 use App\Models\Voucher;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Wishlist;
 
 class AdminController extends Controller
 {

@@ -1,45 +1,41 @@
 <li class="sidebar-item">
-    <a class="sidebar-link {{ $title == 'kursus' ? 'active' : '' }} text-decoration-none"
-        href="">
-        <i class="bi bi-person fs-4"></i>
-        <h3 class="fs-4 mt-1">Manajement Kursus</h3>
+    <a href="{{ route('features.course.index') }}" class="sidebar-link {{ $title == 'kursus' ? 'active' : '' }}">
+        <i class="bi bi-book"></i>
+        <span class="sidebar-link-text">Manajemen Kursus</span>
     </a>
 </li>
 
 <li class="sidebar-item">
-    <a class="sidebar-link {{ $title == 'laporan' ? 'active' : '' }} text-decoration-none"
-        href="">
-        <i class="bi bi-book fs-4"></i>
-        <h3 class="fs-4 mt-1">Manajement Laporan</h3>
+    <a href="#" class="sidebar-link {{ $title == 'laporan' ? 'active' : '' }}">
+        <i class="bi bi-file-earmark-text"></i>
+        <span class="sidebar-link-text">Manajemen Laporan</span>
     </a>
 </li>
 
 <li class="sidebar-item">
-    <a class="sidebar-link {{ $title == 'exam' ? 'active' : '' }} text-decoration-none"
-        href="">
-        <i class="bi bi-person fs-4"></i>
-        <h3 class="fs-4 mt-1">Manajement Kuis & Ujian</h3>
-    </a>
-</li>
-<li class="sidebar-item">
-    <a class="sidebar-link {{ $title == 'diskusi' ? 'active' : '' }} text-decoration-none"
-        href="">
-        <i class="bi bi-person fs-4"></i>
-        <h3 class="fs-4 mt-1">Manajement Forum diskusi</h3>
-    </a>
-</li>
-<li class="sidebar-item">
-    <a class="sidebar-link {{ $title == 'sertifikat' ? 'active' : '' }} text-decoration-none"
-        href="">
-        <i class="bi bi-person fs-4"></i>
-        <h3 class="fs-4 mt-1">Manajement Sertifikat</h3>
-    </a>
-</li>
-<li class="sidebar-item">
-    <a class="sidebar-link {{ $title == 'rating' ? 'active' : '' }} text-decoration-none"
-        href="">
-        <i class="bi bi-person fs-4"></i>
-        <h3 class="fs-4 mt-1">Rating & Review</h3>
+    <a href="#" class="sidebar-link {{ $title == 'exam' ? 'active' : '' }}">
+        <i class="bi bi-pencil-square"></i>
+        <span class="sidebar-link-text">Manajemen Kuis & Ujian</span>
     </a>
 </li>
 
+<li class="sidebar-item">
+    <a href="#" class="sidebar-link {{ $title == 'diskusi' ? 'active' : '' }}">
+        <i class="bi bi-chat-dots"></i>
+        <span class="sidebar-link-text">Manajemen Forum Diskusi</span>
+    </a>
+</li>
+
+<li class="sidebar-item">
+    <a href="#" class="sidebar-link {{ $title == 'sertifikat' ? 'active' : '' }}">
+        <i class="bi bi-award"></i>
+        <span class="sidebar-link-text">Manajemen Sertifikat</span>
+    </a>
+</li>
+
+<li class="sidebar-item">
+    <a href="#" class="sidebar-link {{ $title == 'rating' ? 'active' : '' }}">
+        <i class="bi bi-star"></i>
+        <span class="sidebar-link-text">Rating & Review</span>
+    </a>
+</li>
