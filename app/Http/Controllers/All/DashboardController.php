@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\All;
 
 use App\Http\Controllers\Controller;
 use App\Models\Analytic;
@@ -18,7 +18,7 @@ class DashboardController extends Controller
         $grouped = [];
         if(auth()->user()->role == 'siswa')
         {
-            $enrollments = CourseEnrollment::with(['course', 'progresS'])
+            $enrollments = CourseEnrollment::with(['course', 'progress'])
                             ->where('user_id', auth()->user()->id)->get();
 
             $completionHistory = CourseCompletionHistory::with('course')
@@ -34,7 +34,7 @@ class DashboardController extends Controller
             $grouped = $analytics->groupBy('area_of_struggle')->map->count();
         }
 
-        return view('dashboard.index',[
+        return view('all.index',[
             'title' => 'Dashboard',
             'enrollments' => $enrollments,
             'completionHistory' => $completionHistory,

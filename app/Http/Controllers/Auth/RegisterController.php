@@ -49,6 +49,6 @@ class RegisterController extends Controller
         auth()->login($user);
 
         // Redirect ke halaman beranda atau dashboard
-        return redirect('/dashboard')->with('success', 'Registrasi berhasil!');
+        return redirect('/home')->with('success', 'Registrasi berhasil!');
     }
 }
