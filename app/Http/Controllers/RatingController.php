@@ -17,15 +17,15 @@ class RatingController extends Controller
     public function index()
     {
         $ratings = Rating::with('course')->get();  // Mengambil rating beserta kursusnya
-        return view('features.ratings.index', compact('ratings'));
+        $title = 'Daftar Rating';
+        return view('features.ratings.index', compact('ratings', 'title'));
     }
 
     public function create()
     {
-        // Ambil semua kursus dari database
         $courses = Course::all();  // Mengambil semua data kursus yang ada di tabel courses
-
-        return view('features.ratings.create', compact('courses'));  // Kirim data kursus ke view
+        $title = 'Tambah Rating';
+        return view('features.ratings.create', compact('courses', 'title'));
     }
 
     public function store(Request $request)
@@ -33,15 +33,14 @@ class RatingController extends Controller
         $request->validate([
             'value' => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string',
-            'course_id' => 'required|exists:courses,id',  // Validasi untuk memastikan course_id yang diterima adalah ID yang valid
+            'course_id' => 'required|exists:courses,id',
         ]);
 
-        // Simpan data rating ke dalam database
         Rating::create([
             'value' => $request->value,
             'comment' => $request->comment,
-            'course_id' => $request->course_id,  // Menyimpan ID kursus yang dipilih
-            'user_id' => Auth::id(),  // Menyimpan ID user yang memberikan rating
+            'course_id' => $request->course_id,
+            'user_id' => Auth::id(),
         ]);
 
         return redirect()->route('ratings.index')->with('success', 'Rating berhasil ditambahkan!');
@@ -49,10 +48,10 @@ class RatingController extends Controller
 
     public function edit($id)
     {
-        // Ambil data rating dan semua kursus
         $rating = Rating::findOrFail($id);
-        $courses = Course::all(); // Ambil semua kursus
-        return view('features.ratings.edit', compact('rating', 'courses'));  // Kirim data rating dan kursus ke view
+        $courses = Course::all();
+        $title = 'Edit Rating';
+        return view('features.ratings.edit', compact('rating', 'courses', 'title'));
     }
 
     public function update(Request $request, $id)
@@ -60,17 +59,16 @@ class RatingController extends Controller
         $request->validate([
             'value' => 'required|integer|min:1|max:5',
             'comment' => 'nullable|string',
-            'course_id' => 'required|exists:courses,id',  // Validasi untuk memastikan course_id yang diterima adalah ID yang valid
+            'course_id' => 'required|exists:courses,id',
         ]);
 
         $rating = Rating::findOrFail($id);
         $rating->update([
             'value' => $request->value,
             'comment' => $request->comment,
-            'course_id' => $request->course_id,  // Memperbarui course_id
+            'course_id' => $request->course_id,
         ]);
 
-        // Redirect ke halaman index dengan pesan sukses
         return redirect()->route('ratings.index')->with('success', 'Rating berhasil diperbarui!');
     }
 

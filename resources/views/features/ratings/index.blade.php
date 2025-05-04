@@ -1,8 +1,48 @@
 @extends('all.component.app')
 
 @section('content')
+<!-- Styling tambahan -->
+<style>
+    table td, table th {
+        white-space: nowrap;
+        vertical-align: middle;
+    }
+    .table-responsive {
+        overflow-x: auto;
+        margin-left: 270px; /* Menambahkan margin kiri lebih besar untuk menghindari sidebar */
+    }
+
+    /* Menambahkan margin-top yang lebih besar untuk judul */
+    .container h2 {
+        margin-top: 80px; /* Menambah jarak lebih banyak dari atas */
+        font-size: 24px;
+        font-weight: 600;
+    }
+
+    /* Mengurangi ukuran tabel dan menambah padding */
+    .table-responsive {
+        max-width: 90%; /* Lebar tabel lebih kecil */
+        margin-right: 10px; /* Mengatur tabel agar rata tengah */
+    }
+
+    table {
+        width: 100%; /* Tabel mengisi 100% dari kontainer */
+    }
+
+    /* Tombol untuk menambahkan rating lebih ke kanan */
+    .mb-3.d-flex {
+        justify-content: flex-end; /* Tombol ke kanan */
+        margin-right: 20px; /* Menambahkan jarak kanan agar tidak terlalu rapat */
+    }
+
+    .container {
+        padding: 20px;
+        margin-left: 50px; /* Menambahkan jarak kiri pada container untuk seluruh konten */
+    }
+</style>
+
 <div class="container">
-    <h2 class="mb-4 text-center" style="font-size: 24px; font-weight: 600;">Daftar Rating</h2>
+    <h2 class="mb-4 text-center">Daftar Rating</h2>
 
     <!-- Alert Flash Message -->
     @if(session('success'))
@@ -13,7 +53,7 @@
         </div>
     @endif
 
-    <!-- Tombol untuk Menambahkan Rating -->
+    <!-- Tombol untuk Menambahkan Rating (pindah ke kanan) -->
     <div class="mb-3 d-flex justify-content-end">
         <a href="{{ route('ratings.create') }}" class="btn btn-success">
             <i class="bi bi-plus-circle"></i> Tambah Rating
@@ -23,7 +63,7 @@
     @if($ratings->count())
     <!-- Tabel Daftar Rating -->
     <div class="table-responsive">
-        <table class="table table-bordered table-striped table-hover">
+        <table class="table table-bordered table-striped table-hover" style="max-width: 100%;"> <!-- Ukuran tabel lebih kecil -->
             <thead class="thead-light">
                 <tr>
                     <th>Nama Kursus</th>
