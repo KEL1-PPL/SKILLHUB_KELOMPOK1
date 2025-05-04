@@ -86,9 +86,4 @@ class User extends Authenticatable
         return $this->hasMany(Analytic::class, 'student_id');
     }
 
-    public function wishlists()
-    {
-        return $this->hasMany(Wishlist::class);
-    }
-
 }
