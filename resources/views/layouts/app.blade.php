@@ -7,9 +7,6 @@
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Tambahkan di <head> -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css" rel="stylesheet">
 
     <!-- Base Styles -->
     <style>
@@ -132,7 +129,7 @@
 
     <footer class="main-footer">
         <div class="footer-content">
-            <p>&copy; 2024 Loka.Hub. All rights reserved. <a href="#contact">Contact Us</a></p>
+            <p>&copy; 2025 Skill.Hub. All rights reserved. <a href="#contact">Contact Us</a></p>
         </div>
     </footer>
 
@@ -154,8 +151,5 @@
 
     <!-- Additional page-specific scripts -->
     @stack('scripts')
-<!-- Tambahkan di bawah sebelum </body> -->
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
 </body>
 </html>
