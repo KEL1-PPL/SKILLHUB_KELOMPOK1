@@ -12,5 +12,10 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             MentorIncomeSeeder::class
         ]);
+
+        $this->call([
+            SubscriptionPlanSeeder::class,
+        ]);
+
     }
 }

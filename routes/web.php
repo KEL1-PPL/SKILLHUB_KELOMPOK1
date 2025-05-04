@@ -22,6 +22,10 @@ use App\Http\Controllers\Mentor\MentorDashboardController;
 use App\Http\Controllers\Mentor\MentorIncomeReportController; 
 use App\Http\Controllers\Mentor\MentorAnalyticsController;
 use App\Http\Controllers\Mentor\MentorCourseController;
+use App\Http\Controllers\SubscriptionPlanController;
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\CourseController; // imam
+use App\Http\Controllers\MaterialController; // imam
 
 // Landing Page Route
 Route::get('/', function () {
@@ -60,6 +64,10 @@ Route::middleware('auth')->group(function () {
     // Checkout Routes
     Route::resource('checkout', CheckoutController::class);
 
+    // Subscription-plans
+    Route::get('/subscription/checkout/{plan}', [SubscriptionPlanController::class, 'checkout'])
+    ->name('subscription.checkout');
+
     // Rating and Review Routes
     Route::resource('ratingreview', RatingReviewController::class);
 
@@ -70,6 +78,34 @@ Route::middleware('auth')->group(function () {
     Route::get('/home', function () {
         return view('home');
     })->name('home');
+
+    // course - imam
+    Route::resource('course', CourseController::class)->names([
+        'index' => 'features.course.index',
+        'create' => 'features.course.create',
+        'store' => 'features.course.store',
+        'show' => 'features.course.show',
+        'edit' => 'features.course.edit',
+        'update' => 'features.course.update',
+        'destroy' => 'features.course.destroy'
+    ])->parameters([
+        'course' => 'slug'
+    ]);
+
+    // Material routes
+    Route::resource('course/{course}/material', MaterialController::class)
+        ->names([
+            'index' => 'features.material.index',
+            'create' => 'features.material.create',
+            'store' => 'features.material.store',
+            'show' => 'features.material.show',
+            'edit' => 'features.material.edit',
+            'update' => 'features.material.update',
+            'destroy' => 'features.material.destroy',
+        ]);
+
+    Route::post('course/{course}/material/{material}/toggle-completion', [MaterialController::class, 'toggleCompletion'])
+        ->name('features.material.toggle-completion');
 });
 
 // Admin Routes
@@ -118,6 +154,19 @@ Route::middleware(['auth', 'mentor'])->group(function () {
 });
 
 // Catch-all Fallback Route
+// Subscription-plans
+Route::resource('subscription-plans', SubscriptionPlanController::class)
+    ->names([
+        'index' => 'admin.subscription-plans.index',
+        'create' => 'admin.subscription-plans.create',
+        'store' => 'admin.subscription-plans.store',
+        'show' => 'admin.subscription-plans.show',
+        'edit' => 'admin.subscription-plans.edit',
+        'update' => 'admin.subscription-plans.update',
+        'destroy' => 'admin.subscription-plans.destroy',
+    ]);
+
+// Catch-all Fallback Route (for undefined routes)
 Route::fallback(function () {
     return view('errors.404');
 });
@@ -133,3 +182,19 @@ Route::prefix('mentor')->middleware(['auth', 'role:mentor'])->group(function () 
     Route::get('/analytics', [MentorAnalyticsController::class, 'index'])->name('mentor.analytics');
     Route::get('/course-management', [MentorCourseController::class, 'index'])->name('mentor.course-management');
 });
+
+Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+
+
+// course - imam
+Route::resource('course', CourseController::class);
+Route::resource('course', CourseController::class)->names([
+    'index' => 'features.course.index',
+    'create' => 'features.course.create',
+    'store' => 'features.course.store',
+    'show' => 'features.course.show',
+    'edit' => 'features.course.edit',
+    'update' => 'features.course.update',
+    'destroy' => 'features.course.destroy',
+Route::get('/course/{slug}', [CourseController::class, 'show'])->name('course.show')
+]);

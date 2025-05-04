@@ -11,14 +11,14 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('courses', function (Blueprint $table) {
+        Schema::create('subscription_plans', function (Blueprint $table) {
             $table->id();
-            $table->string('title');
+            $table->string('name');
             $table->text('description')->nullable();
-            $table->string('image')->nullable();
-            $table->string('slug')->unique();
-            $table->integer('rating')->default(0);
-            $table->foreignId('created_by')->constrained('users')->onDelete('cascade');
+            $table->decimal('price', 10, 2);
+            $table->integer('duration_in_days');
+            $table->json('features');
+            $table->boolean('is_active')->default(true);
             $table->timestamps();
         });
     }
@@ -28,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('courses');
+        Schema::dropIfExists('subscription_plans');
     }
 };

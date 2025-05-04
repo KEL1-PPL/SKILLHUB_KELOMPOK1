@@ -476,17 +476,17 @@
                     <div class="col-span-1 ">
                         <div class="flex flex-col items-str">
                             <h1 class="text-2xl font-bold mb-4">Kontak</h1>
-                            <div><i class="bi bi-envelope-fill me-2 text-primary"></i> contact@skillhub.com</div>
+                            <div><i class="bi bi-envelope-fill me-2 text-primary"></i> skillhub@gmail.com</div>
 
                             <!-- WhatsApp -->
-                            <div><i class="bi bi-whatsapp me-2 text-success"></i> +62 812-3456-7890</div>
+                            <div><i class="bi bi-whatsapp me-2 text-success"></i> +62 8xx-xxxx-xxxx</div>
 
                             <!-- Lokasi -->
-                            <div><i class="bi bi-geo-alt-fill me-2 text-danger"></i> Jakarta, Indonesia</div>
+                            <div><i class="bi bi-geo-alt-fill me-2 text-danger"></i> Bandung, Indonesia</div>
                         </div>
                     </div>
                     <div class="col-span-1 ">
-                        <iframe src="https://www.google.com/maps/embed?pb=!1m14!1m12!1m3!1d279606.38917829306!2d112.62283188108017!3d-7.246447932560723!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!5e0!3m2!1sid!2sid!4v1743919482745!5m2!1sid!2sid" width="400" height="200" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+                        <iframe src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d63358.17909990718!2d107.56075555!3d-6.90344995!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x2e68e7d3c7d92b75%3A0x301e8f1fc28b9c0!2sBandung%2C%20Kota%20Bandung%2C%20Jawa%20Barat!5e0!3m2!1sid!2sid!4v1713700971877!5m2!1sid!2sid" width="400" height="200" style="border:0;" allowfullscreen="" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
                     </div>
                 </div>
                 <div class="row-span-1 flex flex-col justify-end h-full">
