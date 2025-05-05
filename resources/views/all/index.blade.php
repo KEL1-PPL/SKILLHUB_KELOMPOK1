@@ -15,6 +15,18 @@
         });
     </script>
 
+    <style>
+        @media (min-width: 992px) {
+            main {
+                margin-left: 260px;
+            }
+        }
+
+        .table-responsive img {
+            margin-right: 10px;
+        }
+    </style>
+    
 @endpush
 
 @section('content')
