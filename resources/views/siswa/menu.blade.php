@@ -1,0 +1,51 @@
+<li class="sidebar-item">
+    <a class="sidebar-link {{ $title == 'Kursus' ? 'active' : '' }} text-decoration-none"
+        href="{{ route('features.course.index') }}">
+        <i class="bi bi-person fs-4"></i>
+        <h3 class="fs-4 mt-1">Kursus Saya</h3>
+    </a>
+</li>
+<li class="sidebar-item">
+    <a class="sidebar-link {{ $title == 'riwayat' ? 'active' : '' }} text-decoration-none"
+        href="{{ route('siswa.riwayat.index') }}">
+        <i class="bi bi-journal fs-4"></i>
+        <h3 class="fs-4 mt-1">Riwayat Saya</h3>
+    </a>
+</li>
+
+<li class="sidebar-item">
+    <a class="sidebar-link {{ $title == 'whislist' ? 'active' : '' }} text-decoration-none"
+        href="">
+        <i class="bi bi-book fs-4"></i>
+        <h3 class="fs-4 mt-1">Whislist Saya</h3>
+    </a>
+</li>
+
+<li class="sidebar-item">
+    <a class="sidebar-link {{ $title == 'kuis' ? 'active' : '' }} text-decoration-none"
+        href="">
+        <i class="bi bi-person fs-4"></i>
+        <h3 class="fs-4 mt-1">Forum Kuis & Ujian</h3>
+    </a>
+</li>
+<li class="sidebar-item">
+    <a class="sidebar-link {{ $title == 'diskusi' ? 'active' : '' }} text-decoration-none"
+        href="">
+        <i class="bi bi-person fs-4"></i>
+        <h3 class="fs-4 mt-1">Forum diskusi</h3>
+    </a>
+</li>
+<li class="sidebar-item">
+    <a class="sidebar-link {{ $title == 'laporan' ? 'active' : '' }} text-decoration-none"
+        href="">
+        <i class="bi bi-person fs-4"></i>
+        <h3 class="fs-4 mt-1">Laporan Perkembangan</h3>
+    </a>
+</li>
+<li class="sidebar-item">
+    <a class="sidebar-link {{ $title == 'bayar' ? 'active' : '' }} text-decoration-none"
+        href="">
+        <i class="bi bi-person fs-4"></i>
+        <h3 class="fs-4 mt-1">Payment kelas</h3>
+    </a>
+</li>
