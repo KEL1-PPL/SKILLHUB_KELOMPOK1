@@ -18,15 +18,17 @@ class MentorIncomeController extends Controller
     {
         $request->validate([
             'status' => 'required|in:corrected,deleted',
-            'correctionNote' => 'required|string'
+            'correctionNote' => 'required|string|max:255'
         ]);
-
+    
         $income = MentorIncome::findOrFail($id);
+    
         $income->update([
-            'status' => $request->status,
-            'correctionNote' => $request->correctionNote
+            'is_valid' => $request->status === 'corrected' ? true : false,
+            'correction_note' => $request->correctionNote
         ]);
-
-        return redirect()->back();
+    
+        return redirect()->back()->with('success', 'Koreksi berhasil disimpan.');
     }
+    
 }
