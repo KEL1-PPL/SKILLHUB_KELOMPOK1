@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use App\Models\Diskusi;
 
 class DiskusiController extends Controller
 {
@@ -11,7 +12,8 @@ class DiskusiController extends Controller
      */
     public function index()
     {
-        //
+        $diskusi = Diskusi::all();
+        return response()->json($diskusi);
     }
 
     /**
@@ -19,7 +21,7 @@ class DiskusiController extends Controller
      */
     public function create()
     {
-        //
+        return view('diskusi.create');
     }
 
     /**
@@ -27,7 +29,18 @@ class DiskusiController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+            'judul' => 'required|string|max:255',
+            'isi' => 'required|string',
+            // tambahkan field lain sesuai kebutuhan
+        ]);
+
+        $diskusi = Diskusi::create($validated);
+
+        return response()->json([
+            'message' => 'Diskusi berhasil dibuat!',
+            'data' => $diskusi
+        ], 201);
     }
 
     /**
@@ -35,7 +48,8 @@ class DiskusiController extends Controller
      */
     public function show(string $id)
     {
-        //
+        $diskusi = Diskusi::findOrFail($id);
+        return response()->json($diskusi);
     }
 
     /**
@@ -43,7 +57,8 @@ class DiskusiController extends Controller
      */
     public function edit(string $id)
     {
-        //
+        $diskusi = Diskusi::findOrFail($id);
+        return view('diskusi.edit', compact('diskusi'));
     }
 
     /**
@@ -51,7 +66,19 @@ class DiskusiController extends Controller
      */
     public function update(Request $request, string $id)
     {
-        //
+        $validated = $request->validate([
+            'judul' => 'required|string|max:255',
+            'isi' => 'required|string',
+            // tambahkan validasi lain sesuai kebutuhan
+        ]);
+
+        $diskusi = Diskusi::findOrFail($id);
+        $diskusi->update($validated);
+
+        return response()->json([
+            'message' => 'Diskusi berhasil diperbarui!',
+            'data' => $diskusi
+        ]);
     }
 
     /**
@@ -59,6 +86,11 @@ class DiskusiController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        $diskusi = Diskusi::findOrFail($id);
+        $diskusi->delete();
+
+        return response()->json([
+            'message' => 'Diskusi berhasil dihapus!'
+        ]);
     }
 }
