@@ -23,6 +23,7 @@ use App\Http\Controllers\Admin\MentorIncomeController;
 use App\Http\Controllers\SubscriptionPlanController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\All\ArticleExploreController;
 
 // Landing Page
 Route::get('/', fn () => view('landing'))->name('landing');
@@ -49,6 +50,8 @@ Route::middleware('auth')->group(function () {
     Route::resource('checkout', CheckoutController::class);
     Route::post('voucher/redeem', [VoucherController::class, 'redeem'])->name('voucher.redeem');
     Route::resource('ratingreview', RatingReviewController::class);
+    Route::get('articles', [ArticleExploreController::class, 'index'])->name('articles.index');
+    Route::get('articles/{article}', [ArticleExploreController::class, 'show'])->name('articles.show');
 
     Route::get('/home', fn () => view('home'))->name('home');
 

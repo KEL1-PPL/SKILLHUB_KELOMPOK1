@@ -7,54 +7,59 @@ use Illuminate\Http\Request;
 use App\Models\Course;
 use App\Models\StudentProgress;
 use Carbon\Carbon;
+use Illuminate\View\View;
 
 class MentorAnalyticsController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $mentor_id = auth()->id();
         
-        // Ambil semua kursus mentor
-        $courses = Course::where('mentor_id', $mentor_id)->get();
+        // Ambil semua kursus mentor dengan eager loading
+        $courses = Course::where('mentor_id', $mentor_id)->with('students')->get();
         
         // Filter berdasarkan kursus jika dipilih
-        $query = App\Http\Controllers\Mentor\StudentProgress::query()
+        $query = StudentProgress::query()  // Perbaikan di sini
             ->join('courses', 'student_progress.course_id', '=', 'courses.id')
             ->join('users as students', 'student_progress.student_id', '=', 'students.id')
             ->where('courses.mentor_id', $mentor_id);
             
-        if ($request->course_id) {
-            $query->where('student_progress.course_id', $request->course_id); // Perbaikan baris 15: menggunakan student_progress.course_id
+        if ($request->filled('course_id')) {
+            $query->where('student_progress.course_id', $request->course_id);
         }
         
-        // Filter berdasarkan periode
-        switch($request->period) {
+        // Filter berdasarkan periode dengan validasi tanggal
+        $endDate = Carbon::now();
+        switch($request->get('period', 'month')) {
             case 'week':
-                $query->where('student_progress.created_at', '>=', Carbon::now()->subWeek());
+                $startDate = $endDate->copy()->subWeek();
                 break;
             case 'month':
-                $query->where('student_progress.created_at', '>=', Carbon::now()->subMonth());
+                $startDate = $endDate->copy()->startOfMonth();
                 break;
             case 'year':
-                $query->where('student_progress.created_at', '>=', Carbon::now()->subYear());
+                $startDate = $endDate->copy()->startOfYear();
                 break;
             default:
-                $query->where('student_progress.created_at', '>=', Carbon::now()->startOfMonth()); // Perbaikan baris 21: menggunakan startOfMonth()
+                $startDate = $endDate->copy()->startOfMonth();
         }
         
-        // Ambil data progress siswa
+        $query->whereBetween('student_progress.created_at', [$startDate, $endDate]);
+        
+        // Ambil data progress siswa dengan pagination
         $studentProgress = $query->select(
             'students.name as student_name',
             'courses.title as course_title',
             'student_progress.progress_percentage',
             'student_progress.average_score',
             'student_progress.status'
-        )->get();
+        )->paginate(10);
         
-        // Siapkan data untuk grafik
-        $chartData = new \stdClass();
-        $chartData->labels = $studentProgress->pluck('student_name')->toArray();
-        $chartData->data = $studentProgress->pluck('progress_percentage')->toArray();
+        // Siapkan data untuk grafik dengan handling data kosong
+        $chartData = !$studentProgress->isEmpty() ? (object) [
+            'labels' => $studentProgress->pluck('student_name')->toArray(),
+            'data' => $studentProgress->pluck('progress_percentage')->toArray()
+        ] : null;
         
         return view('mentor.analytics.index', compact('courses', 'studentProgress', 'chartData'));
     }
