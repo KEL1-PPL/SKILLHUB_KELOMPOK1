@@ -4,12 +4,17 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-class Quiz extends Model
+class Question extends Model
 {
-    protected $fillable = ['title', 'description'];
+    protected $fillable = ['quiz_id', 'question_text'];
 
-    public function questions()
+    public function quiz()
     {
-        return $this->hasMany(Question::class);
+        return $this->belongsTo(Quiz::class);
+    }
+
+    public function options()
+    {
+        return $this->hasMany(Option::class);
     }
 }

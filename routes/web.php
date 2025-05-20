@@ -12,6 +12,8 @@ use App\Http\Controllers\Admin\MentorIncomeController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\QuizController;
 use App\Http\Controllers\QuizAttemptController;
+use App\Http\Controllers\QuestionController;
+
 
 // Landing Page Route
 Route::get('/', function () {
@@ -35,17 +37,27 @@ Route::middleware('auth')->group(function () {
     Route::get('dashboard',DashboardController::class)->name('dashboard');
 
     //Route untuk siswa
-    Route::prefix('siswa')->group(function(){
-        Route::get('kursus', [KursusController::class, 'index'])->name('siswa.kursus.index');
-        Route::get('riwayat', [RiwayatController::class, 'index'])->name('siswa.riwayat.index');
-        Route::get('riwayat/{id}/review', [RiwayatController::class, 'review'])->name('courses.review');
+    Route::prefix('siswa')->middleware(['auth'])->group(function () {
 
-    Route::middleware(['auth'])->group(function () {
-        Route::resource('quizzes', QuizController::class);
-        Route::get('quiz/{quiz}/attempt', [QuizAttemptController::class, 'show'])->name('quiz.attempt');
-        Route::post('quiz/{quiz}/submit', [QuizAttemptController::class, 'submit'])->name('quiz.submit');
-        });
+    Route::get('kursus', [KursusController::class, 'index'])->name('siswa.kursus.index');
+    Route::get('riwayat', [RiwayatController::class, 'index'])->name('siswa.riwayat.index');
+    Route::get('riwayat/{id}/review', [RiwayatController::class, 'review'])->name('courses.review');
+
+    // Quiz
+    Route::resource('quizzes', QuizController::class);
+    Route::get('quiz/{quiz}/attempt', [QuizAttemptController::class, 'show'])->name('quiz.attempt');
+    Route::post('quiz/{quiz}/submit', [QuizAttemptController::class, 'submit'])->name('quiz.submit');
+
+    // Question management
+    Route::prefix('quizzes/{quiz}')->group(function () {
+        Route::get('questions', [QuestionController::class, 'index'])->name('questions.index');
+        Route::get('questions/create', [QuestionController::class, 'create'])->name('questions.create');
+        Route::post('questions', [QuestionController::class, 'store'])->name('questions.store');
     });
+    Route::get('/questions/{question}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
+    Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
+    Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
+});
 
     //Route untuk Mentor
     Route::prefix('mentor')->group(function(){
