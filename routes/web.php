@@ -69,7 +69,7 @@ Route::middleware('auth')->group(function () {
     // Checkout Routes
     Route::resource('checkout', CheckoutController::class);
 
-    // Subscription-plans
+    // Subscription-plans -elsa
     Route::get('/subscription/checkout/{plan}', [SubscriptionPlanController::class, 'checkout'])
     ->name('subscription.checkout');
 
@@ -171,7 +171,7 @@ Route::middleware(['auth', 'mentor'])->group(function () {
     Route::get('/income-report', [App\Http\Controllers\Mentor\IncomeReportController::class, 'index'])->name('mentor.income-report');
 });
 
-// Subscription-plans
+// Subscription-plans -elsa
 Route::resource('subscription-plans', SubscriptionPlanController::class)
     ->names([
         'index' => 'admin.subscription-plans.index',
@@ -182,6 +182,9 @@ Route::resource('subscription-plans', SubscriptionPlanController::class)
         'update' => 'admin.subscription-plans.update',
         'destroy' => 'admin.subscription-plans.destroy',
     ]);
+
+Route::get('/api/subscription-plans', [SubscriptionPlanController::class, 'getActivePlans'])
+    ->name('api.subscription-plans');
 
 // Catch-all Fallback Route (for undefined routes)
 Route::fallback(function () {

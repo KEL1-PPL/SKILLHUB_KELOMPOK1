@@ -63,10 +63,8 @@ class SubscriptionPlanController extends Controller
 
         $data = $validator->validated();
 
-        // Handle checkbox is_active
         $data['is_active'] = $request->has('is_active') ? true : false;
         
-        // Convert features from array to JSON
         if (isset($data['features'])) {
             $data['features'] = json_encode($data['features']);
         }
@@ -83,7 +81,7 @@ class SubscriptionPlanController extends Controller
      */
     public function show(SubscriptionPlan $subscriptionPlan)
     {
-        return view('admin.subscription-plans.show');
+        return view('features.subscription-plans.show', compact('subscriptionPlan'));
     }
 
     /**
@@ -131,10 +129,8 @@ class SubscriptionPlanController extends Controller
 
         $data = $validator->validated();
 
-        // Handle checkbox is_active
         $data['is_active'] = $request->has('is_active') ? true : false;
         
-        // Convert features from array to JSON
         if (isset($data['features'])) {
             $data['features'] = json_encode($data['features']);
         }
@@ -156,5 +152,23 @@ class SubscriptionPlanController extends Controller
         return redirect()
             ->route('admin.subscription-plans.index')
             ->with('success', 'Paket langganan berhasil dihapus!');
+    }
+
+    /**
+     * Display checkout page for the selected subscription plan.
+     */
+    public function checkout($planId)
+    {
+        $subscriptionPlan = SubscriptionPlan::findOrFail($planId);
+        return view('features.subscription-plans.checkout', compact('subscriptionPlan'));
+    }
+
+    /**
+     * Display active subscription plans to users in a modal
+     */
+    public function getActivePlans()
+    {
+        $activePlans = SubscriptionPlan::active()->get();
+        return response()->json($activePlans);
     }
 }
