@@ -31,7 +31,7 @@
 
 <li class="sidebar-item">
     <a class="sidebar-link {{ $title == 'live' ? 'active' : '' }} text-decoration-none"
-        href="">
+        href="{{ route('live-class.index') }}">
         <i class="bi bi-broadcast fs-4"></i>
         <h3 class="fs-4 mt-1">Manajement Live Class</h3>
     </a>

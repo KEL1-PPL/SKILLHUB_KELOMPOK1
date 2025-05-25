@@ -14,10 +14,11 @@ use App\Http\Controllers\RatingReviewController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Admin\AdminController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SubscriptionPlanController;
+use App\Http\Controllers\SubscriptionPlanController; //elsa
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\CourseController; // imam
 use App\Http\Controllers\MaterialController; // imam
+use App\Http\Controllers\LiveClassController; //elsa
 
 // Landing Page Route
 Route::get('/', function () {
@@ -55,7 +56,7 @@ Route::middleware('auth')->group(function () {
     // Checkout Routes
     Route::resource('checkout', CheckoutController::class);
 
-    // Subscription-plans -elsa
+    // Subscription-plans
     Route::get('/subscription/checkout/{plan}', [SubscriptionPlanController::class, 'checkout'])
     ->name('subscription.checkout');
 
@@ -148,3 +149,8 @@ Route::resource('course', CourseController::class)->names([
     'destroy' => 'features.course.destroy',
 Route::get('/course/{slug}', [CourseController::class, 'show'])->name('course.show')
 ]);
+
+// Live Class Management - elsa
+Route::get('/mentor/live-class', [LiveClassController::class, 'index'])->name('live-class.index');
+Route::post('/mentor/live-class', [LiveClassController::class, 'store'])->name('live-class.store');
+
