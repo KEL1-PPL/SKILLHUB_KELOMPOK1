@@ -10,6 +10,7 @@ class Article extends Model
     public function mentor()
     {
         return $this->belongsTo(User::class, 'mentor_id');
+        
     }
 
     public function isPublished()
