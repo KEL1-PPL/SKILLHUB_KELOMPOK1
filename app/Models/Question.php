@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Question extends Model
 {
-    protected $fillable = ['quiz_id', 'question_text'];
+    // Tambahkan 'explanation' agar bisa diisi melalui form atau seeder
+    protected $fillable = ['quiz_id', 'question_text', 'explanation'];
 
     public function quiz()
     {

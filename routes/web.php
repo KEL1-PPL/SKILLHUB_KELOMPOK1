@@ -47,6 +47,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('quizzes', QuizController::class);
     Route::get('quiz/{quiz}/attempt', [QuizAttemptController::class, 'show'])->name('quiz.attempt');
     Route::post('quiz/{quiz}/submit', [QuizAttemptController::class, 'submit'])->name('quiz.submit');
+    Route::get('/quiz/{quiz}/result', [QuizAttemptController::class, 'showResult'])->name('quiz.result');
 
     // Question management
     Route::prefix('quizzes/{quiz}')->group(function () {

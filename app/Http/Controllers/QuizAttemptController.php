@@ -42,11 +42,13 @@ class QuizAttemptController extends Controller
                 $option = Option::find($option_id);
 
                 // Simpan jawaban user
-                $answers[] = Answer::create([
+                $answer = Answer::create([
                     'user_id' => auth()->id(),
                     'question_id' => $question_id,
                     'option_id' => $option_id,
                 ]);
+
+                $answers[$question_id] = $answer;
 
                 if ($option && $option->is_correct) {
                     $score++;
@@ -55,16 +57,31 @@ class QuizAttemptController extends Controller
 
             DB::commit();
 
-            return view('quiz.result', [
-                'quiz' => $quiz,
+            return redirect()->route('quiz.result', [
+                'quiz' => $quiz->id,
                 'score' => $score,
-                'total' => $total,
-                'answers' => $answers,
-            ]);
+            ])->with('answers', $answers);
         } catch (\Exception $e) {
             DB::rollBack();
             Log::error('Gagal menyimpan jawaban kuis: ' . $e->getMessage());
             return back()->with('error', 'Terjadi kesalahan saat memproses kuis.');
         }
+    }
+
+    /**
+     * Tampilkan hasil dan penjelasan setelah kuis.
+     */
+    public function showResult(Request $request, Quiz $quiz)
+    {
+        $questions = $quiz->questions()->with('options')->get();
+        $answers = session('answers', []); // Ambil jawaban dari session
+        $score = $request->input('score', 0);
+
+        return view('quiz.result', [
+            'quiz' => $quiz,
+            'questions' => $questions,
+            'score' => $score,
+            'answers' => $answers,
+        ]);
     }
 }
