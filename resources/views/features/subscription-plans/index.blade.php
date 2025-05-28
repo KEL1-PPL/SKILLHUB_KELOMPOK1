@@ -4,7 +4,7 @@
 <style>
     .content-container {
         padding: 2rem;
-        padding-top: 120px;
+        /* padding-top: 120px; */
     }
 
     @media (min-width: 992px) {

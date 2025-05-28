@@ -7,10 +7,10 @@
 </li>
 
 <li class="sidebar-item">
-    <a class="sidebar-link {{ $title == 'whislist' ? 'active' : '' }} text-decoration-none"
-        href="">
-        <i class="bi bi-book fs-4"></i>
-        <h3 class="fs-4 mt-1">Whislist Saya</h3>
+    <a class="sidebar-link {{ $title == 'wishlist' ? 'active' : '' }} text-decoration-none"
+        href="{{ route('wishlist.index') }}">
+        <i class="bi bi-heart fs-4"></i>
+        <h3 class="fs-4 mt-1">Wishlist Saya</h3>
     </a>
 </li>
 
@@ -36,9 +36,16 @@
     </a>
 </li>
 <li class="sidebar-item">
-    <a class="sidebar-link {{ $title == 'bayar' ? 'active' : '' }} text-decoration-none"
-        href="">
+    <a class="sidebar-link {{ $title == 'transaksi' ? 'active' : '' }} text-decoration-none"
+        href="{{ route('subscription.my-subscriptions') }}">
         <i class="bi bi-person fs-4"></i>
         <h3 class="fs-4 mt-1">Payment kelas</h3>
+    </a>
+</li>
+<li class="sidebar-item">
+    <a class="sidebar-link {{ $title == 'rating' ? 'active' : '' }} text-decoration-none"
+        href="{{ route('ratings.index') }}">
+        <i class="bi bi-star fs-4"></i>
+        <h3 class="fs-4 mt-1">Rating</h3>
     </a>
 </li>
