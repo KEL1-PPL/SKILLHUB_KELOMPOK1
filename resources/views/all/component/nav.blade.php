@@ -1,39 +1,57 @@
-<nav class="navbar navbar-expand-lg navbar-light bg-light shadow fixed-top">
+<nav class="navbar navbar-expand-lg shadow fixed-top" style="background:#fff">
     <a class="navbar-brand d-flex align-items-center" href="#">
         <div class="ms-3">
-            <strong class="fs-4 text-dark">Skill <span class="text-primary">Hub</span></strong>
-            <p class="fs-5 text-muted mb-0">Ayo! Cari pengalaman belajarmu</p>
+            <strong class="fs-3">Skill <span class="base-color-text">Hub</span></strong>
+            <p class="fs-1">Ayo ! cari pengalaman belajarmu</p>
         </div>
     </a>
 
-    <!-- Navbar Toggler for mobile responsiveness -->
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-    </button>
+    <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
+        <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
+            <!-- subscription button only for 'siswa' role -->
+            @if(auth()->check() && auth()->user()->role == 'siswa')
+                <li class="nav-item me-3">
+                    <button type="button" class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#subscriptionModal">
+                        <i class="bi bi-star"></i> Tingkatkan Paket
+                    </button>
+                </li>
+            @endif
 
-    <!-- Navbar links (hidden on mobile and revealed on toggle) -->
-    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav flex-row ms-auto align-items-center">
+
             <li class="nav-item dropdown">
-                <a class="nav-link btn btn-outline-dark rounded-pill d-flex align-items-center gap-2 nav-icon-hover" href="javascript:void(0)" id="drop2" data-bs-toggle="dropdown" aria-expanded="false">
-                    <span class="fw-semibold text-dark">Username: {{ auth()->user()->name }}</span>
+                <a class="nav-link nav-icon-hover bg-dark text-white" href="#" id="drop2"
+                    data-bs-toggle="dropdown" aria-expanded="false">
+                    Username : {{ auth()->user()->name }}
                 </a>
-
-                <!-- Dropdown Menu -->
                 <div class="dropdown-menu dropdown-menu-end dropdown-menu-animate-up" aria-labelledby="drop2">
-                    <form action="{{ route('logout') }}" method="POST">
-                        @csrf
-                        <button class="dropdown-item d-flex align-items-center gap-2">
-                            <i class="bi bi-box-arrow-right fs-6"></i>
-                            <span class="fs-6 mb-0">Logout</span>
-                        </button>
-                    </form>
+                    <div class="message-body">
+                        <form action="{{ route('logout') }}" method="POST">
+                            @csrf
+                            <button class="d-flex align-items-center gap-2 dropdown-item">
+                                <i class="bi bi-box-arrow-right fs-6"></i>
+                                <p class="mb-0 fs-3">Logout</p>
+                            </button>
+                        </form>
+                    </div>
                 </div>
+            </li>
+            <li>
+                <div class="notification-indicator"></div>
+                <a href="{{ route('notifications.index') }}" class="btn btn-link text-dark">
+                    <i class="bi bi-bell fs-5"></i>
+                    @php
+                        $unreadCount = \App\Models\Notification::where('user_id', auth()->id())
+                                                                 ->whereNull('read_at')
+                                                                 ->count();
+                    @endphp
+                    @if($unreadCount > 0)
+                        <span class="notification-badge">{{ $unreadCount }}</span>
+                    @endif
+                </a>
             </li>
         </ul>
     </div>
 </nav>
 
 <!-- Bootstrap JS and Popper.js (Required for the dropdown functionality) -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsd\elivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

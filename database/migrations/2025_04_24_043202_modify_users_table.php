@@ -11,9 +11,9 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('courses', function (Blueprint $table) {
-            // Menambahkan kolom 'price' dengan tipe data decimal
-            $table->decimal('price', 10, 2)->nullable()->after('description');
+        Schema::table('users', function (Blueprint $table) {
+            // Add or modify columns here
+            $table->string('new_column')->nullable();
         });
     }
 
@@ -22,9 +22,9 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('courses', function (Blueprint $table) {
-            // Menghapus kolom 'price' jika rollback dilakukan
-            $table->dropColumn('price');
+        Schema::table('users', function (Blueprint $table) {
+            // Rollback changes
+            $table->dropColumn('new_column');
         });
     }
 };

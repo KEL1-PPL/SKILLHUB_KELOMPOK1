@@ -20,9 +20,9 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
-        'password',
-        'learning_path',
+        'password', 
         'role',
+        'learning_path'
     ];
 
     /**
@@ -86,9 +86,13 @@ class User extends Authenticatable
         return $this->hasMany(Analytic::class, 'student_id');
     }
 
-    public function wishlists()
+    public function isAdmin()
     {
-        return $this->hasMany(Wishlist::class);
+        return $this->role === 'admin';
     }
 
+    public function isMentor()
+    {
+        return $this->role === 'mentor';
+    }
 }

@@ -1,10 +1,24 @@
 @extends('all.component.app')
 
+@push('style')
+<style>
+    @media (min-width: 992px) {
+        main {
+            margin-left: 260px;
+        }
+    }
+
+    .table-responsive img {
+        margin-right: 10px;
+    }
+</style>
+@endpush
+
 @section('content')
-<div class="container-fluid">
+<div class="container-fluid py-4">
     <div class="row">
         <div class="col-12">
-            <div class="card">
+            <div class="card shadow">
                 <div class="card-header d-flex justify-content-between align-items-center">
                     <h3 class="card-title">{{ $title ?? 'Course Discounts' }}</h3>
                     <a href="{{ route('admin.discounts.create') }}" class="btn btn-primary">
@@ -40,7 +54,7 @@
                                                 @if($discount->course && $discount->course->image)
                                                     <img src="{{ asset('image/dashboard_kursus/' . $discount->course->image) }}" 
                                                          alt="{{ $discount->course->title ?? 'Course Image' }}" 
-                                                         class="img-thumbnail mr-2" 
+                                                         class="img-thumbnail" 
                                                          style="width: 50px; height: 50px; object-fit: cover;">
                                                 @endif
                                                 <div>
@@ -54,10 +68,10 @@
                                             <span class="badge bg-success">{{ $discount->percentage }}% OFF</span>
                                         </td>
                                         <td>
-                                            {{ $discount->start_date->format('d M Y') }} - {{ $discount->end_date->format('d M Y') }}
+                                            {{ optional($discount->start_date)->format('d M Y') ?? 'N/A' }} - {{ optional($discount->end_date)->format('d M Y') ?? 'N/A' }}
                                         </td>
                                         <td>
-                                            @if($discount->isActive())
+                                            @if(method_exists($discount, 'isActive') && $discount->isActive())
                                                 <span class="badge bg-success">Active</span>
                                             @elseif($discount->start_date > now())
                                                 <span class="badge bg-warning">Upcoming</span>

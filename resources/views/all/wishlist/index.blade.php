@@ -208,6 +208,10 @@
         .card-body > div:first-child {
             margin-bottom: 2.5rem;
         }
+
+        .wishlist-header {
+            margin-top: 100px;
+        }
     </style>
 @endpush
 

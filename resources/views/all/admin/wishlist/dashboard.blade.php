@@ -127,6 +127,29 @@
         color: var(--primary-color);
     }
 </style>
+
+<style>
+    @media (min-width: 992px) {
+        main {
+            margin-left: 300px;
+        }
+    }
+    .card-header {
+        margin-top: 20px;
+    }
+
+    .dashboard-title {
+        margin-top: 100px;
+    }
+
+    .dashboard-subtitle {
+        margin-top: 10px;
+    }
+    /* .content-container {
+        padding: 2rem;
+        padding-top: 120px;
+    } */
+</style>
 @endpush
 
 @section('content')
