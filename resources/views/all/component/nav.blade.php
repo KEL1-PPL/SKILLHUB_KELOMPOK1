@@ -6,14 +6,6 @@
         </div>
     </a>
 
-    <!-- <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
-        <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
-            <li class="nav-item dropdown">
-                <a class="nav-link btn btn-dark nav-icon-hover" href="javascript:void(0)" id="drop2"
-                    data-bs-toggle="dropdown" aria-expanded="false">
-                    Username : {{ auth()->user()->name }}
-                </a> -->
-
     <div class="navbar-collapse justify-content-end px-0" id="navbarNav">
         <ul class="navbar-nav flex-row ms-auto align-items-center justify-content-end">
             <!-- subscription button only for 'siswa' role -->
@@ -43,9 +35,6 @@
                     </div>
                 </div>
             </li>
-        </ul>
-    </div>
-</nav>
             <li>
                 <div class="notification-indicator"></div>
                 <a href="{{ route('notifications.index') }}" class="btn btn-link text-dark">
@@ -65,4 +54,4 @@
 </nav>
 
 <!-- Bootstrap JS and Popper.js (Required for the dropdown functionality) -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsd\elivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>

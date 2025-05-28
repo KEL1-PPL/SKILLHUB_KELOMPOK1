@@ -1,6 +1,7 @@
 @extends('all.component.app')
 
 @section('content')
+@push('style')
 <!-- Styling tambahan -->
 <style>
     table td, table th {
@@ -38,6 +39,27 @@
     .container {
         padding: 20px;
         margin-left: 50px; /* Menambahkan jarak kiri pada container untuk seluruh konten */
+    }
+    .content-container {
+        padding: 2rem;
+        /* padding-top: 120px; */
+    }
+
+    @media (min-width: 992px) {
+        main {
+            margin-left: 260px;
+        }
+    }
+
+    .table-container {
+        overflow-x: auto;
+    }
+
+    @media (max-width: 576px) {
+        .btn-add-package {
+            width: 100%;
+            justify-content: center;
+        }
     }
 </style>
 
