@@ -18,6 +18,11 @@
 
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     @stack('style')
+    <style>
+        main {
+            margin-top: 80px;
+        }
+    </style>
 </head>
 
 <body>
