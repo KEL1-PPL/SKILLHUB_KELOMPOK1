@@ -60,6 +60,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/subscription/checkout/{plan}', [SubscriptionPlanController::class, 'checkout'])
     ->name('subscription.checkout');
 
+    Route::get('/subscription/my-subscriptions', [SubscriptionPlanController::class, 'mySubscriptions'])
+        ->name('subscription.my-subscriptions');
+
     // Rating and Review Routes
     Route::resource('ratingreview', RatingReviewController::class);
 
@@ -151,6 +154,12 @@ Route::get('/course/{slug}', [CourseController::class, 'show'])->name('course.sh
 ]);
 
 // Live Class Management - elsa
-Route::get('/mentor/live-class', [LiveClassController::class, 'index'])->name('live-class.index');
-Route::post('/mentor/live-class', [LiveClassController::class, 'store'])->name('live-class.store');
-
+Route::middleware(['auth'])->group(function () {
+    // Live Class Routes
+    Route::get('/mentor/live-class', [LiveClassController::class, 'index'])->name('live-class.index');
+    Route::post('/mentor/live-class', [LiveClassController::class, 'store'])->name('live-class.store');
+    Route::get('/mentor/live-class/{id}', [LiveClassController::class, 'show'])->name('live-class.show');
+    Route::get('/mentor/live-class/{id}/edit', [LiveClassController::class, 'edit'])->name('live-class.edit');
+    Route::put('/mentor/live-class/{id}', [LiveClassController::class, 'update'])->name('live-class.update');
+    Route::delete('/mentor/live-class/{id}', [LiveClassController::class, 'destroy'])->name('live-class.destroy');
+});

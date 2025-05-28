@@ -15,16 +15,18 @@ return new class extends Migration
             $table->id();
             $table->string('title');
             $table->text('description');
-            $table->dateTime('datetime');
-            $table->enum('platform', ['Zoom', 'Google Meet', 'Microsoft Teams', 'Discord', 'YouTube Live']);
-            $table->string('join_link');
+            $table->datetime('datetime');
+            $table->string('platform', 50);
+            $table->string('link', 500);
+            $table->unsignedBigInteger('user_id')->nullable(); // Optional: track who created
             $table->integer('participants_count')->default(0);
-            $table->unsignedBigInteger('created_by')->nullable();
-            $table->enum('status', ['scheduled', 'ongoing', 'completed', 'cancelled'])->default('scheduled');
+            $table->enum('status', ['draft', 'published', 'cancelled'])->default('published');
             $table->timestamps();
 
-            $table->index(['datetime', 'status']);
-            $table->index('created_by');
+            $table->index('datetime');
+            $table->index('status');
+            
+            
         });
     }
 
