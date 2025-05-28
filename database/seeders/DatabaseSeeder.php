@@ -6,12 +6,18 @@ use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
 {
-    /**
-     * Seed the application's database.
-     */
-    public function run(): void
+    public function run()
     {
-        // Jalankan seeder course aja
+        $this->call([
+            UserSeeder::class,
+            MentorIncomeSeeder::class
+        ]);
+
+        $this->call([
+            SubscriptionPlanSeeder::class,
+        ]);
+
         $this->call(CourseSeeder::class);
+
     }
 }
