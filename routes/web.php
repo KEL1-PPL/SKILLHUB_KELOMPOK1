@@ -25,7 +25,6 @@ use App\Http\Controllers\Mentor\MentorDashboardController;
 use App\Http\Controllers\Mentor\MentorIncomeReportController; 
 use App\Http\Controllers\Mentor\MentorAnalyticsController;
 use App\Http\Controllers\Mentor\MentorCourseController;
-use App\Http\Controllers\SubscriptionPlanController;
 use App\Http\Controllers\CourseController; // imam
 use App\Http\Controllers\MaterialController; // imam
 use App\Http\Controllers\LiveClassController; //elsa
@@ -33,6 +32,7 @@ use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\WishlistAnalyticsController;
+use App\Http\Controllers\RatingController;
 
 // Landing Page Route
 Route::get('/', function () {
@@ -268,4 +268,14 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
     
     // Add this route for all wishlists
     Route::get('all-wishlists', [WishlistController::class, 'showWishlistAll'])->name('wishlist.all');
+});
+
+// ratings
+Route::middleware('auth')->group(function () {
+    Route::get('/ratings', [RatingController::class, 'index'])->name('ratings.index');
+    Route::get('/ratings/create', [RatingController::class, 'create'])->name('ratings.create');
+    Route::post('/ratings', [RatingController::class, 'store'])->name('ratings.store');
+    Route::get('/ratings/{id}/edit', [RatingController::class, 'edit'])->name('ratings.edit');
+    Route::put('/ratings/{id}', [RatingController::class, 'update'])->name('ratings.update');
+    Route::delete('/ratings/{id}', [RatingController::class, 'destroy'])->name('ratings.destroy');
 });
