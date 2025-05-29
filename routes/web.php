@@ -16,8 +16,6 @@ use App\Http\Controllers\RatingReviewController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\DiscountController as AdminDiscountController;
-use App\Http\Controllers\Admin\EarningsController;
-use App\Http\Controllers\Mentor\IncomeReportController;
 use App\Http\Controllers\Admin\MentorIncomeController;
 use App\Http\Controllers\Admin\WishlistAnalyticsController as AdminWishlistAnalyticsController;
 use App\Http\Controllers\SubscriptionPlanController; //elsa
@@ -30,9 +28,8 @@ use App\Http\Controllers\MaterialController; // imam
 use App\Http\Controllers\LiveClassController; //elsa
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\DiscountController;
-use App\Http\Controllers\WishlistAnalyticsController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\ArticleController;
 
 // Landing Page
 Route::get('/', fn () => view('landing'))->name('landing');
@@ -71,8 +68,6 @@ Route::middleware('auth')->group(function () {
     // Voucher Routes for Users
     Route::post('voucher/redeem', [VoucherController::class, 'redeem'])->name('voucher.redeem');
     Route::resource('ratingreview', RatingReviewController::class);
-    Route::get('articles', [ArticleExploreController::class, 'index'])->name('articles.index');
-    Route::get('articles/{article}', [ArticleExploreController::class, 'show'])->name('articles.show');
 
     Route::get('/home', fn () => view('home'))->name('home');
 
@@ -162,16 +157,6 @@ Route::prefix('mentor')->middleware(['auth', 'role:mentor'])->name('mentor.')->g
 // Fallback untuk route yang tidak ditemukan
 Route::fallback(fn () => view('errors.404'));
 
-// Route untuk mentor
-Route::middleware(['auth', 'role:mentor'])->prefix('mentor')->group(function () {
-    Route::get('/income-report', [IncomeReportController::class, 'index'])->name('mentor.income-report');
-    // Route mentor lainnya
-});
-
-Route::middleware(['auth', 'mentor'])->group(function () {
-    Route::get('/income-report', [App\Http\Controllers\Mentor\IncomeReportController::class, 'index'])->name('mentor.income-report');
-});
-
 // Subscription-plans -elsa
 Route::resource('subscription-plans', SubscriptionPlanController::class)
     ->names([
@@ -199,7 +184,7 @@ Auth::routes();
 // Routes untuk Mentor
 Route::prefix('mentor')->middleware(['auth', 'role:mentor'])->group(function () {
     Route::get('/dashboard', [MentorDashboardController::class, 'index'])->name('mentor.dashboard');
-    Route::get('/income-report', [MentorIncomeReportController::class, 'index'])->name('mentor.income-report');
+    Route::get('/income-report', [EarningReportController::class, 'index'])->name('mentor.income-report');
     Route::get('/analytics', [MentorAnalyticsController::class, 'index'])->name('mentor.analytics');
     Route::get('/course-management', [MentorCourseController::class, 'index'])->name('mentor.course-management');
 });
@@ -266,7 +251,7 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
     Route::get('all-wishlists', [WishlistController::class, 'showWishlistAll'])->name('wishlist.all');
 });
 
-// ratings
+// ratings - raffanda
 Route::middleware('auth')->group(function () {
     Route::get('/ratings', [RatingController::class, 'index'])->name('ratings.index');
     Route::get('/ratings/create', [RatingController::class, 'create'])->name('ratings.create');
@@ -275,3 +260,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/ratings/{id}', [RatingController::class, 'update'])->name('ratings.update');
     Route::delete('/ratings/{id}', [RatingController::class, 'destroy'])->name('ratings.destroy');
 });
+
+// articles - reynal
+Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
+Route::get('/articles/{slug}', [ArticleController::class, 'show'])->name('articles.show');
+

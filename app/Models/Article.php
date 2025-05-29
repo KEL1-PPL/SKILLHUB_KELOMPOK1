@@ -1,20 +1,24 @@
 <?php
+
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Article extends Model
 {
-    protected $fillable = ['title', 'content', 'status', 'mentor_id'];
+    use HasFactory;
 
-    public function mentor()
-    {
-        return $this->belongsTo(User::class, 'mentor_id');
-        
-    }
+    protected $fillable = [
+        'title',
+        'slug',
+        'content',
+        'status',
+        'user_id'
+    ];
 
-    public function isPublished()
+    public function user()
     {
-        return $this->status === 'published';
+        return $this->belongsTo(User::class);
     }
 }

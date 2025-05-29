@@ -45,6 +45,13 @@
                     <h3 class="fs-4 mt-1">Dashboard</h3>
                 </a>
             </li>
+            <li class="sidebar-item">
+                <a class="sidebar-link {{ $title == 'Articles' ? 'active' : '' }} text-decoration-none"
+                    href="{{ route('articles.index') }}">
+                    <i class="ti ti-article fs-6"></i>
+                    <h3 class="fs-4 mt-1">Articles</h3>
+                </a>
+            </li>
         </ul>
 
         <ul id="sidebarnav">

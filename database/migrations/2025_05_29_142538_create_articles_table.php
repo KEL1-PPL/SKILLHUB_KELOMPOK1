@@ -1,5 +1,4 @@
-
-?php
+<?php
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
@@ -14,10 +13,11 @@ return new class extends Migration
     {
         Schema::create('articles', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('mentor_id')->constrained('users');
             $table->string('title');
+            $table->string('slug')->unique();
             $table->text('content');
-            $table->enum('status', ['pending', 'published', 'rejected'])->default('pending');
+            $table->enum('status', ['draft', 'pending', 'approved', 'rejected'])->default('draft');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
