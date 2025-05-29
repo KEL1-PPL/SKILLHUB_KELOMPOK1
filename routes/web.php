@@ -1,10 +1,8 @@
 <?php
 
-use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\All\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\All\DashboardController;
 use App\Http\Controllers\User\ProfileController;
 use App\Http\Controllers\AboutController;
 use App\Http\Controllers\CartController;
@@ -16,11 +14,15 @@ use App\Http\Controllers\RatingReviewController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\DiscountController as AdminDiscountController;
+use App\Http\Controllers\Admin\EarningsController;
+use App\Http\Controllers\Mentor\IncomeReportController;
 use App\Http\Controllers\Admin\MentorIncomeController;
 use App\Http\Controllers\Admin\WishlistAnalyticsController as AdminWishlistAnalyticsController;
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SubscriptionPlanController; //elsa
+use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Mentor\MentorDashboardController;
-use App\Http\Controllers\Mentor\EarningReportController;
+use App\Http\Controllers\Mentor\MentorIncomeReportController; 
 use App\Http\Controllers\Mentor\MentorAnalyticsController;
 use App\Http\Controllers\Mentor\MentorCourseController;
 use App\Http\Controllers\CourseController; // imam
@@ -28,31 +30,46 @@ use App\Http\Controllers\MaterialController; // imam
 use App\Http\Controllers\LiveClassController; //elsa
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\DiscountController;
+use App\Http\Controllers\WishlistAnalyticsController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ArticleController;
 
-// Landing Page
-Route::get('/', fn () => view('landing'))->name('landing');
+// Landing Page Route
+Route::get('/', function () {
+    return view('landing');
+})->name('landing');
 
-// Auth
+// Auth Routes
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
+// Register Routes (Only accessible for guests)
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
 });
 
-// Authenticated Users
+// User Routes (Protected by 'auth' middleware)
 Route::middleware('auth')->group(function () {
     Route::get('dashboard', [DashboardController::class, '__invoke'])->name('dashboard');
+    
+    // Profile Routes
     Route::resource('profile', ProfileController::class);
+
+    // General Pages
     Route::resource('about', AboutController::class);
     Route::resource('contact', ContactController::class);
+
+    // Cart Routes
     Route::resource('cart', CartController::class);
+
+    // Category and Product Routes
     Route::resource('category', CategoryController::class);
     Route::resource('product', ProductController::class);
+
+    // Checkout Routes
     Route::resource('checkout', CheckoutController::class);
 
     // ccription-plans
@@ -67,11 +84,13 @@ Route::middleware('auth')->group(function () {
 
     // Voucher Routes for Users
     Route::post('voucher/redeem', [VoucherController::class, 'redeem'])->name('voucher.redeem');
-    Route::resource('ratingreview', RatingReviewController::class);
 
-    Route::get('/home', fn () => view('home'))->name('home');
+    // Home Route
+    Route::get('/home', function () {
+        return view('home');
+    })->name('home');
 
-    // Course & Material
+    // course - imam
     Route::resource('course', CourseController::class)->names([
         'index' => 'features.course.index',
         'create' => 'features.course.create',
@@ -80,18 +99,9 @@ Route::middleware('auth')->group(function () {
         'edit' => 'features.course.edit',
         'update' => 'features.course.update',
         'destroy' => 'features.course.destroy'
-    ])->parameters(['course' => 'slug']);
-
-    Route::resource('course/{course}/material', MaterialController::class)->names([
-        'index' => 'features.material.index',
-        'create' => 'features.material.create',
-        'store' => 'features.material.store',
-        'show' => 'features.material.show',
-        'edit' => 'features.material.edit',
-        'update' => 'features.material.update',
-        'destroy' => 'features.material.destroy',
+    ])->parameters([
+        'course' => 'slug'
     ]);
-    Route::post('course/{course}/material/{material}/toggle-completion', [MaterialController::class, 'toggleCompletion'])->name('features.material.toggle-completion');
 
     // course - imam
     Route::resource('course', CourseController::class);
@@ -120,42 +130,63 @@ Route::middleware('auth')->group(function () {
 
     Route::post('course/{course}/material/{material}/toggle-completion', [MaterialController::class, 'toggleCompletion'])
         ->name('features.material.toggle-completion');
+
+    // Article Routes
+    Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
+    Route::get('/articles/create', [ArticleController::class, 'create'])->name('articles.create');
+    Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
+    Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
+    Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
+    Route::put('/articles/{article}', [ArticleController::class, 'update'])->name('articles.update');
+    Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
+    Route::post('/articles/{article}/approve', [ArticleController::class, 'approve'])->name('articles.approve');
+    Route::post('/articles/{article}/reject', [ArticleController::class, 'reject'])->name('articles.reject');
 });
 
 // Admin Routes
-Route::prefix('admin')->middleware(['auth', 'role:admin'])->name('admin.')->group(function () {
-    Route::get('dashboard', [AdminController::class, 'index'])->name('dashboard');
+Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+    // Admin Dashboard
+    Route::get('dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+
+    // Admin-Only Resource Routes
     Route::resource('about', AboutController::class);
     Route::resource('contact', ContactController::class);
     Route::resource('voucher', VoucherController::class);
-    Route::resource('earnings', AdminController::class)->except(['create', 'edit']);
-    Route::post('earnings/{earning}/invalidate', [AdminController::class, 'invalidate'])->name('earnings.invalidate');
-    Route::get('mentor-incomes', [MentorIncomeController::class, 'index'])->name('mentor-incomes');
-    Route::post('mentor-incomes/{id}/correct', [MentorIncomeController::class, 'correct'])->name('mentor-incomes.correct');
 
-    // Subscription Plan Admin
-    Route::resource('subscription-plans', SubscriptionPlanController::class)->names([
-        'index' => 'subscription-plans.index',
-        'create' => 'subscription-plans.create',
-        'store' => 'subscription-plans.store',
-        'show' => 'subscription-plans.show',
-        'edit' => 'subscription-plans.edit',
-        'update' => 'subscription-plans.update',
-        'destroy' => 'subscription-plans.destroy',
-    ]);
+    // Earnings Routes for Admin
+    Route::resource('earnings', AdminController::class)->except(['create', 'edit']);
+    Route::post('/earnings/{earning}/invalidate', [AdminController::class, 'invalidate'])->name('admin.earnings.invalidate')
+        ->name('admin.earnings.invalidate');  
+
+    // Mentor Income Routes
+    Route::get('/mentor-incomes', [MentorIncomeController::class, 'index'])->name('admin.mentor-incomes');
+    Route::post('/mentor-incomes/{id}/correct', [MentorIncomeController::class, 'correct'])
+        ->name('admin.mentor-incomes.correct'); 
 });
 
 // Mentor Routes
-Route::prefix('mentor')->middleware(['auth', 'role:mentor'])->name('mentor.')->group(function () {
-    Route::get('dashboard', [MentorDashboardController::class, 'index'])->name('dashboard');
-    Route::get('earning-report', [EarningReportController::class, 'index'])->name('earning-report');
-    Route::post('earning-report', [EarningReportController::class, 'store'])->name('earning-report.store');
-    Route::get('analytics', [MentorAnalyticsController::class, 'index'])->name('analytics');
-    Route::get('course-management', [MentorCourseController::class, 'index'])->name('course-management');
+Route::middleware(['auth', 'mentor'])->prefix('mentor')->name('mentor.')->group(function () {
+    Route::get('/dashboard', [MentorDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/analytics', [MentorAnalyticsController::class, 'index'])->name('analytics');
+    Route::get('/courses', [MentorCourseController::class, 'index'])->name('courses');
+    Route::get('/income-report', [MentorIncomeReportController::class, 'index'])->name('income-report');
 });
 
-// Fallback untuk route yang tidak ditemukan
-Route::fallback(fn () => view('errors.404'));
+// Route untuk admin
+Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
+    Route::get('/income-management', [AdminController::class, 'incomeManagement']);
+    // Route admin lainnya
+});
+
+// Route untuk mentor
+Route::middleware(['auth', 'role:mentor'])->prefix('mentor')->group(function () {
+    Route::get('/income-report', [IncomeReportController::class, 'index'])->name('mentor.income-report');
+    // Route mentor lainnya
+});
+
+Route::middleware(['auth', 'mentor'])->group(function () {
+    Route::get('/income-report', [App\Http\Controllers\Mentor\IncomeReportController::class, 'index'])->name('mentor.income-report');
+});
 
 // Subscription-plans -elsa
 Route::resource('subscription-plans', SubscriptionPlanController::class)
@@ -184,7 +215,7 @@ Auth::routes();
 // Routes untuk Mentor
 Route::prefix('mentor')->middleware(['auth', 'role:mentor'])->group(function () {
     Route::get('/dashboard', [MentorDashboardController::class, 'index'])->name('mentor.dashboard');
-    Route::get('/income-report', [EarningReportController::class, 'index'])->name('mentor.income-report');
+    Route::get('/income-report', [MentorIncomeReportController::class, 'index'])->name('mentor.income-report');
     Route::get('/analytics', [MentorAnalyticsController::class, 'index'])->name('mentor.analytics');
     Route::get('/course-management', [MentorCourseController::class, 'index'])->name('mentor.course-management');
 });
@@ -251,7 +282,7 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
     Route::get('all-wishlists', [WishlistController::class, 'showWishlistAll'])->name('wishlist.all');
 });
 
-// ratings - raffanda
+// ratings
 Route::middleware('auth')->group(function () {
     Route::get('/ratings', [RatingController::class, 'index'])->name('ratings.index');
     Route::get('/ratings/create', [RatingController::class, 'create'])->name('ratings.create');
@@ -260,8 +291,3 @@ Route::middleware('auth')->group(function () {
     Route::put('/ratings/{id}', [RatingController::class, 'update'])->name('ratings.update');
     Route::delete('/ratings/{id}', [RatingController::class, 'destroy'])->name('ratings.destroy');
 });
-
-// articles - reynal
-Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
-Route::get('/articles/{slug}', [ArticleController::class, 'show'])->name('articles.show');
-

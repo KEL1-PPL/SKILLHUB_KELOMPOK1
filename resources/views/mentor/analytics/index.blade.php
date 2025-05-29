@@ -1,7 +1,5 @@
 @extends('layouts.mentor.app')
 
-@section('title', 'Analitik Kemajuan Siswa')
-
 @section('content')
 <div class="container">
     <h1>Analitik Kemajuan Siswa</h1>
@@ -81,32 +79,22 @@
                                     <td>
                                         <div class="progress">
                                             <div class="progress-bar" role="progressbar" 
-                                                aria-valuenow="{{ number_format((float) ($progress->progress_percentage ?? 0), 2) }}" 
+                                                style="width: {{ $progress->progress_percentage ?? 0 }}%"
+                                                aria-valuenow="{{ $progress->progress_percentage ?? 0 }}" 
                                                 aria-valuemin="0" aria-valuemax="100">
-                                                {{ number_format((float) ($progress->progress_percentage ?? 0), 2) }}%
+                                                {{ $progress->progress_percentage ?? 0 }}%
                                             </div>
                                         </div>
                                     </td>
                                     <td>{{ isset($progress->average_score) ? number_format($progress->average_score, 1) : 'N/A' }}</td>
                                     <td>
                                         @php
-                                            $status = strtolower($progress->status ?? 'pending');
-                                            $badgeClass = match($status) {
-                                                'completed' => 'success',
-                                                'in_progress' => 'warning',
-                                                'not_started' => 'secondary',
-                                                default => 'secondary'
-                                            };
-                                            
-                                            $statusLabel = match($status) {
-                                                'completed' => 'Selesai',
-                                                'in_progress' => 'Sedang Berjalan',
-                                                'not_started' => 'Belum Mulai',
-                                                default => 'Menunggu'
-                                            };
+                                            $status = $progress->status ?? 'Pending';
+                                            $badgeClass = $status === 'Completed' ? 'success' : 
+                                                        ($status === 'In Progress' ? 'warning' : 'secondary');
                                         @endphp
                                         <span class="badge bg-{{ $badgeClass }}">
-                                            {{ $statusLabel }}
+                                            {{ $status }}
                                         </span>
                                     </td>
                                 </tr>
@@ -118,80 +106,67 @@
                         @endif
                     </tbody>
                 </table>
-                @if($studentProgress instanceof \Illuminate\Pagination\LengthAwarePaginator)
-                    <div class="mt-4">
-                        {{ $studentProgress->links() }}
-                    </div>
-                @endif
             </div>
         </div>
     </div>
 </div>
 @endsection
 
-@section('scripts')
+@push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const chartElement = document.getElementById('progressChart');
-    if (!chartElement) return;
+    if (chartElement) {
+        try {
+            const ctx = chartElement.getContext('2d');
+            const labels = @json($chartData->labels ?? []);
+            const data = @json($chartData->data ?? []);
 
-    try {
-        const ctx = chartElement.getContext('2d');
-        const labels = JSON.parse('@json($chartData->labels ?? [])');
-        const data = JSON.parse('@json($chartData->data ?? [])');
-
-        if (!labels.length || !data.length) {
-            chartElement.parentElement.innerHTML = '<div class="alert alert-info">Tidak ada data untuk ditampilkan dalam grafik</div>';
-            return;
-        }
-
-        new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Rata-rata Kemajuan Siswa (%)',
-                    data: data,
-                    borderColor: 'rgb(75, 192, 192)',
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    tension: 0.1,
-                    fill: true
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        max: 100,
-                        ticks: {
-                            callback: function(value) {
-                                return value + '%';
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Rata-rata Kemajuan Siswa (%)',
+                        data: data,
+                        borderColor: 'rgb(75, 192, 192)',
+                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                        tension: 0.1,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            title: {
+                                display: true,
+                                text: 'Persentase Kemajuan'
                             }
                         },
-                        title: {
-                            display: true,
-                            text: 'Persentase Kemajuan'
-                        }
-                    }
-                },
-                plugins: {
-                    tooltip: {
-                        callbacks: {
-                            label: function(context) {
-                                return context.parsed.y + '%';
+                        x: {
+                            title: {
+                                display: true,
+                                text: 'Periode'
                             }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            position: 'top'
                         }
                     }
                 }
-            }
-        });
-    } catch (error) {
-        console.error('Error initializing chart:', error);
-        chartElement.parentElement.innerHTML = '<div class="alert alert-danger">Gagal memuat grafik: ' + error.message + '</div>';
+            });
+        } catch (error) {
+            console.error('Error initializing chart:', error);
+            chartElement.parentElement.innerHTML = '<div class="alert alert-danger">Gagal memuat grafik</div>';
+        }
     }
 });
 </script>
-@endsection
+@endpush
