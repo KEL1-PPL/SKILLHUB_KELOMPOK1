@@ -46,7 +46,7 @@
                                     <th>User</th>
                                     <th>Course</th>
                                     <th>Added Date</th>
-                                    <th>Course Price</th>
+                                    <!-- <th>Course Price</th> -->
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -62,7 +62,7 @@
                                         <td>
                                             <div class="d-flex align-items-center">
                                                 @if($wishlist->course && $wishlist->course->image)
-                                                    <img src="{{ asset('image/dashboard_kursus/' . $wishlist->course->image) }}" 
+                                                    <img src="{{ asset('/storage/' . $wishlist->course->image) }}" 
                                                          alt="{{ $wishlist->course->title ?? 'Course Image' }}" 
                                                          class="img-thumbnail mr-2" 
                                                          style="width: 50px; height: 50px; object-fit: cover;">
@@ -75,18 +75,20 @@
                                             </div>
                                         </td>
                                         <td>{{ $wishlist->created_at->format('d M Y, H:i') }}</td>
-                                        <td>
+                                        <!-- <td>
                                             @if($wishlist->course && $wishlist->course->price)
                                                 Rp {{ number_format($wishlist->course->price, 0, ',', '.') }}
                                             @else
                                                 N/A
                                             @endif
-                                        </td>
+                                        </td> -->
                                         <td>
-                                            <a href="{{ route('features.course.show', $wishlist->course_id ?? 0) }}" 
-                                               class="btn btn-sm btn-info">
-                                                <i class="bi bi-eye"></i> View Course
-                                            </a>
+                                            @if($wishlist->course)
+                                                <a href="{{ route('features.course.show', $wishlist->course->slug) }}" 
+                                                   class="btn btn-sm btn-info">
+                                                    <i class="bi bi-eye"></i> View Course
+                                                </a>
+                                            @endif
                                         </td>
                                     </tr>
                                 @empty

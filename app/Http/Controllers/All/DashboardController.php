@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Analytic;
 use App\Models\CourseCompletionHistory;
 use App\Models\CourseEnrollment;
+use App\Models\Course;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -16,6 +17,7 @@ class DashboardController extends Controller
         $completionHistory = [];
         $analytics = [];
         $grouped = [];
+        $popularCourses = collect();
         if(auth()->user()->role == 'siswa')
         {
             $enrollments = CourseEnrollment::with(['course', 'progress'])
@@ -24,6 +26,14 @@ class DashboardController extends Controller
             $completionHistory = CourseCompletionHistory::with('course')
                                     ->where('user_id', auth()->user()->id)->get();
 
+            // Ambil 6 kursus populer berdasarkan wishlist
+            $popularCourses = Course::withCount('wishlists')
+                ->orderByDesc('wishlists_count')
+                ->take(6)
+                ->get();
+            if ($popularCourses->sum('wishlists_count') == 0) {
+                $popularCourses = Course::inRandomOrder()->take(6)->get();
+            }
         }
 
         if(auth()->user()->role == 'mentor')
@@ -40,6 +50,7 @@ class DashboardController extends Controller
             'completionHistory' => $completionHistory,
             'grouped' => $grouped,
             'analytics' => $analytics,
+            'popularCourses' => $popularCourses,
         ]);
     }
 }

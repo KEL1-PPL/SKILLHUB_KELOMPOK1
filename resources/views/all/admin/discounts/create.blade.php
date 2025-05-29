@@ -3,6 +3,20 @@
 @push('style')
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
+    @media (min-width: 992px) {
+        main, .discount-create-form-wrapper {
+            margin-left: 260px;
+        }
+    }
+    .discount-create-form-wrapper {
+        max-width: 900px;
+        margin: 2rem auto;
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 2px 12px rgba(40,112,148,0.07);
+        padding: 2.5rem 2rem;
+    }
+    
     .form-section {
         background-color: var(--white);
         border-radius: 10px;
@@ -29,7 +43,7 @@
     
     .btn-submit {
         background-color: var(--primary-color);
-        color: white;
+        color: red;
         border: none;
         border-radius: 8px;
         padding: 0.75rem 1.5rem;
@@ -59,7 +73,7 @@
 @endpush
 
 @section('content')
-<div class="container-fluid">
+<div class="discount-create-form-wrapper">
     <div class="row">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
@@ -68,7 +82,11 @@
                     <i class="bi bi-arrow-left"></i> Back to Discounts
                 </a>
             </div>
-            
+            @if(session('success'))
+                <div class="alert alert-success mt-2 mb-4" style="max-width:600px;margin-left:auto;margin-right:auto;">
+                    {{ session('success') }}
+                </div>
+            @endif
             <div class="form-section">
                 <form action="{{ route('admin.discounts.store') }}" method="POST">
                     @csrf
