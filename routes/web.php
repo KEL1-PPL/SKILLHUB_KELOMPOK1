@@ -20,9 +20,7 @@ use App\Http\Controllers\Admin\EarningsController;
 use App\Http\Controllers\Mentor\IncomeReportController;
 use App\Http\Controllers\Admin\MentorIncomeController;
 use App\Http\Controllers\Admin\WishlistAnalyticsController as AdminWishlistAnalyticsController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SubscriptionPlanController; //elsa
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Mentor\MentorDashboardController;
 use App\Http\Controllers\Mentor\EarningReportController;
 use App\Http\Controllers\Mentor\MentorAnalyticsController;

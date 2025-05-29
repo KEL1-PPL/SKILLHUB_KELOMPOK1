@@ -329,7 +329,7 @@
                                     <td>
                                         <div class="d-flex align-items-center">
                                             @if($activity->course && $activity->course->image)
-                                                <img src="{{ asset('image/dashboard_kursus/' . $activity->course->image) }}" 
+                                                <img src="{{ asset('/storage/' . $activity->course->image) }}" 
                                                      class="course-image-small me-2" 
                                                      alt="{{ $activity->course->title ?? 'Course' }}">
                                             @endif
@@ -343,9 +343,11 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <a href="{{ route('features.course.show', $activity->course_id ?? 0) }}" class="btn btn-sm btn-outline-primary">
-                                            <i class="bi bi-eye"></i> View
-                                        </a>
+                                        @if($activity->course)
+                                            <a href="{{ route('features.course.show', $activity->course->slug) }}" class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i> Views
+                                            </a>
+                                        @endif
                                     </td>
                                 </tr>
                             @empty
