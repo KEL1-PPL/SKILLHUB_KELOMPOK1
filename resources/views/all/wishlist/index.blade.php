@@ -17,7 +17,7 @@
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
-
+        
         h2 {
             color: #023246;
             font-weight: 700;
@@ -234,7 +234,7 @@
                     <div class="col-md-4 mb-5 course-card" id="wishlist-item-{{ $wishlist->course->id }}">
                         <div class="card shadow-sm h-100">
                             <!-- Course Image -->
-                            <img src="{{ asset('image/dashboard_kursus/' . $wishlist->course->image) }}" 
+                            <img src="{{ asset('storage/' . $wishlist->course->image) }}" 
                                  class="card-img-top" alt="{{ $wishlist->course->title }}">
 
                             <div class="card-body d-flex flex-column justify-content-between">
@@ -249,7 +249,7 @@
                                         @endfor
                                     </div>
                                     <div class="action-buttons">
-                                        <a href="#" class="btn btn-primary btn-sm w-100 mb-3">Lihat Detail</a>
+                                        <a href="" class="btn btn-primary btn-sm w-100 mb-3">Lihat Detail</a>
                                         <button class="btn btn-danger btn-sm remove-wishlist" 
                                                 data-course-id="{{ $wishlist->course->id }}">
                                                 <i class="fas fa-trash mt-5 pt-3"></i> Hapus
