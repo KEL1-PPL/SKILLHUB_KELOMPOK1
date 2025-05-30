@@ -225,28 +225,159 @@
                     </tbody>
                 </table>
             @else
-                <h2 class="mb-4">📊 Analitik Kemajuan Siswa</h2>
-                <table class="table table-bordered">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Nama Siswa</th>
-                            <th>Kursus</th>
-                            <th>Area Kesulitan</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        @foreach ($analytics as $a)
-                            <tr>
-                                <td>{{ $a->student->name }}</td>
-                                <td>{{ $a->course->title }}</td>
-                                <td>{{ $a->area_of_struggle }}</td>
-                            </tr>
-                        @endforeach
-                    </tbody>
-                </table>
+                <!-- Welcome Section -->
+                <div class="mb-4 p-4 bg-gradient bg-primary text-white rounded shadow-sm d-flex align-items-center justify-content-between flex-wrap">
+                    <div>
+                        <h2 class="fw-bold mb-1">Selamat Datang, {{ auth()->user()->name }}!</h2>
+                        <div class="fs-5">Dashboard Mentor - Pantau statistik, kursus, dan artikel Anda di sini.</div>
+                    </div>
+                    <div class="mt-3 mt-md-0">
+                        <a href="{{ route('features.course.create') }}" class="btn btn-light btn-lg me-2 mb-2">Buat Kursus Baru</a>
+                        <a href="{{ route('articles.create') }}" class="btn btn-outline-light btn-lg mb-2">Tulis Artikel</a>
+                    </div>
+                </div>
 
-                <h2 class="mt-5 mb-4">📈 Statistik Area Kesulitan</h2>
-                <canvas id="struggleChart" width="400" height="200"></canvas>
+                <!-- Statistik Cards -->
+                <div class="row g-4 mb-4">
+                    <div class="col-md-3">
+                        <div class="card text-white bg-primary shadow h-100 animate__animated animate__fadeInUp">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="bi bi-people display-4 me-3"></i>
+                                <div>
+                                    <div class="fs-3 fw-bold">{{ $mentorStats['totalStudents'] }}</div>
+                                    <div class="small">Total Siswa</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-success shadow h-100 animate__animated animate__fadeInUp">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="bi bi-person-check display-4 me-3"></i>
+                                <div>
+                                    <div class="fs-3 fw-bold">{{ $mentorStats['enrolledStudents'] }}</div>
+                                    <div class="small">Siswa Aktif Kursus</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-info shadow h-100 animate__animated animate__fadeInUp">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="bi bi-journal-bookmark display-4 me-3"></i>
+                                <div>
+                                    <div class="fs-3 fw-bold">{{ $mentorStats['avgCoursesPerStudent'] }}</div>
+                                    <div class="small">Rata-rata Kursus/Siswa</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="card text-white bg-warning shadow h-100 animate__animated animate__fadeInUp">
+                            <div class="card-body d-flex align-items-center">
+                                <i class="bi bi-bar-chart-line display-4 me-3"></i>
+                                <div>
+                                    <div class="fs-3 fw-bold">{{ $mentorStats['avgProgress'] }}%</div>
+                                    <div class="small">Rata-rata Progress</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Chart Section -->
+                <div class="card shadow-sm mb-4 animate__animated animate__fadeIn">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h5 class="card-title mb-0">Pendaftaran Siswa Tiap Bulan <span id="chart-year-label">({{ date('Y') }})</span></h5>
+                            <select id="chart-year-select" class="form-select form-select-sm" style="width: auto;">
+                                @for($y = date('Y'); $y >= date('Y')-5; $y--)
+                                    <option value="{{ $y }}" @if($y == date('Y')) selected @endif>{{ $y }}</option>
+                                @endfor
+                            </select>
+                        </div>
+                        <div id="student-registration-chart" style="height: 350px;"></div>
+                        <div class="text-muted small mt-2">Statistik pendaftaran siswa baru setiap bulan.</div>
+                    </div>
+                </div>
+
+                <!-- Kursus Terpopuler Section -->
+                <div class="mb-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-primary me-2" style="font-size:1rem;"><i class="bi bi-star-fill"></i></span>
+                        <h4 class="mb-0">Kursus Terpopuler</h4>
+                    </div>
+                    <div class="row g-3">
+                        @foreach($mentorStats['popularCourses'] as $course)
+                            <div class="col-md-4">
+                                <div class="card h-100 shadow-sm animate__animated animate__fadeInUp">
+                                    @if($course->image)
+                                        <img src="{{ $course->getImageUrlAttribute() }}" class="card-img-top" style="height:160px;object-fit:cover;">
+                                    @endif
+                                    <div class="card-body">
+                                        <h5 class="card-title"><a href="{{ route('features.course.show', $course->slug) }}" class="text-decoration-none">{{ $course->title }}</a></h5>
+                                        <span class="badge bg-info mb-2">{{ $course->wishlists_count }} Wishlist</span>
+                                        <div class="text-muted small">Dibuat: {{ $course->created_at->format('d M Y') }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Artikel Terpopuler Section -->
+                <div class="mb-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-success me-2" style="font-size:1rem;"><i class="bi bi-file-earmark-text"></i></span>
+                        <h4 class="mb-0">Artikel Terpopuler</h4>
+                    </div>
+                    <div class="row g-3">
+                        @foreach($mentorStats['popularArticles'] as $article)
+                            <div class="col-md-4">
+                                <div class="card h-100 shadow-sm animate__animated animate__fadeInUp">
+                                    @if($article->image)
+                                        <img src="{{ asset('storage/' . $article->image) }}" class="card-img-top" style="height:160px;object-fit:cover;">
+                                    @endif
+                                    <div class="card-body">
+                                        <h5 class="card-title"><a href="{{ route('articles.show', $article->slug) }}" class="text-decoration-none">{{ $article->title }}</a></h5>
+                                        <span class="badge bg-secondary mb-2">{{ $article->views }} Views</span>
+                                        <span class="badge bg-{{ $article->status === 'approved' ? 'success' : 'warning' }}">{{ ucfirst($article->status) }}</span>
+                                        <div class="text-muted small">Dibuat: {{ $article->created_at->format('d M Y') }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        @endforeach
+                    </div>
+                </div>
+
+                <!-- Aktivitas Terbaru Section -->
+                <div class="mb-4">
+                    <div class="d-flex align-items-center mb-2">
+                        <span class="badge bg-warning me-2" style="font-size:1rem;"><i class="bi bi-clock-history"></i></span>
+                        <h4 class="mb-0">Aktivitas Terbaru Siswa</h4>
+                    </div>
+                    <ul class="list-group list-group-flush">
+                        @php
+                            $recentCompletions = \App\Models\MaterialCompletion::with(['user','material.course'])
+                                ->where('is_completed', true)
+                                ->latest('updated_at')
+                                ->take(5)
+                                ->get();
+                        @endphp
+                        @forelse($recentCompletions as $activity)
+                            <li class="list-group-item d-flex align-items-center">
+                                <i class="bi bi-check-circle-fill text-success me-2"></i>
+                                <span class="fw-semibold">{{ $activity->user->name ?? 'Siswa' }}</span>
+                                <span class="mx-2">menyelesaikan</span>
+                                <span class="fw-semibold">{{ $activity->material->title ?? '-' }}</span>
+                                <span class="mx-2">(Kursus: {{ $activity->material->course->title ?? '-' }})</span>
+                                <span class="ms-auto text-muted small">{{ $activity->updated_at->diffForHumans() }}</span>
+                            </li>
+                        @empty
+                            <li class="list-group-item">Belum ada aktivitas terbaru.</li>
+                        @endforelse
+                    </ul>
+                </div>
             @endif
         </div>
     </div>
@@ -457,4 +588,44 @@
             });
         });
     </script>
+    @if(auth()->user()->role == 'mentor')
+        <script>
+            function loadStudentChart(year) {
+                fetch(`/api/register-user?year=${year}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        Highcharts.chart('student-registration-chart', {
+                            chart: { type: 'line' },
+                            title: { text: '' },
+                            xAxis: {
+                                categories: data.months.map(m => new Date(year, m - 1, 1).toLocaleString('id-ID', { month: 'long' })),
+                                title: { text: 'Bulan' }
+                            },
+                            yAxis: {
+                                title: { text: 'Jumlah Pendaftaran' },
+                                allowDecimals: false
+                            },
+                            plotOptions: {
+                                line: {
+                                    dataLabels: { enabled: true },
+                                    enableMouseTracking: true
+                                }
+                            },
+                            series: [
+                                { name: 'Siswa', data: data.siswa }
+                            ]
+                        });
+                        document.getElementById('chart-year-label').textContent = `(${year})`;
+                    })
+                    .catch(error => console.error("Gagal mengambil data:", error));
+            }
+            document.addEventListener('DOMContentLoaded', function() {
+                const yearSelect = document.getElementById('chart-year-select');
+                loadStudentChart(yearSelect.value);
+                yearSelect.addEventListener('change', function() {
+                    loadStudentChart(this.value);
+                });
+            });
+        </script>
+    @endif
 @endpush

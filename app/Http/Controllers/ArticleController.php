@@ -85,6 +85,9 @@ class ArticleController extends Controller
             return redirect()->route('articles.index')->with('error', 'Unauthorized access');
         }
 
+        // Increment views
+        $article->increment('views');
+
         return view('features.article.show', [
             'article' => $article,
             'title' => $article->title

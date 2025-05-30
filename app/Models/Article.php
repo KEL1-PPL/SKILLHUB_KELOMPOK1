@@ -17,7 +17,8 @@ class Article extends Model
         'image',
         'status',
         'user_id',
-        'rejected_note'
+        'rejected_note',
+        'views'
     ];
 
     protected static function boot()

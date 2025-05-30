@@ -20,6 +20,7 @@ return new class extends Migration
             $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->text('rejected_note')->nullable();
+            $table->integer('views')->default(0);
             $table->timestamps();
         });
     }
