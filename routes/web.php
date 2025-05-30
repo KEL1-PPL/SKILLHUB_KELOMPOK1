@@ -279,3 +279,39 @@ Route::middleware('auth')->group(function () {
     Route::put('/ratings/{id}', [RatingController::class, 'update'])->name('ratings.update');
     Route::delete('/ratings/{id}', [RatingController::class, 'destroy'])->name('ratings.destroy');
 });
+
+use App\Http\Controllers\CertificateController;
+
+// Routes Sertifikat untuk Admin (PBI #4, #5, #6)
+Route::middleware(['auth'])->prefix('admin')->group(function () {
+    Route::get('/certificates/create', [CertificateController::class, 'create'])->name('admin.certificates.create');
+    Route::get('/certificates', [CertificateController::class, 'index'])->name('admin.certificates.index');
+    Route::post('/certificates', [CertificateController::class, 'store'])->name('admin.certificates.store');
+    
+    // Menambahkan route untuk Edit Sertifikat
+    Route::get('/certificates/{certificate}/edit', [CertificateController::class, 'edit'])->name('admin.certificates.edit');
+    
+    Route::put('/certificates/{certificate}', [CertificateController::class, 'update'])->name('admin.certificates.update');
+    Route::delete('/certificates/{certificate}', [CertificateController::class, 'destroy'])->name('admin.certificates.destroy');
+});
+
+// Route untuk siswa melihat sertifikat mereka
+Route::middleware(['auth'])->group(function () {
+    Route::get('/my-certificates', [CertificateController::class, 'myCertificates'])->name('my.certificates');
+});
+
+
+// Route Sertifikat untuk Siswa Download (PBI #7)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/certificates/{certificate}/download', [CertificateController::class, 'download'])->name('certificates.download');
+});
+
+// Route untuk menambah rating
+Route::post('/ratings', [RatingController::class, 'store'])->name('ratings.store');
+
+// Route untuk mengedit rating
+Route::get('/ratings/{id}/edit', [RatingController::class, 'edit'])->name('ratings.edit');
+Route::put('/ratings/{id}', [RatingController::class, 'update'])->name('ratings.update');
+
+// Route untuk menghapus rating
+Route::delete('/ratings/{id}', [RatingController::class, 'destroy'])->name('ratings.destroy');
