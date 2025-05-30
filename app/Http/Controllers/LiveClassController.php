@@ -5,17 +5,24 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\LiveClass;
+use Carbon\Carbon;
 
 class LiveClassController extends Controller
 {
     public function index()
     {
-        // Get all live classes ordered by datetime
         $liveClasses = LiveClass::orderBy('datetime', 'desc')->get();
-        
+
         return view('features.live-class.index', [
             'title' => 'live',
             'liveClasses' => $liveClasses
+        ]);
+    }
+
+    public function create()
+    {
+        return view('features.live-class.create', [
+            'title' => 'live'
         ]);
     }
 
@@ -41,14 +48,15 @@ class LiveClassController extends Controller
         ]);
 
         try {
+            $datetimeWIB = Carbon::parse($request->datetime, 'Asia/Jakarta');
+
             LiveClass::create([
                 'title' => $request->title,
                 'description' => $request->description,
-                'datetime' => $request->datetime,
+                'datetime' => $datetimeWIB,
                 'platform' => $request->platform,
                 'link' => $request->link,
-                // You can add user_id if you want to track who created the live class
-                // 'user_id' => auth()->id(),
+                'user_id' => auth()->id(),
             ]);
 
             return redirect()->route('live-class.index')->with('success', 'Live class berhasil dibuat!');
@@ -62,7 +70,7 @@ class LiveClassController extends Controller
     public function show($id)
     {
         $liveClass = LiveClass::findOrFail($id);
-        
+
         return view('features.live-class.show', [
             'title' => 'live',
             'liveClass' => $liveClass
@@ -72,7 +80,7 @@ class LiveClassController extends Controller
     public function edit($id)
     {
         $liveClass = LiveClass::findOrFail($id);
-        
+
         return view('features.live-class.edit', [
             'title' => 'live',
             'liveClass' => $liveClass
@@ -101,7 +109,15 @@ class LiveClassController extends Controller
 
         try {
             $liveClass = LiveClass::findOrFail($id);
-            $liveClass->update($request->all());
+            $datetimeWIB = Carbon::parse($request->datetime, 'Asia/Jakarta');
+
+            $liveClass->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                'datetime' => $datetimeWIB,
+                'platform' => $request->platform,
+                'link' => $request->link,
+            ]);
 
             return redirect()->route('live-class.index')->with('success', 'Live class berhasil diperbarui!');
         } catch (\Exception $e) {

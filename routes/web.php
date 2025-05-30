@@ -20,15 +20,14 @@ use App\Http\Controllers\Admin\MentorIncomeController;
 use App\Http\Controllers\Admin\WishlistAnalyticsController as AdminWishlistAnalyticsController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\SubscriptionPlanController; //elsa
+use App\Http\Controllers\LiveClassController; //elsa
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Mentor\MentorDashboardController;
 use App\Http\Controllers\Mentor\MentorIncomeReportController; 
 use App\Http\Controllers\Mentor\MentorAnalyticsController;
 use App\Http\Controllers\Mentor\MentorCourseController;
-use App\Http\Controllers\SubscriptionPlanController;
 use App\Http\Controllers\CourseController; // imam
 use App\Http\Controllers\MaterialController; // imam
-use App\Http\Controllers\LiveClassController; //elsa
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\DiscountController;
@@ -71,7 +70,7 @@ Route::middleware('auth')->group(function () {
     // Checkout Routes
     Route::resource('checkout', CheckoutController::class);
 
-    // ccription-plans
+    // Subscription-checkout
     Route::get('/subscription/checkout/{plan}', [SubscriptionPlanController::class, 'checkout'])
     ->name('subscription.checkout');
 
@@ -248,16 +247,7 @@ Route::resource('course', CourseController::class)->names([
 Route::get('/course/{slug}', [CourseController::class, 'show'])->name('course.show')
 ]);
 
-// Live Class Management - elsa
-Route::middleware(['auth'])->group(function () {
-    // Live Class Routes
-    Route::get('/mentor/live-class', [LiveClassController::class, 'index'])->name('live-class.index');
-    Route::post('/mentor/live-class', [LiveClassController::class, 'store'])->name('live-class.store');
-    Route::get('/mentor/live-class/{id}', [LiveClassController::class, 'show'])->name('live-class.show');
-    Route::get('/mentor/live-class/{id}/edit', [LiveClassController::class, 'edit'])->name('live-class.edit');
-    Route::put('/mentor/live-class/{id}', [LiveClassController::class, 'update'])->name('live-class.update');
-    Route::delete('/mentor/live-class/{id}', [LiveClassController::class, 'destroy'])->name('live-class.destroy');
-});
+
 
 // Admin Routes (Protected with 'auth' and 'can:admin' middleware)
 Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
@@ -269,3 +259,14 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
     // Add this route for all wishlists
     Route::get('all-wishlists', [WishlistController::class, 'showWishlistAll'])->name('wishlist.all');
 });
+
+// Route Live Class -elsa
+Route::resource('live-class', LiveClassController::class)->names([
+    'index' => 'live-class.index',
+    'create' => 'live-class.create',
+    'store' => 'live-class.store',
+    'show' => 'live-class.show',
+    'edit' => 'live-class.edit',
+    'update' => 'live-class.update',
+    'destroy' => 'live-class.destroy'
+]);
