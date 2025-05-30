@@ -125,9 +125,9 @@
                         <div class="mb-4">
                             <label class="form-label">Status Saat Ini:</label>
                             <div>
-                                @if($liveClass->status == 'live')
+                                @if($liveClass->LiveStatus == 'live')
                                     <span class="badge bg-danger fs-6">🔴 SEDANG BERLANGSUNG</span>
-                                @elseif($liveClass->status == 'upcoming')
+                                @elseif($liveClass->LiveStatus == 'upcoming')
                                     <span class="badge bg-warning fs-6">⏳ AKAN DATANG</span>
                                 @else
                                     <span class="badge bg-secondary fs-6">✅ SELESAI</span>
@@ -183,7 +183,6 @@
 
 @push('scripts')
 <script>
-    // Set minimum datetime to current time for upcoming classes only
     document.addEventListener('DOMContentLoaded', function() {
         const datetimeInput = document.getElementById('datetime');
         const isUpcoming = {{ $liveClass->isUpcoming() ? 'true' : 'false' }};

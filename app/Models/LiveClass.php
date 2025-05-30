@@ -39,18 +39,17 @@ class LiveClass extends Model
     {
         $now = now();
         $start = $this->datetime;
-        $end = $this->datetime->addHours(2); 
-        
+        $end = $this->datetime->copy()->addHours(2); 
+
         return $now >= $start && $now <= $end;
     }
 
-    // Check if live class is completed
     public function isCompleted()
     {
-        return $this->datetime->addHours(2) < now(); 
+        return $this->datetime->copy()->addHours(2)->lt(now());
     }
 
-    public function getStatusAttribute()
+    public function getLiveStatusAttribute()
     {
         if ($this->isLive()) {
             return 'live';
@@ -83,11 +82,25 @@ class LiveClass extends Model
     {
         $now = now();
         return $query->where('datetime', '<=', $now)
-                    ->where('datetime', '>=', $now->subHours(2));
+                    ->where('datetime', '>', $now->copy()->subHours(2));
     }
 
     public function scopeCompleted($query)
     {
-        return $query->where('datetime', '<', now()->subHours(2));
+        return $query->where('datetime', '<=', now()->subHours(2));
+    }
+
+    public function getDebugStatusAttribute()
+    {
+        $now = now();
+        return [
+            'current_time' => $now->format('Y-m-d H:i:s'),
+            'class_datetime' => $this->datetime->format('Y-m-d H:i:s'),
+            'class_end' => $this->datetime->copy()->addHours(2)->format('Y-m-d H:i:s'),
+            'is_upcoming' => $this->isUpcoming(),
+            'is_live' => $this->isLive(),
+            'is_completed' => $this->isCompleted(),
+            'database_status' => $this->attributes['status'] ?? 'unknown'
+        ];
     }
 }

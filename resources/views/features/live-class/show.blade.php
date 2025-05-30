@@ -24,9 +24,9 @@
                         <div class="col-md-8">
                             <!-- Status Badge -->
                             <div class="mb-4">
-                                @if($liveClass->status == 'live')
+                                @if($liveClass->LiveStatus == 'live')
                                     <span class="badge bg-danger fs-6">🔴 SEDANG BERLANGSUNG</span>
-                                @elseif($liveClass->status == 'upcoming')
+                                @elseif($liveClass->LiveStatus == 'upcoming')
                                     <span class="badge bg-warning fs-6">⏳ AKAN DATANG</span>
                                 @else
                                     <span class="badge bg-secondary fs-6">✅ SELESAI</span>
@@ -159,7 +159,6 @@
 <script>
     function copyToClipboard(text) {
         navigator.clipboard.writeText(text).then(function() {
-            // Show success message
             const originalBtn = event.target.closest('button');
             const originalHTML = originalBtn.innerHTML;
             originalBtn.innerHTML = '<i class="bi bi-check"></i>';

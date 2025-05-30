@@ -18,7 +18,7 @@ return new class extends Migration
             $table->datetime('datetime');
             $table->string('platform', 50);
             $table->string('link', 500);
-            $table->unsignedBigInteger('user_id')->nullable(); // Optional: track who created
+            $table->unsignedBigInteger('user_id')->nullable(); 
             $table->integer('participants_count')->default(0);
             $table->enum('status', ['draft', 'published', 'cancelled'])->default('published');
             $table->timestamps();

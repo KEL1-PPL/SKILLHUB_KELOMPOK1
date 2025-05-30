@@ -22,11 +22,55 @@
             justify-content: center;
         }
     }
+    
+    .live-indicator {
+        animation: pulse 2s infinite;
+    }
+    
+    @keyframes pulse {
+        0% { opacity: 1; }
+        50% { opacity: 0.5; }
+        100% { opacity: 1; }
+    }
 </style>
 @endpush
 
 @section('content')
 <div class="position-relative content-container">
+    <div class="row mt-4">
+        <div class="col-md-3">
+            <div class="card bg-danger text-white">
+                <div class="card-body text-center">
+                    <h5>{{ $liveClasses->filter(fn($class) => $class->isLive())->count() }}</h5>
+                    <small>Sedang Live</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white">
+                <div class="card-body text-center">
+                    <h5>{{ $liveClasses->filter(fn($class) => $class->isUpcoming())->count() }}</h5>
+                    <small>Akan Datang</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-secondary text-white">
+                <div class="card-body text-center">
+                    <h5>{{ $liveClasses->filter(fn($class) => $class->isCompleted())->count() }}</h5>
+                    <small>Selesai</small>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center">
+                    <h5>{{ $liveClasses->sum('participants_count') }}</h5>
+                    <small>Total Peserta</small>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row">
         <div class="col-lg-12">
             <div class="card">
@@ -63,6 +107,7 @@
                                         <th>Platform</th>
                                         <th>Tanggal & Waktu</th>
                                         <th>Status</th>
+                                        <th>Peserta</th>
                                         <th>Aksi</th>
                                     </tr>
                                 </thead>
@@ -85,13 +130,16 @@
                                                 @endif
                                             </td>
                                             <td>
-                                                @if($liveClass->status == 'live')
-                                                    <span class="badge bg-danger">🔴 LIVE</span>
-                                                @elseif($liveClass->status == 'upcoming')
-                                                    <span class="badge bg-warning">⏳ Akan Datang</span>
+                                                @if($liveClass->isLive())
+                                                    <span class="badge bg-danger live-indicator">🔴 LIVE</span>
+                                                @elseif($liveClass->isUpcoming())
+                                                    <span class="badge bg-warning ">⏳ Akan Datang</span>
                                                 @else
                                                     <span class="badge bg-secondary">✅ Selesai</span>
                                                 @endif
+                                            </td>
+                                            <td>
+                                                <span class="badge bg-primary">{{ $liveClass->participants_count }} orang</span>
                                             </td>
                                             <td>
                                                 <div class="btn-group" role="group">
@@ -99,21 +147,37 @@
                                                        class="btn btn-sm btn-outline-primary" title="Lihat Detail">
                                                         <i class="bi bi-eye"></i>
                                                     </a>
+                                                    
+                                                    <!-- Tombol Edit -->
                                                     @if($liveClass->isUpcoming())
                                                         <a href="{{ route('live-class.edit', $liveClass->id) }}" 
                                                            class="btn btn-sm btn-outline-warning" title="Edit">
                                                             <i class="bi bi-pencil"></i>
                                                         </a>
+                                                    @endif
+                                                    
+                                                    <!-- Tombol Hapus -->
+                                                    @if($liveClass->isUpcoming() || $liveClass->isCompleted())
                                                         <form action="{{ route('live-class.destroy', $liveClass->id) }}" 
-                                                              method="POST" style="display: inline;">
+                                                              method="POST" style="display: inline;"
+                                                              onsubmit="return confirmDelete('{{ $liveClass->title }}', '{{ $liveClass->isCompleted() ? 'selesai' : 'akan datang' }}')">
                                                             @csrf
                                                             @method('DELETE')
                                                             <button type="submit" class="btn btn-sm btn-outline-danger" 
-                                                                    title="Hapus"
-                                                                    onclick="return confirm('Yakin ingin menghapus live class ini?')">
+                                                                    title="Hapus">
                                                                 <i class="bi bi-trash"></i>
                                                             </button>
                                                         </form>
+                                                    @endif
+                                                    
+                                                    <!-- Tombol Live Class yang sedang berlangsung -->
+                                                    @if($liveClass->isLive())
+                                                        <a href="{{ $liveClass->link }}" 
+                                                           target="_blank"
+                                                           class="btn btn-sm btn-success" 
+                                                           title="Masuk ke Live Class">
+                                                            <i class="bi bi-play-circle"></i>
+                                                        </a>
                                                     @endif
                                                 </div>
                                             </td>
@@ -138,3 +202,24 @@
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+function confirmDelete(title, status) {
+    const message = status === 'selesai' 
+        ? `Apakah Anda yakin ingin menghapus live class "${title}" yang sudah selesai?\n\nData peserta dan riwayat akan ikut terhapus.`
+        : `Apakah Anda yakin ingin menghapus live class "${title}" yang akan datang?\n\nSiswa tidak akan bisa bergabung ke live class ini.`;
+    
+    return confirm(message);
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    setInterval(() => {
+        const hasLiveClass = document.querySelector('.live-indicator');
+        if (hasLiveClass) {
+            window.location.reload();
+        }
+    }, 30000);
+});
+</script>
+@endpush

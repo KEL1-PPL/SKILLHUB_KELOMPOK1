@@ -260,13 +260,24 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
     Route::get('all-wishlists', [WishlistController::class, 'showWishlistAll'])->name('wishlist.all');
 });
 
-// Route Live Class -elsa
-Route::resource('live-class', LiveClassController::class)->names([
-    'index' => 'live-class.index',
-    'create' => 'live-class.create',
-    'store' => 'live-class.store',
-    'show' => 'live-class.show',
-    'edit' => 'live-class.edit',
-    'update' => 'live-class.update',
-    'destroy' => 'live-class.destroy'
-]);
+
+// Route Live Class - elsa (Admin/Mentor)
+Route::middleware('auth')->group(function () {
+    Route::resource('live-class', LiveClassController::class)->names([
+        'index' => 'live-class.index',
+        'create' => 'live-class.create',
+        'store' => 'live-class.store',
+        'show' => 'live-class.show',
+        'edit' => 'live-class.edit',
+        'update' => 'live-class.update',
+        'destroy' => 'live-class.destroy'
+    ]);
+
+    // Route Live Class Siswa
+    Route::prefix('live-class-student')->name('live-class-student.')->group(function () {
+        Route::get('/', [LiveClassController::class, 'index'])->name('index');
+        Route::get('/{id}', [LiveClassController::class, 'show'])->name('show');
+        Route::get('/{id}/join', [LiveClassController::class, 'join'])->name('join');
+        
+    });
+});
