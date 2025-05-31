@@ -2,95 +2,60 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Diskusi;
+use Illuminate\Http\Request;
 
 class DiskusiController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
-    public function index()
-    {
-        $diskusi = Diskusi::all();
-        return response()->json($diskusi);
+    public function index() {
+        $diskusis = Diskusi::with('user')->latest()->get();
+        $title = 'Daftar Diskusi';
+        return view('features.features-diskusi.index', compact('diskusis', 'title'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        return view('diskusi.create');
+    public function create() {
+        return view('features.features-diskusi.create');
     }
 
-    /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $validated = $request->validate([
-            'judul' => 'required|string|max:255',
-            'isi' => 'required|string',
-            // tambahkan field lain sesuai kebutuhan
+    public function store(Request $request) {
+        $request->validate([
+            'title' => 'required',
+            'question' => 'required',
         ]);
 
-        $diskusi = Diskusi::create($validated);
-
-        return response()->json([
-            'message' => 'Diskusi berhasil dibuat!',
-            'data' => $diskusi
-        ], 201);
-    }
-
-    /**
-     * Display the specified resource.
-     */
-    public function show(string $id)
-    {
-        $diskusi = Diskusi::findOrFail($id);
-        return response()->json($diskusi);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     */
-    public function edit(string $id)
-    {
-        $diskusi = Diskusi::findOrFail($id);
-        return view('diskusi.edit', compact('diskusi'));
-    }
-
-    /**
-     * Update the specified resource in storage.
-     */
-    public function update(Request $request, string $id)
-    {
-        $validated = $request->validate([
-            'judul' => 'required|string|max:255',
-            'isi' => 'required|string',
-            // tambahkan validasi lain sesuai kebutuhan
+        Diskusi::create([
+            'user_id' => auth()->id(),
+            'title' => $request->title,
+            'question' => $request->question,
         ]);
 
-        $diskusi = Diskusi::findOrFail($id);
-        $diskusi->update($validated);
-
-        return response()->json([
-            'message' => 'Diskusi berhasil diperbarui!',
-            'data' => $diskusi
-        ]);
+        return redirect()->route('diskusi.index')->with('success', 'Diskusi berhasil dibuat.');
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
+    public function show($id) {
+        $diskusi = Diskusi::with(['user', 'replies.user'])->findOrFail($id);
+        $title = 'Detail Diskusi';
+        return view('features.features-diskusi.show', compact('diskusi', 'title'));
+    }
+
+    public function edit($id) {
+        $diskusi = Diskusi::findOrFail($id);
+        $title = 'Edit Diskusi';
+        return view('features.features-diskusi.edit', compact('diskusi', 'title'));
+    }
+
+    public function update(Request $request, $id) {
+        $diskusi = Diskusi::findOrFail($id);
+        $diskusi->update([
+            'title' => $request->title,
+            'question' => $request->question,
+        ]);
+        return redirect()->route('diskusi.index')->with('success', 'Diskusi berhasil diperbarui.');
+    }
+
+    public function destroy($id) {
         $diskusi = Diskusi::findOrFail($id);
         $diskusi->delete();
-
-        return response()->json([
-            'message' => 'Diskusi berhasil dihapus!'
-        ]);
+        return redirect()->route('diskusi.index')->with('success', 'Diskusi berhasil dihapus.');
     }
 }

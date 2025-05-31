@@ -9,22 +9,24 @@ return new class extends Migration
     /**
      * Run the migrations.
      */
-        public function up()
-{
-        Schema::create('diskusis', function (Blueprint $table) {
+    public function up()
+    {
+        Schema::create('replies', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('diskusi_id')->constrained()->onDelete('cascade');
             $table->foreignId('user_id')->constrained()->onDelete('cascade');
-            $table->string('title');
-            $table->text('question');
+            $table->text('content');
+            $table->boolean('is_best_answer')->default(false);
             $table->timestamps();
         });
-}
+    }
+
 
     /**
      * Reverse the migrations.
      */
     public function down(): void
     {
-        Schema::dropIfExists('diskusis');
+        Schema::dropIfExists('replies');
     }
 };
