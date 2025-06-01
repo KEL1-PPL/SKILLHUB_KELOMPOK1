@@ -49,3 +49,11 @@
         <h3 class="fs-4 mt-1">Rating</h3>
     </a>
 </li>
+<li class="sidebar-item">
+    <a class="sidebar-link {{ $title == 'sertifikat' ? 'active' : '' }} text-decoration-none"
+        href="{{ route('my.certificates') }}">
+        <i class="bi bi-file-earmark-pdf fs-4"></i>
+        <h3 class="fs-4 mt-1">Sertifikat</h3>
+    </a>
+</li>
+
