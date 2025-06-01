@@ -33,6 +33,8 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\WishlistAnalyticsController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\DiskusiController;
+use App\Http\Controllers\ReplyController;
 
 // Landing Page Route
 Route::get('/', function () {
@@ -279,6 +281,14 @@ Route::middleware('auth')->group(function () {
     Route::put('/ratings/{id}', [RatingController::class, 'update'])->name('ratings.update');
     Route::delete('/ratings/{id}', [RatingController::class, 'destroy'])->name('ratings.destroy');
 });
+
+// diskusi
+Route::resource('diskusi', DiskusiController::class)->middleware('auth');
+// Balasan diskusi (khusus mentor)
+Route::post('/diskusi/{id}/reply', [ReplyController::class, 'store'])->name('replies.store')->middleware('auth');
+Route::post('/reply/{id}/best', [ReplyController::class, 'markAsBest'])->name('replies.best')->middleware('auth');
+// Hapus balasan (admin)
+Route::delete('/admin/reply/{id}', [ReplyController::class, 'destroy'])->name('admin.replies.destroy')->middleware('auth');
 
 use App\Http\Controllers\CertificateController;
 
