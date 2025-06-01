@@ -13,7 +13,11 @@ class DatabaseSeeder extends Seeder
             MentorIncomeSeeder::class,
             SubscriptionPlanSeeder::class,
             CourseSeeder::class,
-            CertificateSeeder::class, // <- Tambahin ini ya!
+            CourseEnrollmentSeeder::class,
+            CourseProgressSeeder::class,
+            MaterialSeeder::class,
+            MaterialCompletionsSeeder::class,
+            CertificateSeeder::class,
         ]);
     }
 }

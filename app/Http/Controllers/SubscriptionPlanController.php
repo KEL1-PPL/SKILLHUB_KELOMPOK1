@@ -10,7 +10,9 @@ use Illuminate\Support\Facades\Auth;
 
 class SubscriptionPlanController extends Controller
 {
-    
+    /**
+     * Display a listing of the resource.
+     */
     public function index()
     {
         $subscriptionPlans = SubscriptionPlan::latest()->paginate(10);
@@ -18,12 +20,18 @@ class SubscriptionPlanController extends Controller
         return view('features.subscription-plans.index', compact('subscriptionPlans', 'title'));
     }
 
+    /**
+     * Show the form for creating a new resource.
+     */
     public function create()
     {
         $title = 'subscription';
         return view('features.subscription-plans.create', compact('title'));
     }
 
+    /**
+     * Store a newly created resource in storage.
+     */
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
@@ -56,7 +64,6 @@ class SubscriptionPlanController extends Controller
         }
 
         $data = $validator->validated();
-
         $data['is_active'] = $request->has('is_active') ? true : false;
         
         if (isset($data['features'])) {
@@ -70,17 +77,26 @@ class SubscriptionPlanController extends Controller
             ->with('success', 'Paket berlangganan berhasil ditambahkan.');
     }
     
+    /**
+     * Display the specified resource.
+     */
     public function show(SubscriptionPlan $subscriptionPlan)
     {
         return view('features.subscription-plans.show', compact('subscriptionPlan'));
     }
 
+    /**
+     * Show the form for editing the specified resource.
+     */
     public function edit(SubscriptionPlan $subscriptionPlan)
     {
         $title = 'subscription';
         return view('features.subscription-plans.edit', compact('subscriptionPlan', 'title'));
     }
 
+    /**
+     * Update the specified resource in storage.
+     */
     public function update(Request $request, SubscriptionPlan $subscriptionPlan)
     {
         $validator = Validator::make($request->all(), [
@@ -113,7 +129,6 @@ class SubscriptionPlanController extends Controller
         }
 
         $data = $validator->validated();
-
         $data['is_active'] = $request->has('is_active') ? true : false;
         
         if (isset($data['features'])) {
@@ -127,6 +142,9 @@ class SubscriptionPlanController extends Controller
             ->with('success', 'Paket berlangganan berhasil diperbarui.');
     }
 
+    /**
+     * Remove the specified resource from storage.
+     */
     public function destroy(SubscriptionPlan $subscriptionPlan)
     {
         $subscriptionPlan->delete();

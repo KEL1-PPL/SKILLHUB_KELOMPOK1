@@ -13,37 +13,49 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RatingReviewController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\DiscountController as AdminDiscountController;
+use App\Http\Controllers\Admin\DiscountController;
+use App\Http\Controllers\Admin\AdminCertificateController;
+use App\Http\Controllers\Admin\AdminSubscriptionPlanController;
 use App\Http\Controllers\Admin\EarningsController;
-use App\Http\Controllers\Mentor\IncomeReportController;
 use App\Http\Controllers\Admin\MentorIncomeController;
 use App\Http\Controllers\Admin\WishlistAnalyticsController as AdminWishlistAnalyticsController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SubscriptionPlanController; //elsa
-use App\Http\Controllers\LiveClassController; //elsa
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\Mentor\MentorDashboardController;
-use App\Http\Controllers\Mentor\MentorIncomeReportController; 
+use App\Http\Controllers\Mentor\MentorIncomeReportController;
 use App\Http\Controllers\Mentor\MentorAnalyticsController;
 use App\Http\Controllers\Mentor\MentorCourseController;
-use App\Http\Controllers\CourseController; // imam
-use App\Http\Controllers\MaterialController; // imam
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Quiz\Mentor\QuizController;
+use App\Http\Controllers\Quiz\Mentor\QuizQuestionController;
+use App\Http\Controllers\Quiz\Student\QuizStudentController;
+use App\Http\Controllers\LiveClassController;
 use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\NotificationController;
-use App\Http\Controllers\DiscountController;
-use App\Http\Controllers\WishlistAnalyticsController;
 use App\Http\Controllers\RatingController;
 use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\DiskusiController;
 use App\Http\Controllers\ReplyController;
 use App\Http\Controllers\CertificateController;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
 // Landing Page Route
 Route::get('/', function () {
     return view('landing');
 })->name('landing');
 
-// Auth Routes
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+*/
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
@@ -54,46 +66,53 @@ Route::middleware('guest')->group(function () {
     Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
 });
 
-// User Routes (Protected by 'auth' middleware)
+// Laravel default auth routes
+Auth::routes();
+
+/*
+|--------------------------------------------------------------------------
+| Public Routes (Accessible without authentication)
+|--------------------------------------------------------------------------
+*/
+Route::resource('subscription-plans', SubscriptionPlanController::class)->only(['index', 'show']);
+
+/*
+|--------------------------------------------------------------------------
+| Authenticated User Routes
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth')->group(function () {
+    // Dashboard & Home
     Route::get('dashboard', [DashboardController::class, '__invoke'])->name('dashboard');
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
     
     // Profile Routes
     Route::resource('profile', ProfileController::class);
 
     // General Pages
-    Route::resource('about', AboutController::class);
-    Route::resource('contact', ContactController::class);
+    Route::resource('about', AboutController::class)->only(['index', 'show']);
+    Route::resource('contact', ContactController::class)->only(['index', 'store']);
 
-    // Cart Routes
+    // E-commerce Features
     Route::resource('cart', CartController::class);
-
-    // Category and Product Routes
-    Route::resource('category', CategoryController::class);
-    Route::resource('product', ProductController::class);
-
-    // Checkout Routes
+    Route::resource('category', CategoryController::class)->only(['index', 'show']);
+    Route::resource('product', ProductController::class)->only(['index', 'show']);
     Route::resource('checkout', CheckoutController::class);
 
-    // Subscription-checkout
+    // Subscription Routes
     Route::get('/subscription/checkout/{plan}', [SubscriptionPlanController::class, 'checkout'])
-    ->name('subscription.checkout');
-
+        ->name('subscription.checkout');
     Route::get('/subscription/my-subscriptions', [SubscriptionPlanController::class, 'mySubscriptions'])
         ->name('subscription.my-subscriptions');
 
     // Rating and Review Routes
     Route::resource('ratingreview', RatingReviewController::class);
+    Route::resource('ratings', RatingController::class);
 
-    // Voucher Routes for Users
+    // Voucher Routes
     Route::post('voucher/redeem', [VoucherController::class, 'redeem'])->name('voucher.redeem');
 
-    // Home Route
-    Route::get('/home', function () {
-        return view('home');
-    })->name('home');
-
-    // course - imam
+    // Course Management
     Route::resource('course', CourseController::class)->names([
         'index' => 'features.course.index',
         'create' => 'features.course.create',
@@ -106,245 +125,149 @@ Route::middleware('auth')->group(function () {
         'course' => 'slug'
     ]);
 
-    // course - imam
-    Route::resource('course', CourseController::class);
-    Route::resource('course', CourseController::class)->names([
-        'index' => 'features.course.index',
-        'create' => 'features.course.create',
-        'store' => 'features.course.store',
-        'show' => 'features.course.show',
-        'edit' => 'features.course.edit',
-        'update' => 'features.course.update',
-        'destroy' => 'features.course.destroy',
-    Route::get('/course/{slug}', [CourseController::class, 'show'])->name('course.show')
+    // Course Enrollment
+    Route::post('/course/{course}/enroll', [CourseController::class, 'enroll'])->name('course.enroll');
+
+    // Material Management
+    Route::resource('course/{course}/material', MaterialController::class)->names([
+        'index' => 'features.material.index',
+        'create' => 'features.material.create',
+        'store' => 'features.material.store',
+        'show' => 'features.material.show',
+        'edit' => 'features.material.edit',
+        'update' => 'features.material.update',
+        'destroy' => 'features.material.destroy',
     ]);
-    
-    // Material routes
-    Route::resource('course/{course}/material', MaterialController::class)
-        ->names([
-            'index' => 'features.material.index',
-            'create' => 'features.material.create',
-            'store' => 'features.material.store',
-            'show' => 'features.material.show',
-            'edit' => 'features.material.edit',
-            'update' => 'features.material.update',
-            'destroy' => 'features.material.destroy',
-        ]);
 
     Route::post('course/{course}/material/{material}/toggle-completion', [MaterialController::class, 'toggleCompletion'])
         ->name('features.material.toggle-completion');
 
-    // Article Routes
-    Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
-    Route::get('/articles/create', [ArticleController::class, 'create'])->name('articles.create');
-    Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
-    Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
-    Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
-    Route::put('/articles/{article}', [ArticleController::class, 'update'])->name('articles.update');
-    Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
-    Route::post('/articles/{article}/approve', [ArticleController::class, 'approve'])->name('articles.approve');
-    Route::post('/articles/{article}/reject', [ArticleController::class, 'reject'])->name('articles.reject');
-});
-
-// Admin Routes
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
-    // Admin Dashboard
-    Route::get('dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
-
-    // Admin-Only Resource Routes
-    Route::resource('about', AboutController::class);
-    Route::resource('contact', ContactController::class);
-    Route::resource('voucher', VoucherController::class);
-
-    // Earnings Routes for Admin
-    Route::resource('earnings', AdminController::class)->except(['create', 'edit']);
-    Route::post('/earnings/{earning}/invalidate', [AdminController::class, 'invalidate'])->name('admin.earnings.invalidate')
-        ->name('admin.earnings.invalidate');  
-
-    // Mentor Income Routes
-    Route::get('/mentor-incomes', [MentorIncomeController::class, 'index'])->name('admin.mentor-incomes');
-    Route::post('/mentor-incomes/{id}/correct', [MentorIncomeController::class, 'correct'])
-        ->name('admin.mentor-incomes.correct'); 
-});
-
-// Mentor Routes
-Route::middleware(['auth', 'mentor'])->prefix('mentor')->name('mentor.')->group(function () {
-    Route::get('/dashboard', [MentorDashboardController::class, 'index'])->name('dashboard');
-    Route::get('/analytics', [MentorAnalyticsController::class, 'index'])->name('analytics');
-    Route::get('/courses', [MentorCourseController::class, 'index'])->name('courses');
-    Route::get('/income-report', [MentorIncomeReportController::class, 'index'])->name('income-report');
-});
-
-// Route untuk admin
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
-    Route::get('/income-management', [AdminController::class, 'incomeManagement']);
-    // Route admin lainnya
-});
-
-// Route untuk mentor
-Route::middleware(['auth', 'role:mentor'])->prefix('mentor')->group(function () {
-    Route::get('/income-report', [IncomeReportController::class, 'index'])->name('mentor.income-report');
-    // Route mentor lainnya
-});
-
-Route::middleware(['auth', 'mentor'])->group(function () {
-    Route::get('/income-report', [App\Http\Controllers\Mentor\IncomeReportController::class, 'index'])->name('mentor.income-report');
-});
-
-// Subscription-plans -elsa
-Route::resource('subscription-plans', SubscriptionPlanController::class)
-    ->names([
-        'index' => 'admin.subscription-plans.index',
-        'create' => 'admin.subscription-plans.create',
-        'store' => 'admin.subscription-plans.store',
-        'show' => 'admin.subscription-plans.show',
-        'edit' => 'admin.subscription-plans.edit',
-        'update' => 'admin.subscription-plans.update',
-        'destroy' => 'admin.subscription-plans.destroy',
-    ]);
-
-Route::get('/api/subscription-plans', [SubscriptionPlanController::class, 'getActivePlans'])
-    ->name('api.subscription-plans');
-
-// Catch-all Fallback Route (for undefined routes)
-Route::fallback(function () {
-    return view('errors.404');
-});
-
-// Auth Routes
-Auth::routes();
-;
-
-// Routes untuk Mentor
-Route::prefix('mentor')->middleware(['auth', 'role:mentor'])->group(function () {
-    Route::get('/dashboard', [MentorDashboardController::class, 'index'])->name('mentor.dashboard');
-    Route::get('/income-report', [MentorIncomeReportController::class, 'index'])->name('mentor.income-report');
-    Route::get('/analytics', [MentorAnalyticsController::class, 'index'])->name('mentor.analytics');
-    Route::get('/course-management', [MentorCourseController::class, 'index'])->name('mentor.course-management');
-});
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-// User Routes (Protected by 'auth' middleware)
-Route::middleware('auth')->group(function () {    
     // Wishlist Routes
     Route::post('/wishlist', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
     Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
     Route::delete('/wishlist', [WishlistController::class, 'removeFromWishlist'])->name('wishlist.remove');
-    
-    // Make admin dashboard and wishlist analytics accessible to all users
-    Route::get('admin/wishlist', [AdminWishlistAnalyticsController::class, 'index'])->name('admin.wishlist.index');
-    Route::get('admin/wishlist/dashboard', [AdminWishlistAnalyticsController::class, 'dashboard'])->name('admin.wishlist.dashboard');
 
-    // Discount Management - Make accessible to all authenticated users
-    Route::get('admin/discounts', [AdminDiscountController::class, 'index'])->name('admin.discounts.index');
-    Route::get('admin/discounts/create', [AdminDiscountController::class, 'create'])->name('admin.discounts.create');
-    Route::post('admin/discounts', [AdminDiscountController::class, 'store'])->name('admin.discounts.store');
-    Route::get('admin/discounts/{discount}/edit', [AdminDiscountController::class, 'edit'])->name('admin.discounts.edit');
-    Route::put('admin/discounts/{discount}', [AdminDiscountController::class, 'update'])->name('admin.discounts.update');
-    Route::delete('admin/discounts/{discount}', [AdminDiscountController::class, 'destroy'])->name('admin.discounts.destroy');
-    
-    // Notifications
+    // Live Class Routes
+    Route::resource('live-class', LiveClassController::class);
+    Route::prefix('live-class-student')->name('live-class-student.')->group(function () {
+        Route::get('/', [LiveClassController::class, 'index'])->name('index');
+        Route::get('/{id}', [LiveClassController::class, 'show'])->name('show');
+        Route::get('/{id}/join', [LiveClassController::class, 'join'])->name('join');
+    });
+
+    // Article Routes
+    Route::resource('articles', ArticleController::class);
+    Route::post('/articles/{article}/approve', [ArticleController::class, 'approve'])->name('articles.approve');
+    Route::post('/articles/{article}/reject', [ArticleController::class, 'reject'])->name('articles.reject');
+
+    // Discussion Routes
+    Route::resource('diskusi', DiskusiController::class);
+    Route::post('/diskusi/{id}/reply', [ReplyController::class, 'store'])->name('replies.store');
+    Route::post('/reply/{id}/best', [ReplyController::class, 'markAsBest'])->name('replies.best');
+
+    // Certificate Routes
+    Route::get('/my-certificates', [CertificateController::class, 'myCertificates'])->name('my.certificates');
+    Route::get('/certificates/{certificate}/download', [CertificateController::class, 'download'])->name('certificates.download');
+
+    // Notification Routes
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
     Route::post('/notifications/mark-as-read/{id}', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
     Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 });
 
-// course - imam
-Route::resource('course', CourseController::class);
-Route::resource('course', CourseController::class)->names([
-    'index' => 'features.course.index',
-    'create' => 'features.course.create',
-    'store' => 'features.course.store',
-    'show' => 'features.course.show',
-    'edit' => 'features.course.edit',
-    'update' => 'features.course.update',
-    'destroy' => 'features.course.destroy',
-Route::get('/course/{slug}', [CourseController::class, 'show'])->name('course.show')
-]);
-
-
-
-// Admin Routes (Protected with 'auth' and 'can:admin' middleware)
-Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
-    // Admin-Only Resource Routes
-    Route::resource('about', AboutController::class);
-    Route::resource('contact', ContactController::class);
-    Route::resource('voucher', VoucherController::class);
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
+    // Dashboard
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
     
-    // Add this route for all wishlists
-    Route::get('all-wishlists', [WishlistController::class, 'showWishlistAll'])->name('wishlist.all');
+    // User Management
+    Route::resource('users', AdminController::class);
+    
+    // Course Management
+    Route::resource('courses', CourseController::class);
+    
+    // Article Management
+    Route::resource('articles', ArticleController::class);
+    Route::post('articles/{article}/approve', [ArticleController::class, 'approve'])->name('articles.approve');
+    Route::post('articles/{article}/reject', [ArticleController::class, 'reject'])->name('articles.reject');
+    
+    // Subscription Plans
+    Route::resource('subscription-plans', AdminSubscriptionPlanController::class);
+    
+    // Discounts
+    Route::resource('discounts', DiscountController::class);
+    
+    // Certificates
+    Route::resource('certificates', AdminCertificateController::class);
+    
+    // Wishlist Analytics
+    Route::get('wishlist', [AdminWishlistAnalyticsController::class, 'index'])->name('wishlist.index');
+    Route::get('wishlist/dashboard', [AdminWishlistAnalyticsController::class, 'dashboard'])->name('wishlist.dashboard');
+    
+    // Analytics
+    Route::get('analytics', [AdminController::class, 'analytics'])->name('analytics');
+    Route::get('analytics/export', [AdminController::class, 'exportAnalytics'])->name('analytics.export');
 });
 
+/*
+|--------------------------------------------------------------------------
+| Mentor Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'mentor'])->prefix('mentor')->name('mentor.')->group(function () {
+    // Dashboard & Analytics
+    Route::get('/dashboard', [MentorDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/analytics', [MentorAnalyticsController::class, 'index'])->name('analytics');
+    Route::get('/courses', [MentorCourseController::class, 'index'])->name('courses');
+    Route::get('/course-management', [MentorCourseController::class, 'index'])->name('course-management');
 
-// Route Live Class - elsa
-Route::middleware('auth')->group(function () {
-    Route::resource('live-class', LiveClassController::class)->names([
-        'index' => 'live-class.index',
-        'create' => 'live-class.create',
-        'store' => 'live-class.store',
-        'show' => 'live-class.show',
-        'edit' => 'live-class.edit',
-        'update' => 'live-class.update',
-        'destroy' => 'live-class.destroy'
-    ]);
+    // Income Reports
+    Route::get('/income-report', [MentorIncomeReportController::class, 'index'])->name('income-report');
 
-    // Route Live Class Siswa
-    Route::prefix('live-class-student')->name('live-class-student.')->group(function () {
-        Route::get('/', [LiveClassController::class, 'index'])->name('index');
-        Route::get('/{id}', [LiveClassController::class, 'show'])->name('show');
-        Route::get('/{id}/join', [LiveClassController::class, 'join'])->name('join');
-        
+    // Quiz Management
+    Route::resource('quizzes', QuizController::class);
+    Route::get('quizzes/{quiz}/analyze', [QuizController::class, 'analyze'])->name('quizzes.analyze');
+    Route::get('courses/{course}/materials', [QuizController::class, 'getMaterials'])->name('courses.materials');
+
+    // Quiz Questions Management
+    Route::prefix('quizzes/{quiz}')->name('quizzes.')->group(function () {
+        Route::resource('questions', QuizQuestionController::class)->except(['index', 'show']);
     });
 });
-// ratings
-Route::middleware('auth')->group(function () {
-    Route::get('/ratings', [RatingController::class, 'index'])->name('ratings.index');
-    Route::get('/ratings/create', [RatingController::class, 'create'])->name('ratings.create');
-    Route::post('/ratings', [RatingController::class, 'store'])->name('ratings.store');
-    Route::get('/ratings/{id}/edit', [RatingController::class, 'edit'])->name('ratings.edit');
-    Route::put('/ratings/{id}', [RatingController::class, 'update'])->name('ratings.update');
-    Route::delete('/ratings/{id}', [RatingController::class, 'destroy'])->name('ratings.destroy');
+
+/*
+|--------------------------------------------------------------------------
+| Student Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'siswa'])->prefix('student')->name('student.')->group(function () {
+    // Quiz Taking
+    Route::get('quizzes', [QuizStudentController::class, 'index'])->name('quizzes.index');
+    Route::get('quizzes/{quiz}', [QuizStudentController::class, 'show'])->name('quizzes.show');
+    Route::get('quizzes/{quiz}/start', [QuizStudentController::class, 'start'])->name('quizzes.start');
+    Route::get('quizzes/{quiz}/attempts/{attempt}', [QuizStudentController::class, 'take'])->name('quizzes.take');
+    Route::post('quizzes/{quiz}/attempts/{attempt}/answer', [QuizStudentController::class, 'saveAnswer'])->name('quizzes.save-answer');
+    Route::post('quizzes/{quiz}/attempts/{attempt}/submit', [QuizStudentController::class, 'submit'])->name('quizzes.submit');
+    Route::get('quizzes/{quiz}/attempts/{attempt}/result', [QuizStudentController::class, 'result'])->name('quizzes.result');
+    Route::get('/quiz/{attempt}/certificate', [QuizStudentController::class, 'certificate'])->name('quiz.certificate');
 });
 
-// diskusi
-Route::resource('diskusi', DiskusiController::class)->middleware('auth');
-// Balasan diskusi (khusus mentor)
-Route::post('/diskusi/{id}/reply', [ReplyController::class, 'store'])->name('replies.store')->middleware('auth');
-Route::post('/reply/{id}/best', [ReplyController::class, 'markAsBest'])->name('replies.best')->middleware('auth');
-// Hapus balasan (admin)
-Route::delete('/admin/reply/{id}', [ReplyController::class, 'destroy'])->name('admin.replies.destroy')->middleware('auth');
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/api/subscription-plans', [SubscriptionPlanController::class, 'getActivePlans'])->name('api.subscription-plans');
 
-// Routes Sertifikat untuk Admin (PBI #4, #5, #6)
-Route::middleware(['auth'])->prefix('admin')->group(function () {
-    Route::get('/certificates/create', [CertificateController::class, 'create'])->name('admin.certificates.create');
-    Route::get('/certificates', [CertificateController::class, 'index'])->name('admin.certificates.index');
-    Route::post('/certificates', [CertificateController::class, 'store'])->name('admin.certificates.store');
-    
-    // Menambahkan route untuk Edit Sertifikat
-    Route::get('/certificates/{certificate}/edit', [CertificateController::class, 'edit'])->name('admin.certificates.edit');
-    
-    Route::put('/certificates/{certificate}', [CertificateController::class, 'update'])->name('admin.certificates.update');
-    Route::delete('/certificates/{certificate}', [CertificateController::class, 'destroy'])->name('admin.certificates.destroy');
+/*
+|--------------------------------------------------------------------------
+| Fallback Route
+|--------------------------------------------------------------------------
+*/
+Route::fallback(function () {
+    return view('errors.404');
 });
-
-// Route untuk siswa melihat sertifikat mereka
-Route::middleware(['auth'])->group(function () {
-    Route::get('/my-certificates', [CertificateController::class, 'myCertificates'])->name('my.certificates');
-});
-
-
-// Route Sertifikat untuk Siswa Download (PBI #7)
-Route::middleware(['auth'])->group(function () {
-    Route::get('/certificates/{certificate}/download', [CertificateController::class, 'download'])->name('certificates.download');
-});
-
-// Route untuk menambah rating
-Route::post('/ratings', [RatingController::class, 'store'])->name('ratings.store');
-
-// Route untuk mengedit rating
-Route::get('/ratings/{id}/edit', [RatingController::class, 'edit'])->name('ratings.edit');
-Route::put('/ratings/{id}', [RatingController::class, 'update'])->name('ratings.update');
-
-// Route untuk menghapus rating
-Route::delete('/ratings/{id}', [RatingController::class, 'destroy'])->name('ratings.destroy');

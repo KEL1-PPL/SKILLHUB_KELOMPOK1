@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Course;
+use App\Models\CourseEnrollment;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
@@ -102,8 +103,10 @@ class CourseController extends Controller
         ];
 
         if ($request->hasFile('image')) {
-            // Delete old image
-            Storage::disk('public')->delete($course->image);
+            // Delete old image with safety check
+            if ($course->image && Storage::disk('public')->exists($course->image)) {
+                Storage::disk('public')->delete($course->image);
+            }
             $data['image'] = $request->file('image')->store('courses', 'public');
         }
 
@@ -119,7 +122,9 @@ class CourseController extends Controller
         }
 
         $course = Course::where('slug', $slug)->firstOrFail();
-        Storage::disk('public')->delete($course->image);
+        if ($course->image && Storage::disk('public')->exists($course->image)) {
+            Storage::disk('public')->delete($course->image);
+        }
         $course->delete();
 
         return redirect()->route('features.course.index')->with('success', 'Kursus berhasil dihapus');
@@ -131,5 +136,26 @@ class CourseController extends Controller
         $count = Course::where('slug', 'LIKE', "{$slug}%")->count();
 
         return $count ? "{$slug}-{$count}" : $slug;
+    }
+
+    public function enroll(Course $course)
+    {
+        // Cek apakah user sudah terdaftar
+        $existing = CourseEnrollment::where('user_id', auth()->id())
+            ->where('course_id', $course->id)
+            ->first();
+
+        if ($existing) {
+            return redirect()->back()->with('error', 'Anda sudah terdaftar di kursus ini');
+        }
+
+        // Tambahkan ke enrollment
+        CourseEnrollment::create([
+            'user_id' => auth()->id(),
+            'course_id' => $course->id,
+            'enrolled_at' => now(),
+        ]);
+
+        return redirect()->back()->with('success', 'Berhasil mendaftar ke kursus!');
     }
 }

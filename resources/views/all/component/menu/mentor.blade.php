@@ -47,7 +47,7 @@
 
 <li class="sidebar-item">
     <a class="sidebar-link {{ $title == 'exam' ? 'active' : '' }} text-decoration-none"
-        href="">
+        href="{{ route('mentor.quizzes.index') }}">
         <i class="bi bi-person fs-4"></i>
         <h3 class="fs-4 mt-1">Manajement Kuis & Ujian</h3>
     </a>

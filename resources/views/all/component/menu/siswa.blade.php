@@ -24,7 +24,7 @@
 
 <li class="sidebar-item">
     <a class="sidebar-link {{ $title == 'kuis' ? 'active' : '' }} text-decoration-none"
-        href="">
+        href="{{ route('student.quizzes.index') }}">
         <i class="bi bi-person fs-4"></i>
         <h3 class="fs-4 mt-1">Forum Kuis & Ujian</h3>
     </a>
@@ -64,4 +64,3 @@
         <h3 class="fs-4 mt-1">Sertifikat</h3>
     </a>
 </li>
-

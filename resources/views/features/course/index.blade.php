@@ -168,11 +168,22 @@
                                             <span class="star {{ $i <= $course->rating ? 'filled' : '' }}">⭐</span>
                                         @endfor
                                     </div>
-                                    <button type="button" class="btn-wishlist @if($user && $user->wishlistCourses->contains($course->id)) added @endif" data-course-id="{{ $course->id }}">
-                                        <i class="bi {{ $user && $user->wishlistCourses->contains($course->id) ? 'bi-heart-fill' : 'bi-heart' }}"></i>
-                                        <span>{{ $user && $user->wishlistCourses->contains($course->id) ? 'Sudah di Wishlist' : 'Tambah ke Wishlist' }}</span>
-                                    </button>
-                                    <a href="{{ route('features.course.show', $course->slug) }}" class="btn btn-primary btn-sm mt-auto w-100">Lihat Detail</a>
+                                    @if(auth()->check() && auth()->user()->role === 'siswa')
+                                        <button type="button" class="btn-wishlist @if($user && $user->wishlistCourses->contains($course->id)) added @endif" data-course-id="{{ $course->id }}">
+                                            <i class="bi {{ $user && $user->wishlistCourses->contains($course->id) ? 'bi-heart-fill' : 'bi-heart' }}"></i>
+                                            <span>{{ $user && $user->wishlistCourses->contains($course->id) ? 'Sudah di Wishlist' : 'Tambah ke Wishlist' }}</span>
+                                        </button>
+                                        @if($user->isEnrolledInCourse($course->id))
+                                            <a href="{{ route('features.course.show', $course->slug) }}" class="btn btn-primary btn-sm mt-auto w-100">Lihat Detail</a>
+                                        @else
+                                            <form action="{{ route('course.enroll', $course->id) }}" method="POST" class="w-100">
+                                                @csrf
+                                                <button type="submit" class="btn btn-success btn-sm mt-auto w-100">Tambah ke Kursus Saya</button>
+                                            </form>
+                                        @endif
+                                    @else
+                                        <a href="{{ route('features.course.show', $course->slug) }}" class="btn btn-primary btn-sm mt-auto w-100">Lihat Detail</a>
+                                    @endif
                                 </div>
                             </div>
                         </div>

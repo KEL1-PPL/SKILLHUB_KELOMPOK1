@@ -2,26 +2,33 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 
 class Course extends Model
 {
+    use HasFactory;
     protected $guarded = ['id'];
 
-    public function creator() {
+    public function creator()
+    {
         return $this->belongsTo(User::class, 'created_by');
     }
 
-    public function enrollments() {
+    public function enrollments()
+    {
         return $this->hasMany(CourseEnrollment::class);
     }
 
-    public function completionHistory() {
+    public function completionHistory()
+    {
         return $this->hasMany(CourseCompletionHistory::class);
     }
 
-    public function analytics() {
+    public function analytics()
+    {
         return $this->hasMany(Analytic::class);
     }
 
@@ -43,12 +50,17 @@ class Course extends Model
         return $count ? "{$slug}-{$count}" : $slug;
     }
 
+    public function quizzes(): HasMany
+    {
+        return $this->hasMany(Quiz::class);
+    }
+
     public function wishlists()
     {
         return $this->hasMany(Wishlist::class);
     }
 
-    public function wishlistedByUsers()
+    public function wishlistedBy()
     {
         return $this->belongsToMany(User::class, 'wishlists');
     }

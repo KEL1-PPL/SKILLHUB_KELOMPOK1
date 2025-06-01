@@ -7,7 +7,7 @@
 </li>
 
 <li class="sidebar-item">
-    <a class="sidebar-link {{ $title == 'Kursus' ? 'active' : '' }} text-decoration-none"
+    <a class="sidebar-link {{ $title == 'kursus' ? 'active' : '' }} text-decoration-none"
         href="{{ route('features.course.index') }}">
         <i class="bi bi-person fs-4"></i>
         <h3 class="fs-4 mt-1">Manajement Kursus</h3>

@@ -17,9 +17,8 @@ class DashboardController extends Controller
         $completionHistory = [];
         $analytics = [];
         $grouped = [];
-        $popularCourses = collect();
-        $mentorStats = [];
-
+        $popularCourses = [];
+        
         if(auth()->user()->role == 'siswa')
         {
             $enrollments = CourseEnrollment::with(['course', 'progress'])
@@ -28,116 +27,171 @@ class DashboardController extends Controller
             $completionHistory = CourseCompletionHistory::with('course')
                                     ->where('user_id', auth()->user()->id)->get();
 
-            // Ambil 6 kursus populer berdasarkan wishlist
-            $popularCourses = Course::withCount('wishlists')
-                ->orderByDesc('wishlists_count')
-                ->take(6)
-                ->get();
-            if ($popularCourses->sum('wishlists_count') == 0) {
-                $popularCourses = Course::inRandomOrder()->take(6)->get();
-            }
+            // Get popular courses based on rating and limit to 6
+            $popularCourses = Course::orderBy('rating', 'desc')
+                                ->take(6)
+                                ->get();
         }
 
         if(auth()->user()->role == 'mentor')
         {
-            $mentorId = auth()->user()->id;
-            
-            // Ambil user_id unik yang pernah menyelesaikan material apapun
-            $studentIdsWithMaterial = \App\Models\MaterialCompletion::where('is_completed', true)
-                ->distinct('user_id')
-                ->pluck('user_id');
-
-            // 1. Siswa terdaftar kursus (hanya yang pernah menyelesaikan material)
-            $enrolledStudents = $studentIdsWithMaterial->count();
-
-            // 2. Rata-rata kursus per siswa (hanya siswa yang pernah menyelesaikan material)
-            $courseCountPerStudent = \App\Models\MaterialCompletion::where('is_completed', true)
-                ->select('user_id', 'material_id')
-                ->distinct()
-                ->get()
-                ->groupBy('user_id')
-                ->map(function($items) {
-                    // Hitung jumlah kursus unik yang diikuti siswa (dari relasi material->course)
-                    return $items->map(function($item) {
-                        return $item->material->course_id ?? null;
-                    })->unique()->count();
-                });
-            $avgCoursesPerStudent = $enrolledStudents > 0 ? round($courseCountPerStudent->sum() / $enrolledStudents, 1) : 0;
-            
-            // 3. Total students
-            $totalStudents = \App\Models\User::where('role', 'siswa')->count();
-            
-            // 4. Total courses
-            $totalCourses = \App\Models\Course::where('created_by', $mentorId)->count();
-            
-            // 5. Average student progress (berdasarkan material_completions)
-            $progressPerStudent = [];
-            $studentsWithMaterial = \App\Models\MaterialCompletion::where('is_completed', true)
-                ->select('user_id', 'material_id')
-                ->distinct()
-                ->get()
-                ->groupBy('user_id');
-
-            foreach ($studentsWithMaterial as $userId => $completions) {
-                // Ambil semua course yang diikuti siswa ini
-                $courseIds = $completions->map(function($item) {
-                    return $item->material->course_id ?? null;
-                })->unique();
-                foreach ($courseIds as $courseId) {
-                    if (!$courseId) continue;
-                    // Total material di course ini
-                    $totalMaterial = \App\Models\Material::where('course_id', $courseId)->count();
-                    if ($totalMaterial == 0) continue;
-                    // Material yang sudah selesai oleh siswa ini di course ini
-                    $completedMaterial = $completions->filter(function($item) use ($courseId) {
-                        return $item->material->course_id == $courseId;
-                    })->count();
-                    $progress = ($completedMaterial / $totalMaterial) * 100;
-                    $progressPerStudent[] = $progress;
-                }
-            }
-            $avgProgress = count($progressPerStudent) > 0 ? round(array_sum($progressPerStudent) / count($progressPerStudent), 1) : 0;
-            
-            // 6. Total articles
-            $totalArticles = \App\Models\Article::where('user_id', $mentorId)->count();
-            
-            // 7. Popular articles (based on views/clicks)
-            $popularArticles = \App\Models\Article::where('user_id', $mentorId)
-                ->where('status', 'approved')
-                ->orderBy('views', 'desc')
-                ->take(5)
-                ->get();
-
-            // 8. Popular courses (by wishlist)
-            $popularCoursesMentor = \App\Models\Course::withCount('wishlists')
-                ->where('created_by', $mentorId)
-                ->orderByDesc('wishlists_count')
-                ->take(5)
-                ->get();
-
-            $mentorStats = [
-                'totalStudents' => $totalStudents,
-                'enrolledStudents' => $enrolledStudents,
-                'avgCoursesPerStudent' => $avgCoursesPerStudent,
-                'totalCourses' => $totalCourses,
-                'avgProgress' => $avgProgress,
-                'totalArticles' => $totalArticles,
-                'popularArticles' => $popularArticles,
-                'popularCourses' => $popularCoursesMentor
-            ];
-
             $analytics = Analytic::with('student', 'course')->get();
             $grouped = $analytics->groupBy('area_of_struggle')->map->count();
+
+            $studentProgresses = collect(CourseEnrollment::with([
+                'user:id,name,email',
+                'course:id,title',
+                'progress'
+            ])
+                ->whereHas('user', function ($query) {
+                    $query->where('role', 'siswa');
+                })
+                ->get()
+                ->map(function ($enrollment) {
+                    $percentage = $enrollment->calculateProgress();
+                    $status = $percentage >= 100 ? 'Selesai' : 'Tidak Selesai';
+
+                    $enrollment->progress()->updateOrCreate(
+                        ['enrollment_id' => $enrollment->id],
+                        [
+                            'percentage_completed' => $percentage,
+                            'status' => $status,
+                            'last_accessed_at' => now(),
+                        ]
+                    );
+
+                    return [
+                        'student_id' => $enrollment->user->id,
+                        'student_name' => $enrollment->user->name,
+                        'student_email' => $enrollment->user->email,
+                        'course_id' => $enrollment->course->id,
+                        'course_title' => $enrollment->course->title,
+                        'progress_percentage' => $percentage,
+                        'status' => $status,
+                        'last_accessed' => $enrollment->progress?->last_accessed_at ?? $enrollment->created_at,
+                        'enrolled_at' => $enrollment->created_at,
+                        'days_since_last_access' => $enrollment->progress?->last_accessed_at ?
+                            now()->diffInDays($enrollment->progress->last_accessed_at) :
+                            now()->diffInDays($enrollment->created_at)
+                    ];
+                }));
+
+            $generatedAnalytics = collect($this->generateAnalytics($studentProgresses)['raw_data']);
+
+            // Calculate mentor stats
+            $mentorStats = [
+                'totalStudents' => $studentProgresses->unique('student_id')->count(),
+                'enrolledStudents' => $studentProgresses->count(),
+                'avgCoursesPerStudent' => $studentProgresses->count() > 0 
+                    ? round($studentProgresses->count() / $studentProgresses->unique('student_id')->count(), 1) 
+                    : 0,
+                'avgProgress' => $studentProgresses->count() > 0 
+                    ? round($studentProgresses->average('progress_percentage'), 1) 
+                    : 0,
+                'popularCourses' => Course::where('created_by', auth()->id())
+                    ->withCount(['enrollments', 'wishlists'])
+                    ->orderBy('enrollments_count', 'desc')
+                    ->take(5)
+                    ->get(),
+                'popularArticles' => \App\Models\Article::where('user_id', auth()->id())
+                    ->orderBy('views', 'desc')
+                    ->take(3)
+                    ->get()
+            ];
         }
 
-        return view('all.index',[
+        return view('all.index', [
             'title' => 'Dashboard',
             'enrollments' => $enrollments,
             'completionHistory' => $completionHistory,
             'grouped' => $grouped,
             'analytics' => $analytics,
             'popularCourses' => $popularCourses,
-            'mentorStats' => $mentorStats ?? null,
+            'mentorStats' => $mentorStats ?? [],
+            'studentProgresses' => $studentProgresses ?? collect(),
+            'generatedAnalytics' => $generatedAnalytics ?? collect(),
         ]);
+    }
+
+    private function generateAnalytics($studentProgresses)
+    {
+        // Ensure we're working with a collection
+        $studentProgresses = collect($studentProgresses);
+        
+        // Transform the data into analytics collection
+        $analytics = $studentProgresses->map(function ($progress) {
+            $areaOfStruggle = $this->determineAreaOfStruggle($progress);
+            
+            return [
+                'student_name' => $progress['student_name'],
+                'student_id' => $progress['student_id'],
+                'course_title' => $progress['course_title'],
+                'progress_percentage' => $progress['progress_percentage'],
+                'status' => $progress['status'],
+                'days_since_last_access' => $progress['days_since_last_access'],
+                'area_of_struggle' => $areaOfStruggle['area'],
+                'suggested_action' => $areaOfStruggle['action']
+            ];
+        });
+
+        // Group analytics by course
+        $courseGroups = $analytics->groupBy('course_title')->map(function ($group) {
+            return [
+                'total_students' => $group->count(),
+                'average_progress' => round($group->avg('progress_percentage'), 2),
+                'completed_count' => $group->where('status', 'Selesai')->count(),
+                'active_students' => $group->where('days_since_last_access', '<', 7)->count()
+            ];
+        });
+
+        return [
+            'raw_data' => $analytics->toArray(),
+            'course_summary' => $courseGroups->toArray(),
+            'total_students' => $analytics->unique('student_name')->count(),
+            'average_overall_progress' => $analytics->count() > 0 ? round($analytics->avg('progress_percentage'), 2) : 0,
+            'total_courses' => $courseGroups->count(),
+            'total_completions' => $analytics->where('status', 'Selesai')->count()
+        ];
+    }
+
+    private function determineAreaOfStruggle($progress)
+    {
+        // Low progress and inactive
+        if ($progress['progress_percentage'] < 30 && $progress['days_since_last_access'] > 7) {
+            return [
+                'area' => 'Keterlibatan Rendah',
+                'action' => 'Perlu follow-up personal dan motivasi'
+            ];
+        }
+        
+        // Stuck at certain progress
+        if ($progress['progress_percentage'] >= 30 && $progress['progress_percentage'] < 70 && $progress['days_since_last_access'] > 5) {
+            return [
+                'area' => 'Kesulitan Materi',
+                'action' => 'Tawarkan sesi konsultasi atau bantuan tambahan'
+            ];
+        }
+        
+        // High progress but inactive
+        if ($progress['progress_percentage'] >= 70 && $progress['days_since_last_access'] > 10) {
+            return [
+                'area' => 'Kehilangan Momentum',
+                'action' => 'Dorong untuk menyelesaikan kursus'
+            ];
+        }
+        
+        // Active but slow progress
+        if ($progress['days_since_last_access'] <= 7 && $progress['progress_percentage'] < 50) {
+            return [
+                'area' => 'Kesulitan Pemahaman',
+                'action' => 'Sediakan materi tambahan atau penjelasan alternatif'
+            ];
+        }
+        
+        // Default case - no significant struggles
+        return [
+            'area' => 'Progres Normal',
+            'action' => 'Pantau dan beri dukungan berkelanjutan'
+        ];
     }
 }
