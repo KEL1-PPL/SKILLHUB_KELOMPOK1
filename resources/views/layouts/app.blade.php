@@ -5,6 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Skill Hub</title>
 
+    <!-- Bootstrap CSS (CDN) -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
@@ -22,12 +25,6 @@
             --pure-white: #FFFFFF;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
         body {
             font-family: 'Inter', 'Segoe UI', sans-serif;
             background: linear-gradient(135deg, var(--light-pastel-blue), var(--light-pastel-orange));
@@ -36,7 +33,6 @@
             line-height: 1.6;
         }
 
-        /* Header Styles */
         .main-header {
             background-color: var(--pure-white);
             padding: 1rem 5%;
@@ -66,14 +62,12 @@
             color: var(--deep-pastel-blue);
         }
 
-        /* Main Content */
         .main-content {
             margin-top: 80px;
             min-height: calc(100vh - 160px);
             padding: 2rem 5%;
         }
 
-        /* Footer Styles */
         .main-footer {
             background-color: var(--light-pastel-blue);
             padding: 1.5rem 5%;
@@ -97,7 +91,6 @@
             color: var(--deep-pastel-orange);
         }
 
-        /* Responsive Design */
         @media (max-width: 768px) {
             .main-header {
                 padding: 1rem;
@@ -113,7 +106,6 @@
         }
     </style>
 
-    <!-- Additional page-specific styles -->
     @stack('styles')
 </head>
 <body>
@@ -123,7 +115,7 @@
         </div>
     </header>
 
-    <main class="main-content">
+    <main class="main-content container">
         @yield('content')
     </main>
 
@@ -133,11 +125,12 @@
         </div>
     </footer>
 
-    <!-- Scripts -->
+    <!-- Bootstrap JS Bundle (CDN) -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Smooth Scroll -->
     <script>
-        // Base functionality
         document.addEventListener('DOMContentLoaded', function() {
-            // Add smooth scroll behavior
             document.querySelectorAll('a[href^="#"]').forEach(anchor => {
                 anchor.addEventListener('click', function (e) {
                     e.preventDefault();
@@ -149,7 +142,6 @@
         });
     </script>
 
-    <!-- Additional page-specific scripts -->
     @stack('scripts')
 </body>
 </html>

@@ -10,14 +10,10 @@ class DatabaseSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
-            MentorIncomeSeeder::class
-        ]);
-
-        $this->call([
+            MentorIncomeSeeder::class,
             SubscriptionPlanSeeder::class,
+            CourseSeeder::class,
+            CertificateSeeder::class, // <- Tambahin ini ya!
         ]);
-
-        $this->call(CourseSeeder::class);
-
     }
 }
