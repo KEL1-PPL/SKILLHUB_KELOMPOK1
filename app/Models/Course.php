@@ -43,5 +43,13 @@ class Course extends Model
         return $count ? "{$slug}-{$count}" : $slug;
     }
 
-    
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    public function wishlistedByUsers()
+    {
+        return $this->belongsToMany(User::class, 'wishlists');
+    }
 }

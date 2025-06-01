@@ -101,4 +101,13 @@ class User extends Authenticatable
     return $this->hasMany(Certificate::class);
 }
 
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    public function wishlistCourses()
+    {
+        return $this->belongsToMany(Course::class, 'wishlists');
+    }
 }
