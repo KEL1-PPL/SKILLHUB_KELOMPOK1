@@ -14,6 +14,7 @@ class CourseSeeder extends Seeder
      */
     public function run(): void
     {
+        // Basic Laravel courses
         Course::create([
             'title' => 'Belajar Laravel Dasar',
             'description' => 'Kursus untuk pemula belajar Laravel 11',
@@ -25,9 +26,43 @@ class CourseSeeder extends Seeder
         Course::create([
             'title' => 'Belajar Laravel Intermediete',
             'description' => 'Kursus untuk menengah belajar Laravel 11',
-            'slug' => Course::generateUniqueSlug('Belajar Laravel Dasar'),
+            'slug' => Course::generateUniqueSlug('Belajar Laravel Intermediete'),
             'rating' => 5,
             'created_by' => User::find(2)->id,
         ]);
+
+        // Additional courses
+        $courses = [
+            [
+                'title' => 'PHP OOP',
+                'description' => 'Fundamental Object-Oriented Programming dengan PHP',
+                'created_by' => 1
+            ],
+            [
+                'title' => 'Java Spring Boot',
+                'description' => 'Belajar membuat aplikasi dengan Spring Boot',
+                'created_by' => 1
+            ],
+            [
+                'title' => 'Vue.js for Beginners',
+                'description' => 'Dasar-dasar pengembangan frontend dengan Vue.js',
+                'created_by' => 1
+            ],
+            [
+                'title' => 'Database Design Fundamentals',
+                'description' => 'Fundamental perancangan basis data',
+                'created_by' => 1
+            ],
+        ];
+
+        foreach ($courses as $course) {
+            Course::create([
+                'title' => $course['title'],
+                'description' => $course['description'],
+                'slug' => Course::generateUniqueSlug($course['title']),
+                'rating' => rand(3, 5),
+                'created_by' => $course['created_by'],
+            ]);
+        }
     }
 }

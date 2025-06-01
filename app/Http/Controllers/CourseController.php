@@ -103,7 +103,7 @@ class CourseController extends Controller
         ];
 
         if ($request->hasFile('image')) {
-            // Delete old image
+            // Delete old image with safety check
             if ($course->image && Storage::disk('public')->exists($course->image)) {
                 Storage::disk('public')->delete($course->image);
             }
@@ -126,7 +126,6 @@ class CourseController extends Controller
             Storage::disk('public')->delete($course->image);
         }
         $course->delete();
-
 
         return redirect()->route('features.course.index')->with('success', 'Kursus berhasil dihapus');
     }

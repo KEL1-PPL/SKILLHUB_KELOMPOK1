@@ -11,16 +11,13 @@ class DatabaseSeeder extends Seeder
         $this->call([
             UserSeeder::class,
             MentorIncomeSeeder::class,
-            // CourseSeeder::class,
-            // CourseEnrollmentSeeder::class,
-            // CourseProgressSeeder::class,
-            // MaterialSeeder::class,
-            // MaterialCompletionsSeeder::class
-        ]);
-
-        $this->call([
             SubscriptionPlanSeeder::class,
+            CourseSeeder::class,
+            CourseEnrollmentSeeder::class,
+            CourseProgressSeeder::class,
+            MaterialSeeder::class,
+            MaterialCompletionsSeeder::class,
+            CertificateSeeder::class,
         ]);
-
     }
 }

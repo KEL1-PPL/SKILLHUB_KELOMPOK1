@@ -13,7 +13,10 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RatingReviewController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Admin\AdminController;
+use App\Http\Controllers\Admin\DiscountController as AdminDiscountController;
+use App\Http\Controllers\Admin\EarningsController;
 use App\Http\Controllers\Admin\MentorIncomeController;
+use App\Http\Controllers\Admin\WishlistAnalyticsController as AdminWishlistAnalyticsController;
 use App\Http\Controllers\Mentor\MentorDashboardController;
 use App\Http\Controllers\Mentor\MentorIncomeReportController;
 use App\Http\Controllers\Mentor\MentorAnalyticsController;
@@ -25,6 +28,14 @@ use App\Http\Controllers\HomeController;
 use App\Http\Controllers\Quiz\Mentor\QuizController;
 use App\Http\Controllers\Quiz\Mentor\QuizQuestionController;
 use App\Http\Controllers\Quiz\Student\QuizStudentController;
+use App\Http\Controllers\LiveClassController;
+use App\Http\Controllers\WishlistController;
+use App\Http\Controllers\NotificationController;
+use App\Http\Controllers\RatingController;
+use App\Http\Controllers\ArticleController;
+use App\Http\Controllers\DiskusiController;
+use App\Http\Controllers\ReplyController;
+use App\Http\Controllers\CertificateController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
@@ -70,11 +81,11 @@ Route::resource('subscription-plans', SubscriptionPlanController::class)->only([
 |--------------------------------------------------------------------------
 */
 Route::middleware('auth')->group(function () {
-    // Dashboard
+    // Dashboard & Home
     Route::get('dashboard', [DashboardController::class, '__invoke'])->name('dashboard');
     Route::get('/home', [HomeController::class, 'index'])->name('home');
-
-    // Profile Management
+    
+    // Profile Routes
     Route::resource('profile', ProfileController::class);
 
     // General Pages
@@ -87,14 +98,17 @@ Route::middleware('auth')->group(function () {
     Route::resource('product', ProductController::class)->only(['index', 'show']);
     Route::resource('checkout', CheckoutController::class);
 
-    // Subscription
+    // Subscription Routes
     Route::get('/subscription/checkout/{plan}', [SubscriptionPlanController::class, 'checkout'])
         ->name('subscription.checkout');
+    Route::get('/subscription/my-subscriptions', [SubscriptionPlanController::class, 'mySubscriptions'])
+        ->name('subscription.my-subscriptions');
 
-    // Rating and Review
+    // Rating and Review Routes
     Route::resource('ratingreview', RatingReviewController::class);
+    Route::resource('ratings', RatingController::class);
 
-    // Voucher for Users
+    // Voucher Routes
     Route::post('voucher/redeem', [VoucherController::class, 'redeem'])->name('voucher.redeem');
 
     // Course Management
@@ -113,7 +127,7 @@ Route::middleware('auth')->group(function () {
     // Course Enrollment
     Route::post('/course/{course}/enroll', [CourseController::class, 'enroll'])->name('course.enroll');
 
-    // Material Management (Nested under Course)
+    // Material Management
     Route::resource('course/{course}/material', MaterialController::class)->names([
         'index' => 'features.material.index',
         'create' => 'features.material.create',
@@ -126,6 +140,38 @@ Route::middleware('auth')->group(function () {
 
     Route::post('course/{course}/material/{material}/toggle-completion', [MaterialController::class, 'toggleCompletion'])
         ->name('features.material.toggle-completion');
+
+    // Wishlist Routes
+    Route::post('/wishlist', [WishlistController::class, 'addToWishlist'])->name('wishlist.add');
+    Route::get('/wishlist', [WishlistController::class, 'index'])->name('wishlist.index');
+    Route::delete('/wishlist', [WishlistController::class, 'removeFromWishlist'])->name('wishlist.remove');
+
+    // Live Class Routes
+    Route::resource('live-class', LiveClassController::class);
+    Route::prefix('live-class-student')->name('live-class-student.')->group(function () {
+        Route::get('/', [LiveClassController::class, 'index'])->name('index');
+        Route::get('/{id}', [LiveClassController::class, 'show'])->name('show');
+        Route::get('/{id}/join', [LiveClassController::class, 'join'])->name('join');
+    });
+
+    // Article Routes
+    Route::resource('articles', ArticleController::class);
+    Route::post('/articles/{article}/approve', [ArticleController::class, 'approve'])->name('articles.approve');
+    Route::post('/articles/{article}/reject', [ArticleController::class, 'reject'])->name('articles.reject');
+
+    // Discussion Routes
+    Route::resource('diskusi', DiskusiController::class);
+    Route::post('/diskusi/{id}/reply', [ReplyController::class, 'store'])->name('replies.store');
+    Route::post('/reply/{id}/best', [ReplyController::class, 'markAsBest'])->name('replies.best');
+
+    // Certificate Routes
+    Route::get('/my-certificates', [CertificateController::class, 'myCertificates'])->name('my.certificates');
+    Route::get('/certificates/{certificate}/download', [CertificateController::class, 'download'])->name('certificates.download');
+
+    // Notification Routes
+    Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/mark-as-read/{id}', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 });
 
 /*
@@ -134,8 +180,9 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    // Admin Dashboard
+    // Dashboard & Management
     Route::get('dashboard', [AdminController::class, 'index'])->name('dashboard');
+    Route::get('/income-management', [AdminController::class, 'incomeManagement'])->name('income-management');
 
     // Content Management
     Route::resource('about', AboutController::class)->except(['show']);
@@ -143,13 +190,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('voucher', VoucherController::class);
 
     // Subscription Plans Management
-    Route::resource('subscription-plans', SubscriptionPlanController::class)->except(['index', 'show'])->names([
-        'create' => 'subscription-plans.create',
-        'store' => 'subscription-plans.store',
-        'edit' => 'subscription-plans.edit',
-        'update' => 'subscription-plans.update',
-        'destroy' => 'subscription-plans.destroy',
-    ]);
+    Route::resource('subscription-plans', SubscriptionPlanController::class)->except(['index', 'show']);
 
     // Earnings Management
     Route::resource('earnings', AdminController::class)->only(['index', 'show', 'update', 'destroy']);
@@ -159,8 +200,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/mentor-incomes', [MentorIncomeController::class, 'index'])->name('mentor-incomes.index');
     Route::post('/mentor-incomes/{id}/correct', [MentorIncomeController::class, 'correct'])->name('mentor-incomes.correct');
 
-    // Income Management
-    Route::get('/income-management', [AdminController::class, 'incomeManagement'])->name('income-management');
+    // Wishlist Analytics
+    Route::get('wishlist', [AdminWishlistAnalyticsController::class, 'index'])->name('wishlist.index');
+    Route::get('wishlist/dashboard', [AdminWishlistAnalyticsController::class, 'dashboard'])->name('wishlist.dashboard');
+
+    // Discount Management
+    Route::resource('discounts', AdminDiscountController::class);
+
+    // Certificate Management
+    Route::resource('certificates', CertificateController::class);
 });
 
 /*
@@ -169,7 +217,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'mentor'])->prefix('mentor')->name('mentor.')->group(function () {
-    // Mentor Dashboard & Analytics
+    // Dashboard & Analytics
     Route::get('/dashboard', [MentorDashboardController::class, 'index'])->name('dashboard');
     Route::get('/analytics', [MentorAnalyticsController::class, 'index'])->name('analytics');
     Route::get('/courses', [MentorCourseController::class, 'index'])->name('courses');
@@ -180,15 +228,12 @@ Route::middleware(['auth', 'mentor'])->prefix('mentor')->name('mentor.')->group(
 
     // Quiz Management
     Route::resource('quizzes', QuizController::class);
-    Route::get('quizzes/{quiz}/analyze', [QuizController::class, 'analyze'])
-        ->name('quizzes.analyze');
-    Route::get('courses/{course}/materials', [QuizController::class, 'getMaterials'])
-        ->name('courses.materials');
+    Route::get('quizzes/{quiz}/analyze', [QuizController::class, 'analyze'])->name('quizzes.analyze');
+    Route::get('courses/{course}/materials', [QuizController::class, 'getMaterials'])->name('courses.materials');
 
-    // Quiz Questions Management (Nested under Quiz)
+    // Quiz Questions Management
     Route::prefix('quizzes/{quiz}')->name('quizzes.')->group(function () {
-        Route::resource('questions', QuizQuestionController::class)
-            ->except(['index', 'show']);
+        Route::resource('questions', QuizQuestionController::class)->except(['index', 'show']);
     });
 });
 
@@ -199,22 +244,22 @@ Route::middleware(['auth', 'mentor'])->prefix('mentor')->name('mentor.')->group(
 */
 Route::middleware(['auth', 'siswa'])->prefix('student')->name('student.')->group(function () {
     // Quiz Taking
-    Route::get('quizzes', [QuizStudentController::class, 'index'])
-        ->name('quizzes.index');
-    Route::get('quizzes/{quiz}', [QuizStudentController::class, 'show'])
-        ->name('quizzes.show');
-    Route::get('quizzes/{quiz}/start', [QuizStudentController::class, 'start'])
-        ->name('quizzes.start');
-    Route::get('quizzes/{quiz}/attempts/{attempt}', [QuizStudentController::class, 'take'])
-        ->name('quizzes.take');
-    Route::post('quizzes/{quiz}/attempts/{attempt}/answer', [QuizStudentController::class, 'saveAnswer'])
-        ->name('quizzes.save-answer');
-    Route::post('quizzes/{quiz}/attempts/{attempt}/submit', [QuizStudentController::class, 'submit'])
-        ->name('quizzes.submit');
-    Route::get('quizzes/{quiz}/attempts/{attempt}/result', [QuizStudentController::class, 'result'])
-        ->name('quizzes.result');
+    Route::get('quizzes', [QuizStudentController::class, 'index'])->name('quizzes.index');
+    Route::get('quizzes/{quiz}', [QuizStudentController::class, 'show'])->name('quizzes.show');
+    Route::get('quizzes/{quiz}/start', [QuizStudentController::class, 'start'])->name('quizzes.start');
+    Route::get('quizzes/{quiz}/attempts/{attempt}', [QuizStudentController::class, 'take'])->name('quizzes.take');
+    Route::post('quizzes/{quiz}/attempts/{attempt}/answer', [QuizStudentController::class, 'saveAnswer'])->name('quizzes.save-answer');
+    Route::post('quizzes/{quiz}/attempts/{attempt}/submit', [QuizStudentController::class, 'submit'])->name('quizzes.submit');
+    Route::get('quizzes/{quiz}/attempts/{attempt}/result', [QuizStudentController::class, 'result'])->name('quizzes.result');
     Route::get('/quiz/{attempt}/certificate', [QuizStudentController::class, 'certificate'])->name('quiz.certificate');
 });
+
+/*
+|--------------------------------------------------------------------------
+| API Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/api/subscription-plans', [SubscriptionPlanController::class, 'getActivePlans'])->name('api.subscription-plans');
 
 /*
 |--------------------------------------------------------------------------
