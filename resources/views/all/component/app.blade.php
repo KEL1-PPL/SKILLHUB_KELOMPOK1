@@ -15,7 +15,7 @@
     <link href="{{ asset('css/all.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ asset('css/sb-admin-2.min.css') }}" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
     @stack('style')
 </head>
@@ -32,6 +32,11 @@
             @yield('content')
         </main>
     </div>
+
+    <!-- Include subscription modal only for 'siswa' role -->
+    @if(auth()->check() && auth()->user()->role == 'siswa')
+        @include('features.subscription-plans.modal')
+    @endif
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
         integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous">

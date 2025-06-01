@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
@@ -21,8 +22,8 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
-        'learning_path',
         'role',
+        'learning_path'
     ];
 
     /**
@@ -70,20 +71,62 @@ class User extends Authenticatable
         return $allMonths;
     }
 
-    public function enrollments() {
+    public function enrollments()
+    {
         return $this->hasMany(CourseEnrollment::class);
     }
 
-    public function coursesCreated() {
+    public function coursesCreated()
+    {
         return $this->hasMany(Course::class, 'created_by');
     }
 
-    public function completionHistory() {
+    public function completionHistory()
+    {
         return $this->hasMany(CourseCompletionHistory::class);
     }
 
-    public function analytics() {
+    public function analytics()
+    {
         return $this->hasMany(Analytic::class, 'student_id');
     }
 
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
+    public function isMentor()
+    {
+        return $this->role === 'mentor';
+    }
+
+    public function isEnrolledInCourse($courseId)
+    {
+        if ($this->role !== 'siswa') {
+            return false;
+        }
+
+        return $this->enrollments()->where('course_id', $courseId)->exists();
+    }
+
+    public function createdQuizzes(): HasMany
+    {
+        return $this->hasMany(Quiz::class, 'created_by');
+    }
+
+    public function quizAttempts(): HasMany
+    {
+        return $this->hasMany(QuizAttempt::class);
+    }
+
+    public function materialCompletions(): HasMany
+    {
+        return $this->hasMany(MaterialCompletion::class);
+    }
+
+    public function courseEnrollments(): HasMany
+    {
+        return $this->hasMany(CourseEnrollment::class);
+    }
 }

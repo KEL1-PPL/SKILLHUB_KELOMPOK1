@@ -14,9 +14,17 @@
         }
 
         @keyframes gradientBG {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
         }
 
         h2 {
@@ -89,7 +97,7 @@
         <div class="container mt-5 pt-5">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2>📚 Jelajahi Kursus Populer</h2>
-                @if(auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'mentor'))
+                @if (auth()->user() && (auth()->user()->role === 'admin' || auth()->user()->role === 'mentor'))
                     <a href="{{ route('features.course.create') }}" class="btn btn-primary">Tambah Kursus</a>
                 @endif
             </div>
@@ -120,7 +128,22 @@
                                         @endfor
                                     </div>
                                     <button class="wishlist-btn btn btn-sm mb-2 w-100">Tambah ke Wishlist</button>
-                                    <a href="{{ route('features.course.show', $course->slug) }}" class="btn btn-primary btn-sm mt-auto w-100">Lihat Detail</a>
+                                    @if (auth()->check() && auth()->user()->role === 'siswa')
+                                        @if (auth()->user()->isEnrolledInCourse($course->id))
+                                            <a href="{{ route('features.course.show', $course->slug) }}"
+                                                class="btn btn-primary btn-sm mt-auto w-100">Lihat Detail</a>
+                                        @else
+                                            <form action="{{ route('course.enroll', $course->id) }}" method="POST"
+                                                class="w-100">
+                                                @csrf
+                                                <button type="submit" class="btn btn-success btn-sm mt-auto w-100">Tambah
+                                                    ke Kursus Saya</button>
+                                            </form>
+                                        @endif
+                                    @else
+                                        <a href="{{ route('features.course.show', $course->slug) }}"
+                                            class="btn btn-primary btn-sm mt-auto w-100">Lihat Detail</a>
+                                    @endif
                                 </div>
                             </div>
                         </div>
@@ -133,11 +156,11 @@
 
 @push('scripts')
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('search-course');
             const courseCards = document.querySelectorAll('.course-card');
 
-            searchInput.addEventListener('input', function () {
+            searchInput.addEventListener('input', function() {
                 const query = this.value.toLowerCase();
 
                 courseCards.forEach(card => {

@@ -7,6 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class CourseCompletionHistory extends Model
 {
     protected $guarded = ['id'];
+    protected $casts = [
+        'submitted_at' => 'datetime',
+    ];
 
     public function user() {
         return $this->belongsTo(User::class);

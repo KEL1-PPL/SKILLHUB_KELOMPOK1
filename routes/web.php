@@ -1,104 +1,103 @@
 <?php
 
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\All\DashboardController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
-use App\Http\Controllers\Siswa\KursusController;
-use App\Http\Controllers\Siswa\RiwayatController;
-use App\Http\Controllers\Mentor\ProgressController;
-use App\Http\Controllers\Admin\EarningsController;
-use App\Http\Controllers\Mentor\IncomeReportController;
+use App\Http\Controllers\User\ProfileController;
+use App\Http\Controllers\AboutController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\CategoryController;
+use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\RatingReviewController;
+use App\Http\Controllers\VoucherController;
+use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\MentorIncomeController;
+use App\Http\Controllers\Mentor\MentorDashboardController;
+use App\Http\Controllers\Mentor\MentorIncomeReportController;
+use App\Http\Controllers\Mentor\MentorAnalyticsController;
+use App\Http\Controllers\Mentor\MentorCourseController;
+use App\Http\Controllers\SubscriptionPlanController;
+use App\Http\Controllers\CourseController;
+use App\Http\Controllers\MaterialController;
+use App\Http\Controllers\HomeController;
+use App\Http\Controllers\Quiz\Mentor\QuizController;
+use App\Http\Controllers\Quiz\Mentor\QuizQuestionController;
+use App\Http\Controllers\Quiz\Student\QuizStudentController;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\QuizController;
-use App\Http\Controllers\QuizAttemptController;
-use App\Http\Controllers\QuestionController;
+use Illuminate\Support\Facades\Auth;
 
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
 // Landing Page Route
 Route::get('/', function () {
     return view('landing');
 })->name('landing');
 
-// Auth Routes
+/*
+|--------------------------------------------------------------------------
+| Authentication Routes
+|--------------------------------------------------------------------------
+*/
 Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
 Route::post('/login', [LoginController::class, 'login']);
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-
-//Register
+// Register Routes (Only accessible for guests)
 Route::middleware('guest')->group(function () {
     Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
     Route::post('/register', [RegisterController::class, 'register'])->name('register.submit');
 });
 
-// User yang sudah login, baik itu role admin, mentor dan siswa
+// Laravel default auth routes
+Auth::routes();
+
+/*
+|--------------------------------------------------------------------------
+| Public Routes (Accessible without authentication)
+|--------------------------------------------------------------------------
+*/
+Route::resource('subscription-plans', SubscriptionPlanController::class)->only(['index', 'show']);
+
+/*
+|--------------------------------------------------------------------------
+| Authenticated User Routes
+|--------------------------------------------------------------------------
+*/
 Route::middleware('auth')->group(function () {
-    Route::get('dashboard',DashboardController::class)->name('dashboard');
-
-    //Route untuk siswa
-    Route::prefix('siswa')->middleware(['auth'])->group(function () {
-
-    Route::get('kursus', [KursusController::class, 'index'])->name('siswa.kursus.index');
-    Route::get('riwayat', [RiwayatController::class, 'index'])->name('siswa.riwayat.index');
-    Route::get('riwayat/{id}/review', [RiwayatController::class, 'review'])->name('courses.review');
-
-    // Quiz
-    Route::resource('quizzes', QuizController::class);
-    Route::get('quiz/{quiz}/attempt', [QuizAttemptController::class, 'show'])->name('quiz.attempt');
-    Route::post('quiz/{quiz}/submit', [QuizAttemptController::class, 'submit'])->name('quiz.submit');
-    Route::get('/quiz/{quiz}/result', [QuizAttemptController::class, 'showResult'])->name('quiz.result');
-
-    // Question management
-    Route::prefix('quizzes/{quiz}')->group(function () {
-        Route::get('questions', [QuestionController::class, 'index'])->name('questions.index');
-        Route::get('questions/create', [QuestionController::class, 'create'])->name('questions.create');
-        Route::post('questions', [QuestionController::class, 'store'])->name('questions.store');
-    });
-    Route::get('/questions/{question}/edit', [QuestionController::class, 'edit'])->name('questions.edit');
-    Route::put('/questions/{question}', [QuestionController::class, 'update'])->name('questions.update');
-    Route::delete('/questions/{question}', [QuestionController::class, 'destroy'])->name('questions.destroy');
-});
-
-    //Route untuk Mentor
-    Route::prefix('mentor')->group(function(){
-        Route::get('progress',[ProgressController::class,'index'])->name('mentor.progress.index');
-    });
+    // Dashboard
     Route::get('dashboard', [DashboardController::class, '__invoke'])->name('dashboard');
-    
-    // Profile Routes
+    Route::get('/home', [HomeController::class, 'index'])->name('home');
+
+    // Profile Management
     Route::resource('profile', ProfileController::class);
 
     // General Pages
-    Route::resource('about', AboutController::class);
-    Route::resource('contact', ContactController::class);
+    Route::resource('about', AboutController::class)->only(['index', 'show']);
+    Route::resource('contact', ContactController::class)->only(['index', 'store']);
 
-    // Cart Routes
+    // E-commerce Features
     Route::resource('cart', CartController::class);
-
-    // Category and Product Routes
-    Route::resource('category', CategoryController::class);
-    Route::resource('product', ProductController::class);
-
-    // Checkout Routes
+    Route::resource('category', CategoryController::class)->only(['index', 'show']);
+    Route::resource('product', ProductController::class)->only(['index', 'show']);
     Route::resource('checkout', CheckoutController::class);
 
-    // Subscription-plans
+    // Subscription
     Route::get('/subscription/checkout/{plan}', [SubscriptionPlanController::class, 'checkout'])
-    ->name('subscription.checkout');
+        ->name('subscription.checkout');
 
-    // Rating and Review Routes
+    // Rating and Review
     Route::resource('ratingreview', RatingReviewController::class);
 
-    // Voucher Routes for Users
+    // Voucher for Users
     Route::post('voucher/redeem', [VoucherController::class, 'redeem'])->name('voucher.redeem');
 
-    // Home Route
-    Route::get('/home', function () {
-        return view('home');
-    })->name('home');
-
-    // course - imam
+    // Course Management
     Route::resource('course', CourseController::class)->names([
         'index' => 'features.course.index',
         'create' => 'features.course.create',
@@ -111,100 +110,117 @@ Route::middleware('auth')->group(function () {
         'course' => 'slug'
     ]);
 
-    // Material routes
-    Route::resource('course/{course}/material', MaterialController::class)
-        ->names([
-            'index' => 'features.material.index',
-            'create' => 'features.material.create',
-            'store' => 'features.material.store',
-            'show' => 'features.material.show',
-            'edit' => 'features.material.edit',
-            'update' => 'features.material.update',
-            'destroy' => 'features.material.destroy',
-        ]);
+    // Course Enrollment
+    Route::post('/course/{course}/enroll', [CourseController::class, 'enroll'])->name('course.enroll');
+
+    // Material Management (Nested under Course)
+    Route::resource('course/{course}/material', MaterialController::class)->names([
+        'index' => 'features.material.index',
+        'create' => 'features.material.create',
+        'store' => 'features.material.store',
+        'show' => 'features.material.show',
+        'edit' => 'features.material.edit',
+        'update' => 'features.material.update',
+        'destroy' => 'features.material.destroy',
+    ]);
 
     Route::post('course/{course}/material/{material}/toggle-completion', [MaterialController::class, 'toggleCompletion'])
         ->name('features.material.toggle-completion');
 });
 
-// Admin Routes
-Route::middleware(['auth', 'admin'])->prefix('admin')->group(function () {
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     // Admin Dashboard
-    Route::get('dashboard', [AdminController::class, 'index'])->name('admin.dashboard');
+    Route::get('dashboard', [AdminController::class, 'index'])->name('dashboard');
 
-    // Admin-Only Resource Routes
-    Route::resource('about', AboutController::class);
-    Route::resource('contact', ContactController::class);
+    // Content Management
+    Route::resource('about', AboutController::class)->except(['show']);
+    Route::resource('contact', ContactController::class)->except(['show', 'create']);
     Route::resource('voucher', VoucherController::class);
 
-    // Earnings Routes for Admin
-    Route::resource('earnings', AdminController::class)->except(['create', 'edit']);
-    Route::post('/earnings/{earning}/invalidate', [AdminController::class, 'invalidate'])->name('admin.earnings.invalidate')
-        ->name('admin.earnings.invalidate');  
+    // Subscription Plans Management
+    Route::resource('subscription-plans', SubscriptionPlanController::class)->except(['index', 'show'])->names([
+        'create' => 'subscription-plans.create',
+        'store' => 'subscription-plans.store',
+        'edit' => 'subscription-plans.edit',
+        'update' => 'subscription-plans.update',
+        'destroy' => 'subscription-plans.destroy',
+    ]);
 
-    // Mentor Income Routes
-    Route::get('/mentor-incomes', [MentorIncomeController::class, 'index'])->name('admin.mentor-incomes');
-    Route::post('/mentor-incomes/{id}/correct', [MentorIncomeController::class, 'correct'])
-        ->name('admin.mentor-incomes.correct'); 
+    // Earnings Management
+    Route::resource('earnings', AdminController::class)->only(['index', 'show', 'update', 'destroy']);
+    Route::post('/earnings/{earning}/invalidate', [AdminController::class, 'invalidate'])->name('earnings.invalidate');
+
+    // Mentor Income Management
+    Route::get('/mentor-incomes', [MentorIncomeController::class, 'index'])->name('mentor-incomes.index');
+    Route::post('/mentor-incomes/{id}/correct', [MentorIncomeController::class, 'correct'])->name('mentor-incomes.correct');
+
+    // Income Management
+    Route::get('/income-management', [AdminController::class, 'incomeManagement'])->name('income-management');
 });
 
-// Mentor Routes
+/*
+|--------------------------------------------------------------------------
+| Mentor Routes
+|--------------------------------------------------------------------------
+*/
 Route::middleware(['auth', 'mentor'])->prefix('mentor')->name('mentor.')->group(function () {
+    // Mentor Dashboard & Analytics
     Route::get('/dashboard', [MentorDashboardController::class, 'index'])->name('dashboard');
     Route::get('/analytics', [MentorAnalyticsController::class, 'index'])->name('analytics');
     Route::get('/courses', [MentorCourseController::class, 'index'])->name('courses');
+    Route::get('/course-management', [MentorCourseController::class, 'index'])->name('course-management');
+
+    // Income Reports
     Route::get('/income-report', [MentorIncomeReportController::class, 'index'])->name('income-report');
+
+    // Quiz Management
+    Route::resource('quizzes', QuizController::class);
+    Route::get('quizzes/{quiz}/analyze', [QuizController::class, 'analyze'])
+        ->name('quizzes.analyze');
+    Route::get('courses/{course}/materials', [QuizController::class, 'getMaterials'])
+        ->name('courses.materials');
+
+    // Quiz Questions Management (Nested under Quiz)
+    Route::prefix('quizzes/{quiz}')->name('quizzes.')->group(function () {
+        Route::resource('questions', QuizQuestionController::class)
+            ->except(['index', 'show']);
+    });
 });
 
-// Route untuk admin
-Route::middleware(['auth', 'role:admin'])->prefix('admin')->group(function () {
-    Route::get('/income-management', [AdminController::class, 'incomeManagement']);
-    // Route admin lainnya
+/*
+|--------------------------------------------------------------------------
+| Student Routes
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'siswa'])->prefix('student')->name('student.')->group(function () {
+    // Quiz Taking
+    Route::get('quizzes', [QuizStudentController::class, 'index'])
+        ->name('quizzes.index');
+    Route::get('quizzes/{quiz}', [QuizStudentController::class, 'show'])
+        ->name('quizzes.show');
+    Route::get('quizzes/{quiz}/start', [QuizStudentController::class, 'start'])
+        ->name('quizzes.start');
+    Route::get('quizzes/{quiz}/attempts/{attempt}', [QuizStudentController::class, 'take'])
+        ->name('quizzes.take');
+    Route::post('quizzes/{quiz}/attempts/{attempt}/answer', [QuizStudentController::class, 'saveAnswer'])
+        ->name('quizzes.save-answer');
+    Route::post('quizzes/{quiz}/attempts/{attempt}/submit', [QuizStudentController::class, 'submit'])
+        ->name('quizzes.submit');
+    Route::get('quizzes/{quiz}/attempts/{attempt}/result', [QuizStudentController::class, 'result'])
+        ->name('quizzes.result');
+    Route::get('/quiz/{attempt}/certificate', [QuizStudentController::class, 'certificate'])->name('quiz.certificate');
 });
 
-// Route untuk mentor
-Route::middleware(['auth', 'role:mentor'])->prefix('mentor')->group(function () {
-    Route::get('/income-report', [IncomeReportController::class, 'index'])->name('mentor.income-report');
-    // Route mentor lainnya
-});
-
-Route::middleware(['auth', 'mentor'])->group(function () {
-    Route::get('/income-report', [App\Http\Controllers\Mentor\IncomeReportController::class, 'index'])->name('mentor.income-report');
-});
-
-// Catch-all Fallback Route
-// Subscription-plans
-Route::resource('subscription-plans', SubscriptionPlanController::class)
-    ->names([
-        'index' => 'admin.subscription-plans.index',
-        'create' => 'admin.subscription-plans.create',
-        'store' => 'admin.subscription-plans.store',
-        'show' => 'admin.subscription-plans.show',
-        'edit' => 'admin.subscription-plans.edit',
-        'update' => 'admin.subscription-plans.update',
-        'destroy' => 'admin.subscription-plans.destroy',
-    ]);
-
-// Catch-all Fallback Route (for undefined routes)
+/*
+|--------------------------------------------------------------------------
+| Fallback Route
+|--------------------------------------------------------------------------
+*/
 Route::fallback(function () {
     return view('errors.404');
 });
-
-
-// Auth Routes
-Auth::routes();
-
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-
-// course - imam
-Route::resource('course', CourseController::class);
-Route::resource('course', CourseController::class)->names([
-    'index' => 'features.course.index',
-    'create' => 'features.course.create',
-    'store' => 'features.course.store',
-    'show' => 'features.course.show',
-    'edit' => 'features.course.edit',
-    'update' => 'features.course.update',
-    'destroy' => 'features.course.destroy',
-Route::get('/course/{slug}', [CourseController::class, 'show'])->name('course.show')
-]);
