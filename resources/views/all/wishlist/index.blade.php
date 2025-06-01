@@ -217,8 +217,8 @@
 
 @section('content')
     <div class="body-wrapper">
-        <div class="container">
-            <div class="wishlist-header">
+        <div class="container mt-5 pt-5">
+            <div class="d-flex justify-content-between align-items-center mb-4-header">
                 <h2>📚 Wishlist Saya <span class="badge">{{ count($wishlists) }}</span></h2>
             </div>
             

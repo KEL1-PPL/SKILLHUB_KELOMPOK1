@@ -14,7 +14,8 @@ class DiskusiController extends Controller
     }
 
     public function create() {
-        return view('features.features-diskusi.create');
+        $title = 'Buat Diskusi';
+        return view('features.features-diskusi.create', compact('title'));
     }
 
     public function store(Request $request) {
