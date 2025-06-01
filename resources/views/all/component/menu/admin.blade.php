@@ -48,14 +48,14 @@
 
 <li class="sidebar-item">
     <a class="sidebar-link {{ $title == 'sertifikat' ? 'active' : '' }} text-decoration-none"
-        href="">
+        href="{{ route('admin.certificates.index') }}">
         <i class="bi bi-person fs-4"></i>
         <h3 class="fs-4 mt-1">Manajement Sertifikat</h3>
     </a>
 </li>
 <li class="sidebar-item">
     <a class="sidebar-link {{ $title == 'diskusi' ? 'active' : '' }} text-decoration-none"
-        href="">
+        href="{{ route('diskusi.index') }}">
         <i class="bi bi-person fs-4"></i>
         <h3 class="fs-4 mt-1">Manajement Forum diskusi</h3>
     </a>

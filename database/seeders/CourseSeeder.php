@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
 use App\Models\Course;
+use Illuminate\Support\Str;
 
 class CourseSeeder extends Seeder
 {
@@ -18,7 +19,11 @@ class CourseSeeder extends Seeder
         ];
 
         foreach ($courses as $course) {
-            Course::create($course);
+            Course::create([
+                'title' => $course['title'],
+                'slug' => Str::slug($course['title']),
+                'created_by' => $course['created_by'],
+            ]);
         }
     }
 }

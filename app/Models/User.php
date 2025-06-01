@@ -96,6 +96,11 @@ class User extends Authenticatable
         return $this->role === 'mentor';
     }
 
+    public function certificates()
+{
+    return $this->hasMany(Certificate::class);
+}
+
     public function wishlists()
     {
         return $this->hasMany(Wishlist::class);
