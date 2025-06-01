@@ -32,6 +32,7 @@ use App\Http\Controllers\WishlistController;
 use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\WishlistAnalyticsController;
+use App\Http\Controllers\RatingController;
 
 // Landing Page Route
 Route::get('/', function () {
@@ -261,7 +262,7 @@ Route::middleware(['auth', 'can:admin'])->prefix('admin')->group(function () {
 });
 
 
-// Route Live Class - elsa (Admin/Mentor)
+// Route Live Class - elsa
 Route::middleware('auth')->group(function () {
     Route::resource('live-class', LiveClassController::class)->names([
         'index' => 'live-class.index',
@@ -280,4 +281,13 @@ Route::middleware('auth')->group(function () {
         Route::get('/{id}/join', [LiveClassController::class, 'join'])->name('join');
         
     });
+});
+// ratings
+Route::middleware('auth')->group(function () {
+    Route::get('/ratings', [RatingController::class, 'index'])->name('ratings.index');
+    Route::get('/ratings/create', [RatingController::class, 'create'])->name('ratings.create');
+    Route::post('/ratings', [RatingController::class, 'store'])->name('ratings.store');
+    Route::get('/ratings/{id}/edit', [RatingController::class, 'edit'])->name('ratings.edit');
+    Route::put('/ratings/{id}', [RatingController::class, 'update'])->name('ratings.update');
+    Route::delete('/ratings/{id}', [RatingController::class, 'destroy'])->name('ratings.destroy');
 });

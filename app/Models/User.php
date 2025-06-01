@@ -95,4 +95,14 @@ class User extends Authenticatable
     {
         return $this->role === 'mentor';
     }
+
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    public function wishlistCourses()
+    {
+        return $this->belongsToMany(Course::class, 'wishlists');
+    }
 }

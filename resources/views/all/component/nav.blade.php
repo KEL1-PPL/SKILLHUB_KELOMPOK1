@@ -54,4 +54,4 @@
 </nav>
 
 <!-- Bootstrap JS and Popper.js (Required for the dropdown functionality) -->
-<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsd\elivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
