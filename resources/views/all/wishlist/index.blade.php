@@ -249,7 +249,7 @@
                                         @endfor
                                     </div>
                                     <div class="action-buttons">
-                                        <a href="" class="btn btn-primary btn-sm w-100 mb-3">Lihat Detail</a>
+                                        <a href="{{ route('features.course.show', $wishlist->course->slug) }}"  class="btn btn-primary btn-sm w-100 mb-3">Lihat Detail</a>
                                         <button class="btn btn-danger btn-sm remove-wishlist" 
                                                 data-course-id="{{ $wishlist->course->id }}">
                                                 <i class="fas fa-trash mt-5 pt-3"></i> Hapus

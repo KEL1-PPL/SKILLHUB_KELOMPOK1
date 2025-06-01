@@ -13,7 +13,9 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RatingReviewController;
 use App\Http\Controllers\VoucherController;
 use App\Http\Controllers\Admin\AdminController;
-use App\Http\Controllers\Admin\DiscountController as AdminDiscountController;
+use App\Http\Controllers\Admin\DiscountController;
+use App\Http\Controllers\Admin\AdminCertificateController;
+use App\Http\Controllers\Admin\AdminSubscriptionPlanController;
 use App\Http\Controllers\Admin\EarningsController;
 use App\Http\Controllers\Admin\MentorIncomeController;
 use App\Http\Controllers\Admin\WishlistAnalyticsController as AdminWishlistAnalyticsController;
@@ -21,7 +23,6 @@ use App\Http\Controllers\Mentor\MentorDashboardController;
 use App\Http\Controllers\Mentor\MentorIncomeReportController;
 use App\Http\Controllers\Mentor\MentorAnalyticsController;
 use App\Http\Controllers\Mentor\MentorCourseController;
-use App\Http\Controllers\SubscriptionPlanController;
 use App\Http\Controllers\CourseController;
 use App\Http\Controllers\MaterialController;
 use App\Http\Controllers\HomeController;
@@ -180,35 +181,36 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
-    // Dashboard & Management
-    Route::get('dashboard', [AdminController::class, 'index'])->name('dashboard');
-    Route::get('/income-management', [AdminController::class, 'incomeManagement'])->name('income-management');
-
-    // Content Management
-    Route::resource('about', AboutController::class)->except(['show']);
-    Route::resource('contact', ContactController::class)->except(['show', 'create']);
-    Route::resource('voucher', VoucherController::class);
-
-    // Subscription Plans Management
-    Route::resource('subscription-plans', SubscriptionPlanController::class)->except(['index', 'show']);
-
-    // Earnings Management
-    Route::resource('earnings', AdminController::class)->only(['index', 'show', 'update', 'destroy']);
-    Route::post('/earnings/{earning}/invalidate', [AdminController::class, 'invalidate'])->name('earnings.invalidate');
-
-    // Mentor Income Management
-    Route::get('/mentor-incomes', [MentorIncomeController::class, 'index'])->name('mentor-incomes.index');
-    Route::post('/mentor-incomes/{id}/correct', [MentorIncomeController::class, 'correct'])->name('mentor-incomes.correct');
-
+    // Dashboard
+    Route::get('/dashboard', [AdminController::class, 'index'])->name('dashboard');
+    
+    // User Management
+    Route::resource('users', AdminController::class);
+    
+    // Course Management
+    Route::resource('courses', CourseController::class);
+    
+    // Article Management
+    Route::resource('articles', ArticleController::class);
+    Route::post('articles/{article}/approve', [ArticleController::class, 'approve'])->name('articles.approve');
+    Route::post('articles/{article}/reject', [ArticleController::class, 'reject'])->name('articles.reject');
+    
+    // Subscription Plans
+    Route::resource('subscription-plans', AdminSubscriptionPlanController::class);
+    
+    // Discounts
+    Route::resource('discounts', DiscountController::class);
+    
+    // Certificates
+    Route::resource('certificates', AdminCertificateController::class);
+    
     // Wishlist Analytics
     Route::get('wishlist', [AdminWishlistAnalyticsController::class, 'index'])->name('wishlist.index');
     Route::get('wishlist/dashboard', [AdminWishlistAnalyticsController::class, 'dashboard'])->name('wishlist.dashboard');
-
-    // Discount Management
-    Route::resource('discounts', AdminDiscountController::class);
-
-    // Certificate Management
-    Route::resource('certificates', CertificateController::class);
+    
+    // Analytics
+    Route::get('analytics', [AdminController::class, 'analytics'])->name('analytics');
+    Route::get('analytics/export', [AdminController::class, 'exportAnalytics'])->name('analytics.export');
 });
 
 /*

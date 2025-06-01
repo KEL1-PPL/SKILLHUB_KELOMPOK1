@@ -7,35 +7,43 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class SubscriptionPlan extends Model
 {
+    use HasFactory;
+
     protected $fillable = [
         'name',
         'description',
         'price',
         'duration_in_days',
-        'features',
-        'is_active'
+        'features'
     ];
 
     protected $casts = [
-        'price' => 'decimal:2',
+        'price' => 'float',
         'duration_in_days' => 'integer',
-        'features' => 'array',
-        'is_active' => 'boolean'
+        'features' => 'array'
     ];
 
-    public function getFormattedPriceAttribute(): string
+    public function subscriptions()
+    {
+        return $this->hasMany(Subscription::class);
+    }
+
+    public function getFormattedPriceAttribute()
     {
         return 'Rp ' . number_format($this->price, 0, ',', '.');
     }
 
-    public function getFormattedDurationAttribute(): string
+    public function getFormattedDurationAttribute()
     {
-        if ($this->duration_in_days % 30 === 0) {
-            $months = $this->duration_in_days / 30;
-            return $months . ' ' . str('month')->plural($months);
+        if ($this->duration_in_days >= 365) {
+            $years = floor($this->duration_in_days / 365);
+            return $years . ' ' . str_plural('tahun', $years);
+        } elseif ($this->duration_in_days >= 30) {
+            $months = floor($this->duration_in_days / 30);
+            return $months . ' ' . str_plural('bulan', $months);
+        } else {
+            return $this->duration_in_days . ' ' . str_plural('hari', $this->duration_in_days);
         }
-        
-        return $this->duration_in_days . ' ' . str('day')->plural($this->duration_in_days);
     }
 
     public function scopeActive($query)
@@ -47,5 +55,4 @@ class SubscriptionPlan extends Model
     {
         return now()->addDays($this->duration_in_days)->format('Y-m-d H:i:s');
     }
-
 }

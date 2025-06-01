@@ -54,4 +54,14 @@ class Course extends Model
     {
         return $this->hasMany(Quiz::class);
     }
+
+    public function wishlists()
+    {
+        return $this->hasMany(Wishlist::class);
+    }
+
+    public function wishlistedBy()
+    {
+        return $this->belongsToMany(User::class, 'wishlists');
+    }
 }

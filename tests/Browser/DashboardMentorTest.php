@@ -4,7 +4,7 @@ namespace Tests\Browser;
 
 use App\Models\Course;
 use App\Models\CourseEnrollment;
-use App\Models\CourseProgres;
+use App\Models\CourseProgress;
 use App\Models\User;
 use Illuminate\Foundation\Testing\DatabaseMigrations;
 use Laravel\Dusk\Browser;
@@ -43,7 +43,7 @@ class DashboardMentorTest extends DuskTestCase
                 'enrolled_at' => now()
             ]);
 
-            CourseProgres::create([
+            CourseProgress::create([
                 'enrollment_id' => $enrollment->id,
                 'percentage_completed' => 65,
                 'status' => 'Tidak Selesai',
@@ -88,7 +88,7 @@ class DashboardMentorTest extends DuskTestCase
                 'enrolled_at' => now()->subDays(30)
             ]);
 
-            CourseProgres::create([
+            CourseProgress::create([
                 'enrollment_id' => $enrollment->id,
                 'percentage_completed' => 15,
                 'status' => 'Tidak Selesai',
@@ -144,7 +144,7 @@ class DashboardMentorTest extends DuskTestCase
                 'enrolled_at' => now()
             ]);
 
-            CourseProgres::create([
+            CourseProgress::create([
                 'enrollment_id' => $enrollment->id,
                 'percentage_completed' => 75,
                 'status' => 'Tidak Selesai',
@@ -178,5 +178,12 @@ class DashboardMentorTest extends DuskTestCase
                 ->assertDontSee('🔍 Analitik Area Kesulitan')
                 ->screenshot('student-cannot_access_mentor_features');
         });
+    }
+
+    protected function createTestProgress()
+    {
+        CourseProgress::create([
+            // Your test data here
+        ]);
     }
 }

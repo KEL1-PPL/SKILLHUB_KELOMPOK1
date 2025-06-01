@@ -20,7 +20,7 @@ class CourseEnrollment extends Model
 
     public function progress()
     {
-        return $this->hasOne(CourseProgres::class, 'enrollment_id');
+        return $this->hasOne(CourseProgress::class, 'enrollment_id');
     }
 
     public function calculateProgress()
