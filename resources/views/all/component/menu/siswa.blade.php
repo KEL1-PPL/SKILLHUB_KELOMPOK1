@@ -7,6 +7,14 @@
 </li>
 
 <li class="sidebar-item">
+    <a class="sidebar-link {{ $title == 'live' ? 'active' : '' }} text-decoration-none"
+        href="{{ route('live-class-student.index') }}">
+        <i class="bi bi-broadcast fs-4"></i>
+        <h3 class="fs-4 mt-1">Live Class</h3>
+    </a>
+</li>
+
+<li class="sidebar-item">
     <a class="sidebar-link {{ $title == 'wishlist' ? 'active' : '' }} text-decoration-none"
         href="{{ route('wishlist.index') }}">
         <i class="bi bi-heart fs-4"></i>

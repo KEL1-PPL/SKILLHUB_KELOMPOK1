@@ -16,7 +16,7 @@ class LiveClass extends Model
         'datetime',
         'platform',
         'link',
-        'user_id', // if you want to track who created the live class
+        'user_id', 
         'participants_count',
         'status',
     ];
@@ -25,36 +25,31 @@ class LiveClass extends Model
         'datetime' => 'datetime',
     ];
 
-    // Relationship with User (if you want to track who created the live class)
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    // Check if live class is upcoming
     public function isUpcoming()
     {
         return $this->datetime > now();
     }
 
-    // Check if live class is live (happening now)
     public function isLive()
     {
         $now = now();
         $start = $this->datetime;
-        $end = $this->datetime->addHours(2); // Assume 2 hours duration
-        
+        $end = $this->datetime->copy()->addHours(2); 
+
         return $now >= $start && $now <= $end;
     }
 
-    // Check if live class is completed
     public function isCompleted()
     {
-        return $this->datetime->addHours(2) < now(); // Assume 2 hours duration
+        return $this->datetime->copy()->addHours(2)->lt(now());
     }
 
-    // Get status
-    public function getStatusAttribute()
+    public function getLiveStatusAttribute()
     {
         if ($this->isLive()) {
             return 'live';
@@ -65,13 +60,11 @@ class LiveClass extends Model
         }
     }
 
-    // Get formatted datetime
     public function getFormattedDatetimeAttribute()
     {
         return $this->datetime->format('d F Y, H:i');
     }
 
-    // Get time until live class starts
     public function getTimeUntilStartAttribute()
     {
         if ($this->isUpcoming()) {
@@ -80,23 +73,34 @@ class LiveClass extends Model
         return null;
     }
 
-    // Scope for upcoming live classes
     public function scopeUpcoming($query)
     {
         return $query->where('datetime', '>', now());
     }
 
-    // Scope for live classes happening now
     public function scopeLive($query)
     {
         $now = now();
         return $query->where('datetime', '<=', $now)
-                    ->where('datetime', '>=', $now->subHours(2));
+                    ->where('datetime', '>', $now->copy()->subHours(2));
     }
 
-    // Scope for completed live classes
     public function scopeCompleted($query)
     {
-        return $query->where('datetime', '<', now()->subHours(2));
+        return $query->where('datetime', '<=', now()->subHours(2));
+    }
+
+    public function getDebugStatusAttribute()
+    {
+        $now = now();
+        return [
+            'current_time' => $now->format('Y-m-d H:i:s'),
+            'class_datetime' => $this->datetime->format('Y-m-d H:i:s'),
+            'class_end' => $this->datetime->copy()->addHours(2)->format('Y-m-d H:i:s'),
+            'is_upcoming' => $this->isUpcoming(),
+            'is_live' => $this->isLive(),
+            'is_completed' => $this->isCompleted(),
+            'database_status' => $this->attributes['status'] ?? 'unknown'
+        ];
     }
 }
