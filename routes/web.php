@@ -33,8 +33,10 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\DiscountController;
 use App\Http\Controllers\WishlistAnalyticsController;
 use App\Http\Controllers\RatingController;
+use App\Http\Controllers\ArticleController;
 use App\Http\Controllers\DiskusiController;
 use App\Http\Controllers\ReplyController;
+use App\Http\Controllers\CertificateController;
 
 // Landing Page Route
 Route::get('/', function () {
@@ -131,6 +133,17 @@ Route::middleware('auth')->group(function () {
 
     Route::post('course/{course}/material/{material}/toggle-completion', [MaterialController::class, 'toggleCompletion'])
         ->name('features.material.toggle-completion');
+
+    // Article Routes
+    Route::get('/articles', [ArticleController::class, 'index'])->name('articles.index');
+    Route::get('/articles/create', [ArticleController::class, 'create'])->name('articles.create');
+    Route::post('/articles', [ArticleController::class, 'store'])->name('articles.store');
+    Route::get('/articles/{article}', [ArticleController::class, 'show'])->name('articles.show');
+    Route::get('/articles/{article}/edit', [ArticleController::class, 'edit'])->name('articles.edit');
+    Route::put('/articles/{article}', [ArticleController::class, 'update'])->name('articles.update');
+    Route::delete('/articles/{article}', [ArticleController::class, 'destroy'])->name('articles.destroy');
+    Route::post('/articles/{article}/approve', [ArticleController::class, 'approve'])->name('articles.approve');
+    Route::post('/articles/{article}/reject', [ArticleController::class, 'reject'])->name('articles.reject');
 });
 
 // Admin Routes
@@ -289,8 +302,6 @@ Route::post('/diskusi/{id}/reply', [ReplyController::class, 'store'])->name('rep
 Route::post('/reply/{id}/best', [ReplyController::class, 'markAsBest'])->name('replies.best')->middleware('auth');
 // Hapus balasan (admin)
 Route::delete('/admin/reply/{id}', [ReplyController::class, 'destroy'])->name('admin.replies.destroy')->middleware('auth');
-
-use App\Http\Controllers\CertificateController;
 
 // Routes Sertifikat untuk Admin (PBI #4, #5, #6)
 Route::middleware(['auth'])->prefix('admin')->group(function () {
