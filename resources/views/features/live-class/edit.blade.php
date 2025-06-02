@@ -92,9 +92,6 @@
                                         <option value="Google Meet" {{ old('platform', $liveClass->platform) == 'Google Meet' ? 'selected' : '' }}>Google Meet</option>
                                         <option value="Microsoft Teams" {{ old('platform', $liveClass->platform) == 'Microsoft Teams' ? 'selected' : '' }}>Microsoft Teams</option>
                                         <option value="YouTube Live" {{ old('platform', $liveClass->platform) == 'YouTube Live' ? 'selected' : '' }}>YouTube Live</option>
-                                        <option value="Facebook Live" {{ old('platform', $liveClass->platform) == 'Facebook Live' ? 'selected' : '' }}>Facebook Live</option>
-                                        <option value="Instagram Live" {{ old('platform', $liveClass->platform) == 'Instagram Live' ? 'selected' : '' }}>Instagram Live</option>
-                                        <option value="Lainnya" {{ old('platform', $liveClass->platform) == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
                                     </select>
                                     @error('platform')
                                         <div class="invalid-feedback">{{ $message }}</div>

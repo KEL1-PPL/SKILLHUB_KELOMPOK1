@@ -45,7 +45,7 @@
 </li>
 <li class="sidebar-item">
     <a class="sidebar-link {{ $title == 'transaksi' ? 'active' : '' }} text-decoration-none"
-        href="{{ route('subscription.my-subscriptions') }}">
+        href="">
         <i class="bi bi-person fs-4"></i>
         <h3 class="fs-4 mt-1">Payment kelas</h3>
     </a>

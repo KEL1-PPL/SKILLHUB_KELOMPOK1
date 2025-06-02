@@ -12,10 +12,10 @@ use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\RatingReviewController;
 use App\Http\Controllers\VoucherController;
+use App\Http\Controllers\SubscriptionPlanController;
 use App\Http\Controllers\Admin\AdminController;
 use App\Http\Controllers\Admin\DiscountController;
 use App\Http\Controllers\Admin\AdminCertificateController;
-use App\Http\Controllers\Admin\AdminSubscriptionPlanController;
 use App\Http\Controllers\Admin\EarningsController;
 use App\Http\Controllers\Admin\MentorIncomeController;
 use App\Http\Controllers\Admin\WishlistAnalyticsController as AdminWishlistAnalyticsController;
@@ -196,7 +196,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('articles/{article}/reject', [ArticleController::class, 'reject'])->name('articles.reject');
     
     // Subscription Plans
-    Route::resource('subscription-plans', AdminSubscriptionPlanController::class);
+    Route::resource('subscription-plans', SubscriptionPlanController::class)
+    ->names([
+        'index' => 'subscription-plans.index',
+        'create' => 'subscription-plans.create',
+        'store' => 'subscription-plans.store',
+        'show' => 'subscription-plans.show',
+        'edit' => 'subscription-plans.edit',
+        'update' => 'subscription-plans.update',
+        'destroy' => 'subscription-plans.destroy',
+    ]);
     
     // Discounts
     Route::resource('discounts', DiscountController::class);
