@@ -31,7 +31,7 @@ class MentorArticleTest extends DuskTestCase
                 ->type('content', 'Tes artikel')
                 ->press('Simpan Artikel')
                 ->pause(2000)
-                ->assertSee('Articles');
+                ->screenshot('testCreateArticle');
         });
     }
 
@@ -63,7 +63,7 @@ class MentorArticleTest extends DuskTestCase
     }
 
     
-        /**
+    /**
      * @Test
      * @group artikel-siswa
      */
@@ -85,6 +85,23 @@ class MentorArticleTest extends DuskTestCase
                 ->assertSee('Articles');
         });
     }
+
+    /**
+     * @Test
+     * @group artikel-siswa-fail
+     */
+        public function testViewArticlefail(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/login')
+                ->type('email', 'students@skillhub.com')
+                ->type('password', 'password')
+                ->press('Log In to Your Account')
+                ->assertPathIs('/login');
+        });
+    }
+
+
     /**
      * @Test
      * @group artikel-mentor-edit
@@ -111,6 +128,34 @@ class MentorArticleTest extends DuskTestCase
                 ->assertSee('Articles');
         });
     }
+
+    /**
+     * @Test
+     * @group artikel-edit-fail
+     */
+    public function testEditArticlefail(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/login')
+                ->type('email', 'mentor@skillhub.com')
+                ->type('password', 'password')
+                ->press('Log In to Your Account')
+                ->assertPathIs('/dashboard')
+                ->pause(5000)
+                ->assertSee('Selamat Datang, Mentor User!')
+                ->clickLink('Articles')
+                ->assertPathIs('/articles')
+                ->assertSee('Articles')
+                ->pause(2000)
+                ->clickLink('Edit')
+                ->assertPathIs('/articles/1/edit')
+                ->type('title', 'Tes Artikell')
+                ->type('content', 'Tes')
+                ->press('Update Article');
+        });
+    }
+
+
     /**
      * @Test
      * @group artikel-mentor-delete
@@ -133,6 +178,23 @@ class MentorArticleTest extends DuskTestCase
                 ->assertSee('Articles');
         });
     }
+
+    /**
+     * @Test
+     * @group artikel-mentor-delete-fail
+     */
+        public function testDeleteArticlefail(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/login')
+                ->type('email', 'mentors@skillhub.com')
+                ->type('password', 'password')
+                ->press('Log In to Your Account')
+                ->assertPathIs('/login');
+        });
+    }
+
+
     /**
      * @Test
      * @group artikel-admin
@@ -152,6 +214,22 @@ class MentorArticleTest extends DuskTestCase
                 ->assertPathIs('/articles')
                 ->pause(2000)
                 ->assertSee('Articles');
+        });
+    }
+
+
+    /**
+     * @Test
+     * @group artikel-admin-fail
+     */
+        public function testAdminArticlefail(): void
+    {
+        $this->browse(function (Browser $browser) {
+            $browser->visit('/login')
+                ->type('email', 'Admins@skillhub.com')
+                ->type('password', 'password')
+                ->press('Log In to Your Account')
+                ->assertPathIs('/login');
         });
     }
 
