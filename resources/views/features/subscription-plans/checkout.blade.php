@@ -1,7 +1,7 @@
 @extends('all.component.app')
 
 @section('content')
-<div class="container-fluid" style="padding-top: 120px;">
+<div class="container-fluid px-4 mt-4">
     <div class="row mb-3">
         <div class="col-lg-10 offset-lg-2 col-md-12 px-4">
             <h1 class="h4 fw-bold">Checkout Paket Berlangganan</h1>
