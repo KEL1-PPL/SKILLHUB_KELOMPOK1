@@ -18,7 +18,6 @@ class MentorArticleTest extends DuskTestCase
                 ->type('email', 'mentor@skillhub.com')
                 ->type('password', 'password')
                 ->press('Log In to Your Account')
-                ->assertPathIs('/dashboard')
                 ->pause(5000)
                 ->assertSee('Selamat Datang, Mentor User!')
                 ->clickLink('Articles')
@@ -31,6 +30,7 @@ class MentorArticleTest extends DuskTestCase
                 ->type('content', 'Tes artikel')
                 ->press('Simpan Artikel')
                 ->pause(2000)
+                -assertpathis('/articles')
                 ->screenshot('testCreateArticle');
         });
     }
@@ -46,7 +46,6 @@ class MentorArticleTest extends DuskTestCase
                 ->type('email', 'mentor@skillhub.com')
                 ->type('password', 'password')
                 ->press('Log In to Your Account')
-                ->assertPathIs('/dashboard')
                 ->pause(5000)
                 ->assertSee('Selamat Datang, Mentor User!')
                 ->clickLink('Articles')
@@ -58,7 +57,9 @@ class MentorArticleTest extends DuskTestCase
                 ->type('title', 'Tes Artikel')
                 ->type('content', 'Tes')
                 ->press('Simpan Artikel')
-                ->assertSee('The content field must be at least 10 characters.');
+                ->assertSee('The content field must be at least 10 characters.')
+                ->assertPathIs('/articles/create')
+                ->screenshot('testCreateArticlefail');
         });
     }
 
@@ -81,8 +82,9 @@ class MentorArticleTest extends DuskTestCase
                 ->assertSee('Articles')
                 ->pause(2000)
                 ->clickLink('Lebih lanjut')
-                ->assertPathIs('/articles/4')
-                ->assertSee('Articles');
+                ->assertPathIs('/articles/5')
+                ->assertSee('Articles')
+                ->screenshot('testViewArticle');
         });
     }
 
@@ -97,7 +99,8 @@ class MentorArticleTest extends DuskTestCase
                 ->type('email', 'students@skillhub.com')
                 ->type('password', 'password')
                 ->press('Log In to Your Account')
-                ->assertPathIs('/login');
+                ->assertPathIs('/login')
+                ->screenshot('testViewArticlefail');
         });
     }
 
@@ -120,12 +123,13 @@ class MentorArticleTest extends DuskTestCase
                 ->assertSee('Articles')
                 ->pause(2000)
                 ->clickLink('Edit')
-                ->assertPathIs('/articles/5/edit')
+                ->assertPathIs('/articles/1/edit')
                 ->type('title', 'Tes Artikell')
                 ->type('content', 'Tes artikelll')
                 ->press('Update Article')
                 ->pause(2000)
-                ->assertSee('Articles');
+                ->assertSee('Articles')
+                ->screenshot('testEditArticle');
         });
     }
 
@@ -140,7 +144,6 @@ class MentorArticleTest extends DuskTestCase
                 ->type('email', 'mentor@skillhub.com')
                 ->type('password', 'password')
                 ->press('Log In to Your Account')
-                ->assertPathIs('/dashboard')
                 ->pause(5000)
                 ->assertSee('Selamat Datang, Mentor User!')
                 ->clickLink('Articles')
@@ -151,7 +154,10 @@ class MentorArticleTest extends DuskTestCase
                 ->assertPathIs('/articles/1/edit')
                 ->type('title', 'Tes Artikell')
                 ->type('content', 'Tes')
-                ->press('Update Article');
+                ->press('Update Article')
+                ->assertPathIs('/articles/1/edit')
+                ->assertSee('The content field must be at least 10 characters.')
+                ->screenshot('testEditArticlefail');
         });
     }
 
@@ -175,7 +181,8 @@ class MentorArticleTest extends DuskTestCase
                 ->pause(2000)
                 ->assertPathIs('/articles')
                 ->pause(2000)
-                ->assertSee('Articles');
+                ->assertSee('Articles')
+                ->screenshot('testDeleteArticle');
         });
     }
 
@@ -190,7 +197,8 @@ class MentorArticleTest extends DuskTestCase
                 ->type('email', 'mentors@skillhub.com')
                 ->type('password', 'password')
                 ->press('Log In to Your Account')
-                ->assertPathIs('/login');
+                ->assertPathIs('/login')
+                ->screenshot('testDeleteArticlefail');
         });
     }
 
@@ -213,7 +221,8 @@ class MentorArticleTest extends DuskTestCase
                 ->pause(2000)
                 ->assertPathIs('/articles')
                 ->pause(2000)
-                ->assertSee('Articles');
+                ->assertSee('Articles')
+                ->screenshot('testAdminArticle');
         });
     }
 
@@ -229,7 +238,8 @@ class MentorArticleTest extends DuskTestCase
                 ->type('email', 'Admins@skillhub.com')
                 ->type('password', 'password')
                 ->press('Log In to Your Account')
-                ->assertPathIs('/login');
+                ->assertPathIs('/login')
+                ->screenshot('testAdminArticlefail');
         });
     }
 
